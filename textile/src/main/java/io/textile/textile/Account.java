@@ -7,7 +7,7 @@ import io.textile.pb.QueryOuterClass.QueryOptions;
 import mobile.Mobile_;
 import mobile.SearchHandle;
 
-public class Account extends NodeDependant {
+public class Account extends NodeDependent {
 
     Account(Mobile_ node) {
         super(node);
