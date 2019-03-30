@@ -11,29 +11,29 @@ public class Cafes extends NodeDependent {
     }
 
     public void register(String host, String token) throws Exception {
-        this.node.registerCafe(host, token);
+        node.registerCafe(host, token);
     }
 
     public CafeSession session(String peerId) throws Exception {
-        byte[] bytes = this.node.cafeSession(peerId);
+        byte[] bytes = node.cafeSession(peerId);
         return CafeSession.parseFrom(bytes);
     }
 
     public CafeSessionList sessions() throws Exception {
-        byte[] bytes = this.node.cafeSessions();
+        byte[] bytes = node.cafeSessions();
         return CafeSessionList.parseFrom(bytes);
     }
 
     public CafeSession refreshSession(String peerId) throws Exception {
-        byte[] bytes = this.node.refreshCafeSession(peerId);
+        byte[] bytes = node.refreshCafeSession(peerId);
         return CafeSession.parseFrom(bytes);
     }
 
     public void deregister(String peerId) throws Exception {
-        this.node.deregisterCafe(peerId);
+        node.deregisterCafe(peerId);
     }
 
     public void checkMessages() throws Exception {
-        this.node.checkCafeMessages();
+        node.checkCafeMessages();
     }
 }

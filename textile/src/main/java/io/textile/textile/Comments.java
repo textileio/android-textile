@@ -9,6 +9,6 @@ public class Comments extends NodeDependent {
     }
 
     public String add(String blockId, String body) throws Exception {
-        return this.node.addComment(blockId, body);
+        return node.addComment(blockId, body);
     }
 }

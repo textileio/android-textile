@@ -1,7 +1,6 @@
 package io.textile.textile;
 
-import io.textile.pb.Model.ContactList;
-import io.textile.pb.QueryOuterClass.ThreadBackupQuery;
+import io.textile.pb.Model.Contact;
 import io.textile.pb.QueryOuterClass.QueryOptions;
 
 import mobile.Mobile_;
@@ -14,27 +13,27 @@ public class Account extends NodeDependent {
     }
 
     public String address() {
-        return this.node.address();
+        return node.address();
     }
 
     public String seed() {
-        return this.node.seed();
+        return node.seed();
     }
 
     public byte[] encrypt(byte[] bytes) throws Exception {
-        return this.node.encrypt(bytes);
+        return node.encrypt(bytes);
     }
 
     public byte[] decrypt(byte[] bytes) throws Exception {
-        return this.node.decrypt(bytes);
+        return node.decrypt(bytes);
     }
 
-    ContactList peers() throws Exception {
-        byte[] bytes = this.node.accountPeers();
-        return ContactList.parseFrom(bytes);
+    public Contact contact() throws Exception {
+        byte[] bytes = node.accountContact();
+        return Contact.parseFrom(bytes);
     }
 
-    SearchHandle findThreadBackups(ThreadBackupQuery query, QueryOptions options) throws Exception {
-        return this.node.findThreadBackups(query.toByteArray(), options.toByteArray());
+    public SearchHandle sync(QueryOptions options) throws Exception {
+        return node.syncAccount(options.toByteArray());
     }
 }
