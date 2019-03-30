@@ -1,8 +1,9 @@
 package io.textile.textile;
 
 import io.textile.pb.Mobile.MobilePreparedFiles;
-import io.textile.pb.Model;
-import io.textile.pb.View;
+import io.textile.pb.Model.Block;
+import io.textile.pb.View.Directory;
+import io.textile.pb.View.FilesList;
 import mobile.Callback;
 import mobile.Mobile_;
 
@@ -61,19 +62,19 @@ public class Files extends NodeDependent {
         return MobilePreparedFiles.parseFrom(bytes);
     }
 
-    public Model.Block add(View.Directory directory, String threadId, String caption) throws Exception {
+    public Block add(Directory directory, String threadId, String caption) throws Exception {
         byte[] bytes = node.addFiles(directory.toByteArray(), threadId, caption);
-        return Model.Block.parseFrom(bytes);
+        return Block.parseFrom(bytes);
     }
 
-    public Model.Block addByTarget(String target, String threadId, String caption) throws Exception {
+    public Block addByTarget(String target, String threadId, String caption) throws Exception {
         byte[] bytes = node.addFilesByTarget(target, threadId, caption);
-        return Model.Block.parseFrom(bytes);
+        return Block.parseFrom(bytes);
     }
 
-    public View.FilesList list(String offset, long limit, String threadId) throws Exception {
+    public FilesList list(String offset, long limit, String threadId) throws Exception {
         byte[] bytes = node.files(offset, limit, threadId);
-        return View.FilesList.parseFrom(bytes);
+        return FilesList.parseFrom(bytes);
     }
 
     public String data(String hash) throws Exception {
