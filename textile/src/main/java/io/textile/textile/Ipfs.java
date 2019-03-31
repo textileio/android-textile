@@ -9,7 +9,7 @@ public class Ipfs extends NodeDependent {
     }
 
     public String peerId() throws Exception {
-        return node.peerId()
+        return node.peerId();
     }
 
     public byte[] dataAtPath(String path) throws Exception {
