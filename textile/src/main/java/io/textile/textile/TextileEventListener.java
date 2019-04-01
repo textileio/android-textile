@@ -5,7 +5,7 @@ import io.textile.pb.Model.CafeClientThread;
 import io.textile.pb.Model.Notification;
 import io.textile.pb.View.FeedItem;
 
-public interface TextileEventsHandler {
+public interface TextileEventListener {
 
     void nodeStarted();
 

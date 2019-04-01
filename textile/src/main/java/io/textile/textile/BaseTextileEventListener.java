@@ -3,7 +3,7 @@ package io.textile.textile;
 import io.textile.pb.Model;
 import io.textile.pb.View;
 
-public abstract class BaseTextileEventsHandler implements TextileEventsHandler {
+public abstract class BaseTextileEventListener implements TextileEventListener {
 
     @Override
     public void nodeStarted() {

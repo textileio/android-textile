@@ -3,6 +3,7 @@ package io.textile.textile;
 import android.content.Context;
 
 import java.io.File;
+import java.util.HashSet;
 
 import io.textile.pb.Mobile.MobileWalletAccount;
 import io.textile.pb.View.Summary;
@@ -31,6 +32,8 @@ public class Textile {
     public Profile profile;
     public Schemas schemas;
     public Threads threads;
+
+    private HashSet<TextileEventListener> eventsListeners = new HashSet();
 
     private Mobile_ node;
 
@@ -98,7 +101,7 @@ public class Textile {
             RunConfig config = new RunConfig();
             config.setRepoPath(repoPath);
             config.setDebug(debug);
-            node = Mobile.newTextile(config, new MessageHandler());
+            node = Mobile.newTextile(config, new MessageHandler(eventsListeners));
         }
     }
 
@@ -121,6 +124,14 @@ public class Textile {
     public Summary summary() throws Exception {
         byte[] bytes = node.summary();
         return Summary.parseFrom(bytes);
+    }
+
+    public void addEventListener(TextileEventListener listener) {
+        eventsListeners.add(listener);
+    }
+
+    public void removeEventListener(TextileEventListener listener) {
+        eventsListeners.remove(listener);
     }
 
     private void createNodeDependents() {
