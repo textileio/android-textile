@@ -49,9 +49,10 @@ public class Textile {
         String path = new File(filesDir, "textile-repo").getAbsolutePath();
         try {
             Textile.instance().newTextile(path, debug);
+            Textile.instance().createNodeDependents();
+            return null;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            if (e.getMessage() == "the error message") {
+            if (e.getMessage().equals("repo does not exist, initialization is required")) {
                 try {
                     String recoveryPhrase = Textile.instance().newWallet(12);
                     MobileWalletAccount account = Textile.instance().walletAccountAt(recoveryPhrase, 0, "");
@@ -62,10 +63,10 @@ public class Textile {
                 } catch (Exception innerError) {
                     throw innerError;
                 }
+            } else {
+                throw e;
             }
         }
-        Textile.instance().createNodeDependents();
-        return null;
     }
 
     public static Textile instance() {

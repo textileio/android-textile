@@ -12,6 +12,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String address = Textile.instance().account.address();
+        try {
+            String phrase = Textile.initialize(getApplicationContext(), true, false);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

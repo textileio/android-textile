@@ -1,7 +1,9 @@
 package io.textile.textile;
 
-import io.textile.pb.Model;
-import io.textile.pb.View;
+import io.textile.pb.Model.Notification;
+import io.textile.pb.Model.Thread;
+import io.textile.pb.Model.Contact;
+import io.textile.pb.View.FeedItem;
 
 public abstract class BaseTextileEventListener implements TextileEventListener {
 
@@ -31,12 +33,12 @@ public abstract class BaseTextileEventListener implements TextileEventListener {
     }
 
     @Override
-    public void notificationReceived(Model.Notification notification) {
+    public void notificationReceived(Notification notification) {
 
     }
 
     @Override
-    public void threadUpdateReceived(View.FeedItem feedItem) {
+    public void threadUpdateReceived(FeedItem feedItem) {
 
     }
 
@@ -71,12 +73,12 @@ public abstract class BaseTextileEventListener implements TextileEventListener {
     }
 
     @Override
-    public void clientThreadQueryResult(String queryId, Model.CafeClientThread clientThread) {
+    public void clientThreadQueryResult(String queryId, Thread thread) {
 
     }
 
     @Override
-    public void contactQueryResult(String queryId, Model.Contact contact) {
+    public void contactQueryResult(String queryId, Contact contact) {
 
     }
 }

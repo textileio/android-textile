@@ -5,7 +5,7 @@ import java.util.Set;
 import io.textile.pb.MessageOuterClass.Error;
 import io.textile.pb.Mobile.MobileQueryEvent;
 import io.textile.pb.Model.Notification;
-import io.textile.pb.Model.CafeClientThread;
+import io.textile.pb.Model.Thread;
 import io.textile.pb.Model.Contact;
 import io.textile.pb.View.WalletUpdate;
 import io.textile.pb.View.FeedItem;
@@ -22,19 +22,19 @@ class MessageHandler implements Messenger {
 
     @Override
     public void notify(Event event) {
-        if (event.getName() == "NODE_START") {
+        if (event.getName().equals("NODE_START")) {
             for (TextileEventListener listener : listeners) {
                 listener.nodeStarted();
             }
-        } else if (event.getName() == "NODE_STOP") {
+        } else if (event.getName().equals("NODE_STOP")) {
             for (TextileEventListener listener : listeners) {
                 listener.nodeStopped();
             }
-        } else if (event.getName() == "NODE_ONLINE") {
+        } else if (event.getName().equals("NODE_ONLINE")) {
             for (TextileEventListener listener : listeners) {
                 listener.nodeOnline();
             }
-        } else if (event.getName() == "WALLET_UPDATE") {
+        } else if (event.getName().equals("WALLET_UPDATE")) {
             try {
                 WalletUpdate walletUpdate = WalletUpdate.parseFrom(event.getData());
                 switch (walletUpdate.getType()) {
@@ -65,7 +65,7 @@ class MessageHandler implements Messenger {
                 return;
             }
 
-        } else if (event.getName() == "THREAD_UPDATE") {
+        } else if (event.getName().equals("THREAD_UPDATE")) {
             try {
                 FeedItem feedItem = FeedItem.parseFrom(event.getData());
                 for (TextileEventListener listener : listeners) {
@@ -74,7 +74,7 @@ class MessageHandler implements Messenger {
             } catch (Exception e) {
                 return;
             }
-        } else if (event.getName() == "NOTIFICATION") {
+        } else if (event.getName().equals("NOTIFICATION")) {
             try {
                 Notification notification = Notification.parseFrom(event.getData());
                 for (TextileEventListener listener : listeners) {
@@ -83,18 +83,18 @@ class MessageHandler implements Messenger {
             } catch (Exception e) {
                 return;
             }
-        } else if (event.getName() == "QUERY_RESPONSE") {
+        } else if (event.getName().equals("QUERY_RESPONSE")) {
             try {
                 MobileQueryEvent queryEvent = MobileQueryEvent.parseFrom(event.getData());
                 switch (queryEvent.getType()) {
                     case DATA:
                         String type = queryEvent.getData().getValue().getTypeUrl();
-                        if (type == "/CafeClientThread") {
-                            CafeClientThread clientThread = CafeClientThread.parseFrom(queryEvent.getData().getValue().getValue());
+                        if (type.equals("/Thread")) {
+                            Thread clientThread = Thread.parseFrom(queryEvent.getData().getValue().getValue());
                             for (TextileEventListener listener : listeners) {
                                 listener.clientThreadQueryResult(queryEvent.getId(), clientThread);
                             }
-                        } else if (type == "/Contact") {
+                        } else if (type.equals("/Contact")) {
                             Contact contact = Contact.parseFrom(queryEvent.getData().getValue().getValue());
                             for (TextileEventListener listener : listeners) {
                                 listener.contactQueryResult(queryEvent.getId(), contact);
