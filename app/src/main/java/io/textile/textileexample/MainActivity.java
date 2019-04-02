@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             String phrase = Textile.initialize(getApplicationContext(), true, false);
+            Textile.instance().addEventListener(new TextileListener());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

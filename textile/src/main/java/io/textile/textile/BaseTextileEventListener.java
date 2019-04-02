@@ -33,6 +33,16 @@ public abstract class BaseTextileEventListener implements TextileEventListener {
     }
 
     @Override
+    public void willStopNodeInBackgroundAfterDelay(int seconds) {
+
+    }
+
+    @Override
+    public void canceledPendingNodeStop() {
+
+    }
+
+    @Override
     public void notificationReceived(Notification notification) {
 
     }

@@ -110,12 +110,36 @@ public class Textile {
         }
     }
 
-    void start() throws Exception {
-        node.start();
+    void start() {
+        try {
+            node.start();
+        } catch (Exception e) {
+            for (TextileEventListener listener : eventsListeners) {
+                listener.nodeFailedToStart(e);
+            }
+        }
     }
 
-    void stop() throws Exception {
-        node.stop();
+    void stop() {
+        try {
+            node.stop();
+        } catch (Exception e) {
+            for (TextileEventListener listener : eventsListeners) {
+                listener.nodeFailedToStop(e);
+            }
+        }
+    }
+
+    void notifyListenersOfPendingNodeStop(int seconds) {
+        for (TextileEventListener listener : eventsListeners) {
+            listener.willStopNodeInBackgroundAfterDelay(seconds);
+        }
+    }
+
+    void notifyListenersOfCanceledPendingNodeStop() {
+        for (TextileEventListener listener : eventsListeners) {
+            listener.canceledPendingNodeStop();
+        }
     }
 
     public String version() {

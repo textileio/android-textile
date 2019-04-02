@@ -17,6 +17,10 @@ public interface TextileEventListener {
 
     void nodeOnline();
 
+    void willStopNodeInBackgroundAfterDelay(int seconds);
+
+    void canceledPendingNodeStop();
+
     void notificationReceived(Notification notification);
 
     void threadUpdateReceived(FeedItem feedItem);
