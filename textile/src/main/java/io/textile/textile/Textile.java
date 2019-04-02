@@ -1,7 +1,7 @@
 package io.textile.textile;
 
 import android.content.Context;
-
+import android.content.Intent;
 import java.io.File;
 import java.util.HashSet;
 
@@ -50,6 +50,8 @@ public class Textile {
         try {
             Textile.instance().newTextile(path, debug);
             Textile.instance().createNodeDependents();
+            Intent intent = new Intent(applicationContext, LifecycleManager.class);
+            applicationContext.startService(intent);
             return null;
         } catch (Exception e) {
             if (e.getMessage().equals("repo does not exist, initialization is required")) {
@@ -59,6 +61,8 @@ public class Textile {
                     Textile.instance().initRepo(account.getSeed(), path, logToDisk, debug);
                     Textile.instance().newTextile(path, debug);
                     Textile.instance().createNodeDependents();
+                    Intent intent = new Intent(applicationContext, LifecycleManager.class);
+                    applicationContext.startService(intent);
                     return recoveryPhrase;
                 } catch (Exception innerError) {
                     throw innerError;

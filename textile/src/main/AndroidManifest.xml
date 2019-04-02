@@ -1,2 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.textile.textile" />
+    package="io.textile.textile">
+    <application>
+        <service android:name=".LifecycleManager" android:exported="false" />
+    </application>
+</manifest>
