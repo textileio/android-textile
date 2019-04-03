@@ -46,7 +46,7 @@ public class Textile {
 
     public static String initialize(Context applicationContext, boolean debug, boolean logToDisk) throws Exception {
         File filesDir = applicationContext.getFilesDir();
-        String path = new File(filesDir, "textile-repo").getAbsolutePath();
+        String path = new File(filesDir, "textile-go").getAbsolutePath();
         try {
             Textile.instance().newTextile(path, debug);
             Textile.instance().createNodeDependents();

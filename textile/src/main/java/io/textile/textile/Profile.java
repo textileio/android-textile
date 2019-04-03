@@ -1,6 +1,6 @@
 package io.textile.textile;
 
-import io.textile.pb.Model.Contact;
+import io.textile.pb.Model.Peer;
 import mobile.Mobile_;
 
 public class Profile extends NodeDependent {
@@ -9,9 +9,9 @@ public class Profile extends NodeDependent {
         super(node);
     }
 
-    public Contact get() throws Exception {
+    public Peer get() throws Exception {
         byte[] bytes = node.profile();
-        return Contact.parseFrom(bytes);
+        return Peer.parseFrom(bytes);
     }
 
     public String name() throws Exception {
