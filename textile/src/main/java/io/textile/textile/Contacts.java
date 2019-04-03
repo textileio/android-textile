@@ -18,8 +18,8 @@ public class Contacts extends NodeDependent {
         node.addContact(contact.toByteArray());
     }
 
-    public Contact get(String contactId) throws Exception {
-        byte[] bytes = node.contact(contactId);
+    public Contact get(String address) throws Exception {
+        byte[] bytes = node.contact(address);
         return Contact.parseFrom(bytes);
     }
 
@@ -28,12 +28,12 @@ public class Contacts extends NodeDependent {
         return ContactList.parseFrom(bytes);
     }
 
-    public void remove(String contactId) throws Exception {
-        node.removeContact(contactId);
+    public void remove(String address) throws Exception {
+        node.removeContact(address);
     }
 
-    public ThreadList threads(String contactId) throws Exception {
-        byte[] bytes = node.contactThreads(contactId);
+    public ThreadList threads(String address) throws Exception {
+        byte[] bytes = node.contactThreads(address);
         return ThreadList.parseFrom(bytes);
     }
 
