@@ -81,7 +81,7 @@ public class LifecycleManager extends Service implements LifecycleObserver {
             timer.cancel();
             timer = null;
         }
-        int delaySeconds = 10;
+        int delaySeconds = 60;
         Textile.instance().notifyListenersOfPendingNodeStop(delaySeconds);
         timer = new Timer();
         timer.schedule(new TimerTask() {
