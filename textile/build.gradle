@@ -15,7 +15,7 @@ ext {
     siteUrl = 'https://github.com/textileio/android-textile'
     gitUrl = 'https://github.com/textileio/android-textile.git'
 
-    libraryVersion = '0.1.1'
+    libraryVersion = '0.1.2'
 
     developerId = 'textile'
     developerName = 'Textile'
@@ -57,8 +57,8 @@ android {
 }
 
 dependencies {
-    implementation 'io.textile:pb:0.1.10'
-    implementation 'io.textile:mobile:0.1.10'
+    implementation 'io.textile:pb:0.1.11'
+    implementation 'io.textile:mobile:0.1.11'
     implementation "android.arch.lifecycle:extensions:1.1.1"
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
     testImplementation 'junit:junit:4.12'
