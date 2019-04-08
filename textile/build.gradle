@@ -57,8 +57,8 @@ android {
 }
 
 dependencies {
-    implementation 'io.textile:pb:0.1.11'
-    implementation 'io.textile:mobile:0.1.11'
+    api 'io.textile:pb:0.1.11'
+    api 'io.textile:mobile:0.1.11'
     implementation "android.arch.lifecycle:extensions:1.1.1"
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
     testImplementation 'junit:junit:4.12'
@@ -103,7 +103,7 @@ install {
         pom.withXml {
             def dependenciesNode = asNode().getAt('dependencies')[0] ?: asNode().appendNode('dependencies')
             // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
-            configurations.implementation.allDependencies.each {
+            configurations.api.allDependencies.each {
                 // Ensure dependencies such as fileTree are not included.
                 if (it.name != 'unspecified') {
                     def dependencyNode = dependenciesNode.appendNode('dependency')
