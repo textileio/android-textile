@@ -15,7 +15,7 @@ ext {
     siteUrl = 'https://github.com/textileio/android-textile'
     gitUrl = 'https://github.com/textileio/android-textile.git'
 
-    libraryVersion = '0.1.2'
+    libraryVersion = '0.1.4'
 
     developerId = 'textile'
     developerName = 'Textile'
@@ -103,7 +103,7 @@ install {
         pom.withXml {
             def dependenciesNode = asNode().getAt('dependencies')[0] ?: asNode().appendNode('dependencies')
             // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
-            configurations.api.allDependencies.each {
+            configurations.implementation.allDependencies.each {
                 // Ensure dependencies such as fileTree are not included.
                 if (it.name != 'unspecified') {
                     def dependencyNode = dependenciesNode.appendNode('dependency')
