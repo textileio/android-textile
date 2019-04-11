@@ -9,7 +9,7 @@ import mobile.Mobile_;
 
 public class Files extends NodeDependent {
 
-    interface PreparedFilesHandler {
+    public interface PreparedFilesHandler {
         void onFilesPrepared(MobilePreparedFiles preparedFiles);
         void onError(Exception e);
     }
