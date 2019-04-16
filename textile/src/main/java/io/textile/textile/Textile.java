@@ -32,6 +32,7 @@ public class Textile {
     public Profile profile;
     public Schemas schemas;
     public Threads threads;
+    public String repoPath;
 
     private HashSet<TextileEventListener> eventsListeners = new HashSet();
 
@@ -47,6 +48,7 @@ public class Textile {
     public static String initialize(Context applicationContext, boolean debug, boolean logToDisk) throws Exception {
         File filesDir = applicationContext.getFilesDir();
         String path = new File(filesDir, "textile-go").getAbsolutePath();
+        Textile.instance().repoPath = path;
         try {
             Textile.instance().newTextile(path, debug);
             Textile.instance().createNodeDependents();
