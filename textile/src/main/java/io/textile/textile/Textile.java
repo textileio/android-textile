@@ -37,6 +37,8 @@ public class Textile {
     private HashSet<TextileEventListener> eventsListeners = new HashSet();
 
     private Mobile_ node;
+    private Context applicationContext;
+    private Intent lifecycleManagerIntent;
 
     private Textile () {
     }
@@ -46,14 +48,18 @@ public class Textile {
     }
 
     public static String initialize(Context applicationContext, boolean debug, boolean logToDisk) throws Exception {
+        if (Textile.instance().node != null) {
+            return null;
+        }
+        Textile.instance().applicationContext = applicationContext;
         File filesDir = applicationContext.getFilesDir();
         String path = new File(filesDir, "textile-go").getAbsolutePath();
         Textile.instance().repoPath = path;
         try {
             Textile.instance().newTextile(path, debug);
             Textile.instance().createNodeDependents();
-            Intent intent = new Intent(applicationContext, LifecycleManager.class);
-            applicationContext.startService(intent);
+            Textile.instance().lifecycleManagerIntent = new Intent(applicationContext, LifecycleManager.class);
+            applicationContext.startService(Textile.instance().lifecycleManagerIntent);
             return null;
         } catch (Exception e) {
             if (e.getMessage().equals("repo does not exist, initialization is required")) {
@@ -104,12 +110,10 @@ public class Textile {
     }
 
     private void newTextile(String repoPath, boolean debug) throws Exception {
-        if (node == null) {
-            RunConfig config = new RunConfig();
-            config.setRepoPath(repoPath);
-            config.setDebug(debug);
-            node = Mobile.newTextile(config, new MessageHandler(eventsListeners));
-        }
+        RunConfig config = new RunConfig();
+        config.setRepoPath(repoPath);
+        config.setDebug(debug);
+        node = Mobile.newTextile(config, new MessageHandler(eventsListeners));
     }
 
     void start() {
@@ -155,6 +159,36 @@ public class Textile {
     public Summary summary() throws Exception {
         byte[] bytes = node.summary();
         return Summary.parseFrom(bytes);
+    }
+
+    public void destroy() throws Exception {
+        node.stop();
+
+        eventsListeners.clear();
+        node = null;
+        applicationContext.stopService(lifecycleManagerIntent);
+        applicationContext = null;
+        lifecycleManagerIntent = null;
+
+        account = null;
+        cafes = null;
+        comments = null;
+        contacts = null;
+        feed = null;
+        files = null;
+        flags = null;
+        ignores = null;
+        invites = null;
+        ipfs = null;
+        likes = null;
+        logs = null;
+        messages = null;
+        notifications = null;
+        profile = null;
+        schemas = null;
+        threads = null;
+
+        repoPath = null;
     }
 
     public void addEventListener(TextileEventListener listener) {
