@@ -42,6 +42,7 @@ public class LifecycleManager extends Service implements LifecycleObserver {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ProcessLifecycleOwner.get().getLifecycle().removeObserver(this);
         stopNodeAndClearTimer();
     }
 

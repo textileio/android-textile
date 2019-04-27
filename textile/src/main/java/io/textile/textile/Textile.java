@@ -69,8 +69,8 @@ public class Textile {
                     Textile.instance().initRepo(account.getSeed(), path, logToDisk, debug);
                     Textile.instance().newTextile(path, debug);
                     Textile.instance().createNodeDependents();
-                    Intent intent = new Intent(applicationContext, LifecycleManager.class);
-                    applicationContext.startService(intent);
+                    Textile.instance().lifecycleManagerIntent = new Intent(applicationContext, LifecycleManager.class);
+                    applicationContext.startService(Textile.instance().lifecycleManagerIntent);
                     return recoveryPhrase;
                 } catch (Exception innerError) {
                     throw innerError;
