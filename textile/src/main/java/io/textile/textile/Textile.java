@@ -1,7 +1,15 @@
 package io.textile.textile;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
+import android.arch.lifecycle.ProcessLifecycleOwner;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+
 import java.io.File;
 import java.util.HashSet;
 
@@ -13,7 +21,11 @@ import mobile.Mobile;
 import mobile.Mobile_;
 import mobile.RunConfig;
 
-public class Textile {
+public class Textile implements LifecycleObserver {
+
+    enum AppState {
+        None, Background, Foreground, BackgroundFromForeground
+    }
 
     public Account account;
     public Cafes cafes;
@@ -35,13 +47,13 @@ public class Textile {
     public String repoPath;
 
     private HashSet<TextileEventListener> eventsListeners = new HashSet();
+    private MessageHandler messageHandler = new MessageHandler(eventsListeners);
 
     private Mobile_ node;
     private Context applicationContext;
-    private Intent lifecycleManagerIntent;
-
-    private Textile () {
-    }
+    private Intent lifecycleServiceIntent;
+    private LifecycleService lifecycleService;
+    private AppState appState = AppState.None;
 
     private static class TextileHelper {
         private static final Textile INSTANCE = new Textile();
@@ -58,8 +70,9 @@ public class Textile {
         try {
             Textile.instance().newTextile(path, debug);
             Textile.instance().createNodeDependents();
-            Textile.instance().lifecycleManagerIntent = new Intent(applicationContext, LifecycleManager.class);
-            applicationContext.startService(Textile.instance().lifecycleManagerIntent);
+            Textile.instance().lifecycleServiceIntent = new Intent(applicationContext, LifecycleService.class);
+            applicationContext.bindService(Textile.instance().lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
+            applicationContext.startService(Textile.instance().lifecycleServiceIntent);
             return null;
         } catch (Exception e) {
             if (e.getMessage().equals("repo does not exist, initialization is required")) {
@@ -69,8 +82,9 @@ public class Textile {
                     Textile.instance().initRepo(account.getSeed(), path, logToDisk, debug);
                     Textile.instance().newTextile(path, debug);
                     Textile.instance().createNodeDependents();
-                    Textile.instance().lifecycleManagerIntent = new Intent(applicationContext, LifecycleManager.class);
-                    applicationContext.startService(Textile.instance().lifecycleManagerIntent);
+                    Textile.instance().lifecycleServiceIntent = new Intent(applicationContext, LifecycleService.class);
+                    applicationContext.bindService(Textile.instance().lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
+                    applicationContext.startService(Textile.instance().lifecycleServiceIntent);
                     return recoveryPhrase;
                 } catch (Exception innerError) {
                     throw innerError;
@@ -83,6 +97,9 @@ public class Textile {
 
     public static Textile instance() {
         return TextileHelper.INSTANCE;
+    }
+
+    private Textile () {
     }
 
     private String newWallet(long wordCount) throws Exception {
@@ -113,7 +130,7 @@ public class Textile {
         RunConfig config = new RunConfig();
         config.setRepoPath(repoPath);
         config.setDebug(debug);
-        node = Mobile.newTextile(config, new MessageHandler(eventsListeners));
+        node = Mobile.newTextile(config, messageHandler);
     }
 
     void start() {
@@ -162,13 +179,15 @@ public class Textile {
     }
 
     public void destroy() throws Exception {
-        node.stop();
+        ProcessLifecycleOwner.get().getLifecycle().removeObserver(this);
+        applicationContext.unbindService(connection);
+        lifecycleService.stopNodeImmediately();
+        lifecycleService = null;
+        lifecycleServiceIntent = null;
 
         eventsListeners.clear();
         node = null;
-        applicationContext.stopService(lifecycleManagerIntent);
         applicationContext = null;
-        lifecycleManagerIntent = null;
 
         account = null;
         cafes = null;
@@ -218,4 +237,52 @@ public class Textile {
         schemas = new Schemas(node);
         threads = new Threads(node);
     }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    void onForeground() {
+        if (appState.equals(AppState.Foreground)) {
+            return;
+        }
+        if (appState.equals(AppState.BackgroundFromForeground)) {
+            lifecycleService.cancelPendingNodeStop();
+        } else {
+            lifecycleService.startNode();
+        }
+        appState = AppState.Foreground;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    void onBackground() {
+        if (appState.equals(AppState.Background)) {
+            return;
+        }
+        if (appState.equals(AppState.None)) {
+            appState = AppState.Background;
+            lifecycleService.startNode();
+            lifecycleService.stopNodeAfterDelay();
+        } else if (appState.equals(AppState.Foreground)) {
+            appState = AppState.BackgroundFromForeground;
+            lifecycleService.stopNodeAfterDelay();
+        }
+    }
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LifecycleService.LifecycleBinder binder = (LifecycleService.LifecycleBinder) service;
+            lifecycleService = binder.getService();
+            lifecycleService.nodeStoppedListener = new LifecycleService.NodeStoppedListener() {
+                @Override
+                public void onNodeStopped() {
+                    Textile.this.appState = AppState.None;
+                }
+            };
+            ProcessLifecycleOwner.get().getLifecycle().addObserver(Textile.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 }
