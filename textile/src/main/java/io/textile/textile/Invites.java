@@ -16,7 +16,7 @@ public class Invites extends NodeDependent {
 
     public ExternalInvite addExternal(String threadId) throws Exception {
         byte[] bytes = node.addExternalInvite(threadId);
-        return bytes != null ? ExternalInvite.parseFrom(bytes) : null;
+        return ExternalInvite.parseFrom(bytes);
     }
 
     public InviteViewList list() throws Exception {

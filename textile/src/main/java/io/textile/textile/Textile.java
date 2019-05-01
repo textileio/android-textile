@@ -108,7 +108,7 @@ public class Textile implements LifecycleObserver {
 
     private MobileWalletAccount walletAccountAt(String phrase, long index, String password) throws Exception {
         byte[] bytes = Mobile.walletAccountAt(phrase, index, password);
-        return bytes != null ? MobileWalletAccount.parseFrom(bytes) : null;
+        return MobileWalletAccount.parseFrom(bytes);
     }
 
     private void initRepo(String seed, String repoPath, boolean logToDisk, boolean debug) throws Exception {
@@ -175,7 +175,7 @@ public class Textile implements LifecycleObserver {
 
     public Summary summary() throws Exception {
         byte[] bytes = node.summary();
-        return bytes != null ? Summary.parseFrom(bytes) : null;
+        return Summary.parseFrom(bytes);
     }
 
     public void destroy() throws Exception {

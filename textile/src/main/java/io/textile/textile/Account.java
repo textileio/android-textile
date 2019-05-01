@@ -27,10 +27,10 @@ public class Account extends NodeDependent {
     public byte[] decrypt(byte[] bytes) throws Exception {
         return node.decrypt(bytes);
     }
-
+    
     public Contact contact() throws Exception {
         byte[] bytes = node.accountContact();
-        return bytes != null ? Contact.parseFrom(bytes) : null;
+        return Contact.parseFrom(bytes);
     }
 
     public SearchHandle sync(QueryOptions options) throws Exception {

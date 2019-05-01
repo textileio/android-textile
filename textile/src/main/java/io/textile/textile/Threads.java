@@ -17,7 +17,7 @@ public class Threads extends NodeDependent {
 
     public Thread add(AddThreadConfig config) throws Exception {
         byte[] bytes = node.addThread(config.toByteArray());
-        return bytes != null ? Thread.parseFrom(bytes) : null;
+        return Thread.parseFrom(bytes);
     }
 
     public void addOrUpdate(Thread thread) throws Exception {

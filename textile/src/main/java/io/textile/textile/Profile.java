@@ -11,7 +11,7 @@ public class Profile extends NodeDependent {
 
     public Peer get() throws Exception {
         byte[] bytes = node.profile();
-        return bytes != null ? Peer.parseFrom(bytes) : null;
+        return Peer.parseFrom(bytes);
     }
 
     public String name() throws Exception {
