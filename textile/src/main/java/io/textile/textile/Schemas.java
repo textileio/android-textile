@@ -12,6 +12,6 @@ public class Schemas extends NodeDependent {
 
     public FileIndex add(Node schemaNode) throws Exception {
         byte[] bytes = node.addSchema(schemaNode.toByteArray());
-        return FileIndex.parseFrom(bytes);
+        return bytes != null ? FileIndex.parseFrom(bytes) : null;
     }
 }

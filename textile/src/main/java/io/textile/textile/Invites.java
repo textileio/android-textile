@@ -16,12 +16,12 @@ public class Invites extends NodeDependent {
 
     public ExternalInvite addExternal(String threadId) throws Exception {
         byte[] bytes = node.addExternalInvite(threadId);
-        return ExternalInvite.parseFrom(bytes);
+        return bytes != null ? ExternalInvite.parseFrom(bytes) : null;
     }
 
     public InviteViewList list() throws Exception {
         byte[] bytes = node.invites();
-        return InviteViewList.parseFrom(bytes);
+        return InviteViewList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public String accept(String inviteId) throws Exception {

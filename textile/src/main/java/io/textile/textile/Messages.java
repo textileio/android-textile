@@ -15,6 +15,6 @@ public class Messages extends NodeDependent {
 
     public TextList list(String offset, long limit, String threadId) throws Exception {
         byte[] bytes = node.messages(offset, limit, threadId);
-        return TextList.parseFrom(bytes);
+        return TextList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 }

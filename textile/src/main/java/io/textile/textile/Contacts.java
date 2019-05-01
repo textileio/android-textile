@@ -20,12 +20,12 @@ public class Contacts extends NodeDependent {
 
     public Contact get(String address) throws Exception {
         byte[] bytes = node.contact(address);
-        return Contact.parseFrom(bytes);
+        return bytes != null ? Contact.parseFrom(bytes) : null;
     }
 
     public ContactList list() throws Exception {
         byte[] bytes = node.contacts();
-        return ContactList.parseFrom(bytes);
+        return ContactList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public void remove(String address) throws Exception {
@@ -34,7 +34,7 @@ public class Contacts extends NodeDependent {
 
     public ThreadList threads(String address) throws Exception {
         byte[] bytes = node.contactThreads(address);
-        return ThreadList.parseFrom(bytes);
+        return ThreadList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public SearchHandle search(ContactQuery query, QueryOptions options) throws Exception {

@@ -30,7 +30,7 @@ public class Account extends NodeDependent {
 
     public Contact contact() throws Exception {
         byte[] bytes = node.accountContact();
-        return Contact.parseFrom(bytes);
+        return bytes != null ? Contact.parseFrom(bytes) : null;
     }
 
     public SearchHandle sync(QueryOptions options) throws Exception {

@@ -16,17 +16,17 @@ public class Cafes extends NodeDependent {
 
     public CafeSession session(String peerId) throws Exception {
         byte[] bytes = node.cafeSession(peerId);
-        return CafeSession.parseFrom(bytes);
+        return bytes != null ? CafeSession.parseFrom(bytes) : null;
     }
 
     public CafeSessionList sessions() throws Exception {
         byte[] bytes = node.cafeSessions();
-        return CafeSessionList.parseFrom(bytes);
+        return CafeSessionList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public CafeSession refreshSession(String peerId) throws Exception {
         byte[] bytes = node.refreshCafeSession(peerId);
-        return CafeSession.parseFrom(bytes);
+        return bytes != null ? CafeSession.parseFrom(bytes) : null;
     }
 
     public void deregister(String peerId) throws Exception {

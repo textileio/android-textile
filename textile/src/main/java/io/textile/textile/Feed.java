@@ -12,6 +12,6 @@ public class Feed extends NodeDependent {
 
     public FeedItemList list(FeedRequest request) throws Exception {
         byte[] bytes = node.feed(request.toByteArray());
-        return FeedItemList.parseFrom(bytes);
+        return FeedItemList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 }

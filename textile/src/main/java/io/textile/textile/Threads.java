@@ -17,7 +17,7 @@ public class Threads extends NodeDependent {
 
     public Thread add(AddThreadConfig config) throws Exception {
         byte[] bytes = node.addThread(config.toByteArray());
-        return Thread.parseFrom(bytes);
+        return bytes != null ? Thread.parseFrom(bytes) : null;
     }
 
     public void addOrUpdate(Thread thread) throws Exception {
@@ -30,17 +30,17 @@ public class Threads extends NodeDependent {
 
     public Thread get(String threadId) throws Exception {
         byte[] bytes = node.thread(threadId);
-        return Thread.parseFrom(bytes);
+        return bytes != null ? Thread.parseFrom(bytes) : null;
     }
 
     public ThreadList list() throws Exception {
         byte[] bytes = node.threads();
-        return ThreadList.parseFrom(bytes);
+        return ThreadList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public ContactList peers(String threadId) throws Exception {
         byte[] bytes = node.threadPeers(threadId);
-        return ContactList.parseFrom(bytes);
+        return ContactList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public String remove(String threadId) throws Exception {

@@ -27,7 +27,7 @@ public class Files extends NodeDependent {
                     return;
                 }
                 try {
-                    handler.onFilesPrepared(MobilePreparedFiles.parseFrom(bytes));
+                    handler.onFilesPrepared(bytes != null ? MobilePreparedFiles.parseFrom(bytes) : null);
                 } catch (Exception exception) {
                     handler.onError(exception);
                 }
@@ -44,7 +44,7 @@ public class Files extends NodeDependent {
                     return;
                 }
                 try {
-                    handler.onFilesPrepared(MobilePreparedFiles.parseFrom(bytes));
+                    handler.onFilesPrepared(bytes != null ? MobilePreparedFiles.parseFrom(bytes) : null);
                 } catch (Exception exception) {
                     handler.onError(exception);
                 }
@@ -54,27 +54,27 @@ public class Files extends NodeDependent {
 
     public MobilePreparedFiles prepareSync(String data, String threadId) throws Exception {
         byte[] bytes = node.prepareFilesSync(data, threadId);
-        return MobilePreparedFiles.parseFrom(bytes);
+        return bytes != null ? MobilePreparedFiles.parseFrom(bytes) : null;
     }
 
     public MobilePreparedFiles prepareByPathSync(String path, String threadId) throws Exception {
         byte[] bytes = node.prepareFilesByPathSync(path, threadId);
-        return MobilePreparedFiles.parseFrom(bytes);
+        return bytes != null ? MobilePreparedFiles.parseFrom(bytes) : null;
     }
 
     public Block add(Directory directory, String threadId, String caption) throws Exception {
         byte[] bytes = node.addFiles(directory.toByteArray(), threadId, caption);
-        return Block.parseFrom(bytes);
+        return bytes != null ? Block.parseFrom(bytes) : null;
     }
 
     public Block addByTarget(String target, String threadId, String caption) throws Exception {
         byte[] bytes = node.addFilesByTarget(target, threadId, caption);
-        return Block.parseFrom(bytes);
+        return bytes != null ? Block.parseFrom(bytes) : null;
     }
 
     public FilesList list(String offset, long limit, String threadId) throws Exception {
         byte[] bytes = node.files(offset, limit, threadId);
-        return FilesList.parseFrom(bytes);
+        return FilesList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public String data(String hash) throws Exception {

@@ -11,7 +11,7 @@ public class Notifications extends NodeDependent {
 
     public NotificationList list(String offset, long limit) throws Exception {
         byte[] bytes = node.notifications(offset, limit);
-        return NotificationList.parseFrom(bytes);
+        return NotificationList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public long countUnread() {
