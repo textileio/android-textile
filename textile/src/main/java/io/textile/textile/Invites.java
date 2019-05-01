@@ -21,7 +21,7 @@ public class Invites extends NodeDependent {
 
     public InviteViewList list() throws Exception {
         byte[] bytes = node.invites();
-        return InviteViewList.parseFrom(bytes);
+        return InviteViewList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public String accept(String inviteId) throws Exception {

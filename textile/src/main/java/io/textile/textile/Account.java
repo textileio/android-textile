@@ -27,7 +27,7 @@ public class Account extends NodeDependent {
     public byte[] decrypt(byte[] bytes) throws Exception {
         return node.decrypt(bytes);
     }
-
+    
     public Contact contact() throws Exception {
         byte[] bytes = node.accountContact();
         return Contact.parseFrom(bytes);

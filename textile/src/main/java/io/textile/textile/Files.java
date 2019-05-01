@@ -74,7 +74,7 @@ public class Files extends NodeDependent {
 
     public FilesList list(String offset, long limit, String threadId) throws Exception {
         byte[] bytes = node.files(offset, limit, threadId);
-        return FilesList.parseFrom(bytes);
+        return FilesList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     public String data(String hash) throws Exception {
