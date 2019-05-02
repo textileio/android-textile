@@ -29,8 +29,12 @@ public class Threads extends NodeDependent {
     }
 
     public Thread get(String threadId) throws Exception {
+        /*
+         * thread throws an Exception if no thread is found.
+         * We can assume that bytes is valid once we get to Thread.parseFrom(bytes)
+         */
         byte[] bytes = node.thread(threadId);
-        return bytes != null ? Thread.parseFrom(bytes) : null;
+        return Thread.parseFrom(bytes);
     }
 
     public ThreadList list() throws Exception {

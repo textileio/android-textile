@@ -19,8 +19,12 @@ public class Contacts extends NodeDependent {
     }
 
     public Contact get(String address) throws Exception {
+        /*
+         * contact throws an Exception if no contact is found.
+         * We can assume that bytes is valid once we get to Contact.parseFrom(bytes)
+         */
         byte[] bytes = node.contact(address);
-        return bytes != null ? Contact.parseFrom(bytes) : null;
+        return Contact.parseFrom(bytes);
     }
 
     public ContactList list() throws Exception {
