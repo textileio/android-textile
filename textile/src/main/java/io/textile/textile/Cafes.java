@@ -15,6 +15,10 @@ public class Cafes extends NodeDependent {
     }
 
     public CafeSession session(String peerId) throws Exception {
+        /*
+         * cafeSession returns null if no session is found.
+         * Be sure we return null in that case and not a default CafeSession
+         */
         byte[] bytes = node.cafeSession(peerId);
         return bytes != null ? CafeSession.parseFrom(bytes) : null;
     }
@@ -25,6 +29,10 @@ public class Cafes extends NodeDependent {
     }
 
     public CafeSession refreshSession(String peerId) throws Exception {
+        /*
+         * refreshCafeSession returns null if no session is found.
+         * Be sure we return null in that case and not a default CafeSession
+         */
         byte[] bytes = node.refreshCafeSession(peerId);
         return bytes != null ? CafeSession.parseFrom(bytes) : null;
     }
