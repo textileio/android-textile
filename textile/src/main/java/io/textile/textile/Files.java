@@ -72,7 +72,7 @@ public class Files extends NodeDependent {
         return Block.parseFrom(bytes);
     }
 
-    public FilesList list(String offset, long limit, String threadId) throws Exception {
+    public FilesList list(String threadId, String offset, long limit) throws Exception {
         byte[] bytes = node.files(offset, limit, threadId);
         return FilesList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
