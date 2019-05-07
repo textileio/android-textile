@@ -1,6 +1,9 @@
 package io.textile.textile;
 
+import io.textile.pb.Model.Block;
 import io.textile.pb.Model.Peer;
+import io.textile.pb.Model.Thread;
+import io.textile.pb.View.Directory;
 import mobile.Mobile_;
 
 public class Profile extends NodeDependent {
@@ -26,7 +29,18 @@ public class Profile extends NodeDependent {
         return node.avatar();
     }
 
-    public void setAvatar(String hash) throws Exception {
-        node.setAvatar(hash);
+    public Block setAvatarByTarget(String target) throws Exception {
+        Thread accountThread = accountThread();
+        return Textile.instance().files.addByTarget(target, accountThread.getId(), null);
+    }
+
+    public Block setAvatar(Directory directory) throws Exception {
+        Thread accountThread = accountThread();
+        return Textile.instance().files.add(directory, accountThread.getId(), null);
+    }
+
+    private Thread accountThread() throws Exception {
+        byte[] bytes = node.accountThread();
+        return Thread.parseFrom(bytes);
     }
 }
