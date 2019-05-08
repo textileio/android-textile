@@ -16,21 +16,25 @@ public class Account extends NodeDependent {
         return node.address();
     }
 
-    public String seed() {
-        return node.seed();
+    public byte[] decrypt(byte[] bytes) throws Exception {
+        return node.decrypt(bytes);
+    }
+
+    public void delete(String repoPath, String address) throws Exception {
+        node.deleteAccount(repoPath, address);
+    }
+
+    public Contact contact() throws Exception {
+        byte[] bytes = node.accountContact();
+        return Contact.parseFrom(bytes);
     }
 
     public byte[] encrypt(byte[] bytes) throws Exception {
         return node.encrypt(bytes);
     }
 
-    public byte[] decrypt(byte[] bytes) throws Exception {
-        return node.decrypt(bytes);
-    }
-    
-    public Contact contact() throws Exception {
-        byte[] bytes = node.accountContact();
-        return Contact.parseFrom(bytes);
+    public String seed() {
+        return node.seed();
     }
 
     public SearchHandle sync(QueryOptions options) throws Exception {
