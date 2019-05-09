@@ -27,7 +27,7 @@ public class Profile extends NodeDependent {
         return node.avatar();
     }
 
-    private Thread accountThread() throws Exception {
+    public Thread accountThread() throws Exception {
         byte[] bytes = node.accountThread();
         return Thread.parseFrom(bytes);
     }

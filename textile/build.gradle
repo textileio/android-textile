@@ -15,7 +15,7 @@ ext {
     siteUrl = 'https://github.com/textileio/android-textile'
     gitUrl = 'https://github.com/textileio/android-textile.git'
 
-    libraryVersion = '0.1.14'
+    libraryVersion = '0.1.16'
 
     developerId = 'textile'
     developerName = 'Textile'
