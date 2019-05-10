@@ -1,0 +1,59 @@
+version: 2.1
+
+jobs:
+  tests:
+    docker:
+      - image: circleci/android:api-28-ndk
+    steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}-{{ checksum "textile/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}-{{ checksum "textile/build.gradle" }}
+      - run:
+          name: Run Tests
+          command: ./gradlew lint test
+
+  publish:
+    docker:
+      - image: circleci/android:api-28-ndk
+    steps:
+      - checkout
+      - restore_cache:
+        key: jars-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}-{{ checksum "textile/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}-{{ checksum "textile/build.gradle" }}
+      - run:
+          name: update version
+          command: |
+            sed -i.bak "s/0.0.1-dev/${CIRCLE_TAG}/g" textile/build.gradle
+      - run:
+          name: install
+          command: |
+            ./gradlew textile:install
+      - run:
+          name: publish
+          command: |
+            ./gradlew textile:bintrayUpload
+
+workflows:
+  version: 2
+  android-textile:
+    jobs:
+      - tests
+      - publish:
+          filters:
+            tags:
+              only: /^[0-9.]+(-rc[0-9]+)?/
+            branches:
+              ignore: /.*/
