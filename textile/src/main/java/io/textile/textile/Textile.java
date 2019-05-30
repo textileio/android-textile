@@ -21,29 +21,103 @@ import mobile.Mobile;
 import mobile.Mobile_;
 import mobile.RunConfig;
 
+/**
+ * Provides top level access to the Textile API
+ */
 public class Textile implements LifecycleObserver {
 
     enum AppState {
         None, Background, Foreground, BackgroundFromForeground
     }
 
+    /**
+     * Provides access to Textile account related APIs
+     */
     public Account account;
+
+    /**
+     * Provides access to Textile cafes related APIs
+     */
     public Cafes cafes;
+
+    /**
+     * Provides access to Textile comments related APIs
+     */
     public Comments comments;
+
+    /**
+     * Provides access to Textile contacts related APIs
+     */
     public Contacts contacts;
+
+    /**
+     * Provides access to Textile feed related APIs
+     */
     public Feed feed;
+
+    /**
+     * Provides access to Textile files related APIs
+     */
     public Files files;
+
+    /**
+     * Provides access to Textile flags related APIs
+     */
     public Flags flags;
+
+    /**
+     * Provides access to Textile ignores related APIs
+     */
     public Ignores ignores;
+
+    /**
+     * Provides access to Textile invites related APIs
+     */
     public Invites invites;
+
+    /**
+     * Provides access to Textile IPFS related APIs
+     */
     public Ipfs ipfs;
+
+    /**
+     * Provides access to Textile likes related APIs
+     */
     public Likes likes;
+
+    /**
+     * Provides access to Textile logs related APIs
+     */
     public Logs logs;
+
+    /**
+     * Provides access to Textile messages related APIs
+     */
     public Messages messages;
+
+    /**
+     * Provides access to Textile notifications related APIs
+     */
     public Notifications notifications;
+
+    /**
+     * Provides access to Textile profile related APIs
+     */
     public Profile profile;
+
+    /**
+     * Provides access to Textile schemas related APIs
+     */
     public Schemas schemas;
+
+    /**
+     * Provides access to Textile threads related APIs
+     */
     public Threads threads;
+
+    /**
+     * The path to the local Textile repository
+     */
     public String repoPath;
 
     private HashSet<TextileEventListener> eventsListeners = new HashSet();
@@ -59,6 +133,14 @@ public class Textile implements LifecycleObserver {
         private static final Textile INSTANCE = new Textile();
     }
 
+    /**
+     * Initialize the shared Textile instace, possibly returning the wallet recovery phrase
+     * @param applicationContext The host app's application context
+     * @param debug Sets the log level to debug or not
+     * @param logToDisk Whether or not to write Textile logs to disk
+     * @return The wallet recovery phrase if it's the first time the node is being initialize, nil otherwise
+     * @throws Exception The exception that occurred
+     */
     public static String initialize(Context applicationContext, boolean debug, boolean logToDisk) throws Exception {
         if (Textile.instance().node != null) {
             return null;
@@ -95,6 +177,9 @@ public class Textile implements LifecycleObserver {
         }
     }
 
+    /**
+     * The shared Textile instance, should be used for all Textile API access
+     */
     public static Textile instance() {
         return TextileHelper.INSTANCE;
     }
@@ -165,19 +250,34 @@ public class Textile implements LifecycleObserver {
         }
     }
 
+    /**
+     * @return The version of the Textile node running locally
+     */
     public String version() {
         return node.version();
     }
 
+    /**
+     * @return The git summary of the Textile node running locally
+     */
     public String gitSummary() {
         return node.gitSummary();
     }
 
+    /**
+     * Get a summary of the local Textile node and it's data
+     * @return A summary of the Textile node running locally
+     * @throws Exception The exception that occurred
+     */
     public Summary summary() throws Exception {
         byte[] bytes = node.summary();
         return Summary.parseFrom(bytes);
     }
 
+    /**
+     * Reset the local Textile node instance so it can be re-initialized
+     * @throws Exception The exception that occurred
+     */
     public void destroy() throws Exception {
         ProcessLifecycleOwner.get().getLifecycle().removeObserver(this);
         applicationContext.unbindService(connection);
@@ -210,10 +310,18 @@ public class Textile implements LifecycleObserver {
         repoPath = null;
     }
 
+    /**
+     * Register an listener to receive callbacks about Textile events
+     * @param listener The listener that will be called back
+     */
     public void addEventListener(TextileEventListener listener) {
         eventsListeners.add(listener);
     }
 
+    /**
+     * Remove a previously registered event listener
+     * @param listener The listener to remove
+     */
     public void removeEventListener(TextileEventListener listener) {
         eventsListeners.remove(listener);
     }
