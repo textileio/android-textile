@@ -93,7 +93,7 @@ public interface TextileEventListener {
     /**
      * Called when any query fails
      * @param queryId The id of the failed query
-     * @param error The error describing the failure
+     * @param e The error describing the failure
      */
     void queryError(String queryId, Exception e);
 
