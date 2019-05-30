@@ -31,8 +31,8 @@ public class Account extends NodeDependent {
 
     /**
      * Encrypt raw data with the account private key
-     * @param data The data to encrypt
-     * @return The encryped data
+     * @param bytes The data to encrypt
+     * @return The encrypted data
      * @throws Exception The exception that occurred
      */
     public byte[] encrypt(byte[] bytes) throws Exception {
@@ -40,8 +40,8 @@ public class Account extends NodeDependent {
     }
 
     /**
-     * Decrypt encryped data using the account private key
-     * @param data The encrypted data
+     * Decrypt encrypted data using the account private key
+     * @param bytes The encrypted data
      * @return The decrypted data
      * @throws Exception The exception that occurred
      */

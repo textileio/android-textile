@@ -179,6 +179,7 @@ public class Textile implements LifecycleObserver {
 
     /**
      * The shared Textile instance, should be used for all Textile API access
+     * @return The shared Textile instance
      */
     public static Textile instance() {
         return TextileHelper.INSTANCE;

@@ -5,6 +5,9 @@ import io.textile.pb.Model.Thread;
 import io.textile.pb.Model.Contact;
 import io.textile.pb.View.FeedItem;
 
+/**
+ * A default implementation of TextileEventListener that can be extended to override specific methods
+ */
 public abstract class BaseTextileEventListener implements TextileEventListener {
 
     @Override
