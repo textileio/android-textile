@@ -1,19 +1,22 @@
-# Textile
+# android-textile
 
-[![CircleCI](https://circleci.com/gh/textileio/android-textile.svg?style=svg)](https://circleci.com/gh/textileio/android-textile)
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat)](https://github.com/RichardLitt/standard-readme)
 ![Bintray](https://img.shields.io/bintray/v/textile/maven/textile.svg)
 ![GitHub](https://img.shields.io/github/license/textileio/android-textile.svg)
 ![Platform](https://img.shields.io/badge/platform-android-lightgrey.svg)
+[![CircleCI](https://circleci.com/gh/textileio/android-textile.svg?style=svg)](https://circleci.com/gh/textileio/android-textile)
 
-Textile provides encrypted, recoverable, schema-based, and cross-application data storage built on IPFS and libp2p. We like to think of it as a decentralized data wallet with built-in protocols for sharing and recovery, or more simply, an open and programmable iCloud.
+> Textile provides encrypted, recoverable, schema-based, and cross-application data storage built on IPFS and libp2p. We like to think of it as a decentralized data wallet with built-in protocols for sharing and recovery, or more simply, an open and programmable iCloud.
 
-To learn more, please head over to the [Textile documentation](https://docs.textile.io/).
+## Table of Contents
 
-## Getting Started
+- [Install](#install)
+- [Usage](#usage)
+- [Maintainers](#maintainers)
+- [Contributing](#contributing)
+- [License](#license)
 
-[Click here to read the Android getting started guide](https://docs.textile.io/develop/clients/android/).
-
-## Installation
+## Install
 
 The Textile Android library is published in [Textile's Bintray Maven repository](https://dl.bintray.com/textile/maven).
 You can install it using Gradle.
@@ -40,14 +43,22 @@ dependencies {
 }
 ```
 
-## Example
+## Usage
 
-To run the example project, clone the repo, build and run the example `app` module.
+To learn about Textile usage, please head over to the [Textile documentation](https://docs.textile.io/) and be sure to read the [Android getting started guide](https://docs.textile.io/develop/clients/android/).
 
-## Author
+This repo contains an example project. To run it, clone the repo, build and run the example `app` module.
 
-Textile, contact@textile.io
+## Maintainers
+
+[@asutula](https://github.com/asutula)
+
+## Contributing
+
+PRs accepted.
+
+Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
 ## License
 
-Textile is available under the MIT license. See the LICENSE file for more info.
+MIT © 2019 Textile
