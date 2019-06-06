@@ -149,8 +149,8 @@ public class Files extends NodeDependent {
      * @return The base64 string of data
      * @throws Exception The exception that occurred
      */
-    public String data(String hash) throws Exception {
-        return node.fileData(hash);
+    public String content(String hash) throws Exception {
+        return node.fileContent(hash);
     }
 
     /**
@@ -160,8 +160,8 @@ public class Files extends NodeDependent {
      * @return The base64 string of image data
      * @throws Exception The exception that occurred
      */
-    public String imageDataForMinWidth(String path, long minWidth) throws Exception {
-        return node.imageFileDataForMinWidth(path, minWidth);
+    public String imageContentForMinWidth(String path, long minWidth) throws Exception {
+        return node.imageFileContentForMinWidth(path, minWidth);
     }
 
 }
