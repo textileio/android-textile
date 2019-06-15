@@ -2,7 +2,7 @@ package io.textile.textile;
 
 import io.textile.pb.Model.Thread;
 import io.textile.pb.Model.ThreadList;
-import io.textile.pb.Model.ContactList;
+import io.textile.pb.Model.PeerList;
 import io.textile.pb.QueryOuterClass.ThreadSnapshotQuery;
 import io.textile.pb.QueryOuterClass.QueryOptions;
 import io.textile.pb.View.AddThreadConfig;
@@ -79,9 +79,9 @@ public class Threads extends NodeDependent {
      * @return An object containing a list of contacts
      * @throws Exception The exception that occurred
      */
-    public ContactList peers(String threadId) throws Exception {
+    public PeerList peers(String threadId) throws Exception {
         byte[] bytes = node.threadPeers(threadId);
-        return ContactList.parseFrom(bytes != null ? bytes : new byte[0]);
+        return PeerList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     /**
