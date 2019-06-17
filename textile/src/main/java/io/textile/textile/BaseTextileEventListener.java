@@ -51,7 +51,7 @@ public abstract class BaseTextileEventListener implements TextileEventListener {
     }
 
     @Override
-    public void threadUpdateReceived(FeedItem feedItem) {
+    public void threadUpdateReceived(String threadId, FeedItemData feedItemData) {
 
     }
 
