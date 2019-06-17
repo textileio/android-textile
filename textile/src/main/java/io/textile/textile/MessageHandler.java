@@ -68,8 +68,9 @@ class MessageHandler implements Messenger {
         } else if (event.getName().equals("THREAD_UPDATE")) {
             try {
                 FeedItem feedItem = FeedItem.parseFrom(event.getData());
+                FeedItemData data = Util.feedItemData(feedItem);
                 for (TextileEventListener listener : listeners) {
-                    listener.threadUpdateReceived(feedItem);
+                    listener.threadUpdateReceived(feedItem.getThread(), data);
                 }
             } catch (Exception e) {
                 return;

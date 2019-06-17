@@ -4,9 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-import com.google.protobuf.Timestamp;
-
-import io.textile.pb.Model;
 import io.textile.textile.Textile;
 
 public class MainActivity extends AppCompatActivity {

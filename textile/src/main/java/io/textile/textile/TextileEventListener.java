@@ -56,9 +56,10 @@ public interface TextileEventListener {
 
     /**
      * Called when any thread receives an update
-     * @param feedItem The thread update
+     * @param threadId The id of the thread being updated
+     * @param feedItemData The thread update
      */
-    void threadUpdateReceived(FeedItem feedItem);
+    void threadUpdateReceived(String threadId, FeedItemData feedItemData);
 
     /**
      * Called when a new thread is successfully added
