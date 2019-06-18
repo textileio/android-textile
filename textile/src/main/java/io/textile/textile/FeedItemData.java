@@ -10,6 +10,7 @@ import io.textile.pb.View.Text;
 
 public class FeedItemData {
     public FeedItemType type;
+    public String block;
     public Text text;
     public Comment comment;
     public Like like;
