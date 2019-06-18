@@ -25,37 +25,37 @@ public class Util {
         FeedItemData feedItemData;
         String typeUrl = feedItem.getPayload().getTypeUrl();
         ByteString bytes = feedItem.getPayload().getValue();
-        if (typeUrl == "/Text") {
+        if (typeUrl.equals("/Text")) {
             feedItemData = new FeedItemData();
             feedItemData.block = feedItem.getBlock();
             feedItemData.type = FeedItemType.TEXT;
             feedItemData.text = Text.parseFrom(bytes);
-        } else if (typeUrl == "/Comment") {
+        } else if (typeUrl.equals("/Comment")) {
             feedItemData = new FeedItemData();
             feedItemData.block = feedItem.getBlock();
             feedItemData.type = FeedItemType.COMMENT;
             feedItemData.comment = Comment.parseFrom(bytes);
-        } else if (typeUrl == "/Like") {
+        } else if (typeUrl.equals("/Like")) {
             feedItemData = new FeedItemData();
             feedItemData.block = feedItem.getBlock();
             feedItemData.type = FeedItemType.LIKE;
             feedItemData.like = Like.parseFrom(bytes);
-        } else if (typeUrl == "/Files") {
+        } else if (typeUrl.equals("/Files")) {
             feedItemData = new FeedItemData();
             feedItemData.block = feedItem.getBlock();
             feedItemData.type = FeedItemType.FILES;
             feedItemData.files = Files.parseFrom(bytes);
-        } else if (typeUrl == "/Ignore") {
+        } else if (typeUrl.equals("/Ignore")) {
             feedItemData = new FeedItemData();
             feedItemData.block = feedItem.getBlock();
             feedItemData.type = FeedItemType.IGNORE;
             feedItemData.ignore = Ignore.parseFrom(bytes);
-        } else if (typeUrl == "/Join") {
+        } else if (typeUrl.equals("/Join")) {
             feedItemData = new FeedItemData();
             feedItemData.block = feedItem.getBlock();
             feedItemData.type = FeedItemType.JOIN;
             feedItemData.join = Join.parseFrom(bytes);
-        } else if (typeUrl == "/Leave") {
+        } else if (typeUrl.equals("/Leave")) {
             feedItemData = new FeedItemData();
             feedItemData.block = feedItem.getBlock();
             feedItemData.type = FeedItemType.LEAVE;
