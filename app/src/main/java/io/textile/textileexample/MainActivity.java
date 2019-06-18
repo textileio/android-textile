@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initTextile() {
         try {
-            String phrase = Textile.initialize(getApplicationContext(), true, false);
+            String phrase = Textile.initialize(getApplicationContext(), false, false);
             Textile.instance().addEventListener(new TextileListener());
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -1,7 +1,9 @@
 package io.textile.textile;
 
+import io.textile.pb.Model;
 import io.textile.pb.Model.Peer;
 import io.textile.pb.Model.Thread;
+import mobile.Callback;
 import mobile.Mobile_;
 
 /**
@@ -48,6 +50,28 @@ public class Profile extends NodeDependent {
      */
     public String avatar() throws Exception {
         return node.avatar();
+    }
+
+    /**
+     * Set the avatar
+     * @param file The image file to use
+     * @param handler An object that will get called with the resulting block
+     */
+    public void setAvatar(String file, final Files.BlockHandler handler) {
+        node.setAvatar(file, new Callback() {
+            @Override
+            public void call(byte[] bytes, Exception e) {
+                if (e != null) {
+                    handler.onError(e);
+                    return;
+                }
+                try {
+                    handler.onComplete(Model.Block.parseFrom(bytes));
+                } catch (Exception exception) {
+                    handler.onError(exception);
+                }
+            }
+        });
     }
 
     /**

@@ -53,8 +53,8 @@ android {
 }
 
 dependencies {
-    api 'io.textile:pb:0.2.6'
-    api 'io.textile:mobile:0.2.6'
+    api 'io.textile:pb:0.4.1'
+    api 'io.textile:mobile:0.4.1'
     implementation "net.gotev:uploadservice-okhttp:3.4.2"
     implementation "android.arch.lifecycle:extensions:1.1.1"
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"

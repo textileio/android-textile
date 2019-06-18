@@ -15,12 +15,12 @@ public class Cafes extends NodeDependent {
 
     /**
      * Used to register a remote Textile Cafe node with the local Textile node
-     * @param host The fully qualified host URL
+     * @param host The peer id of the cafe being registered
      * @param token The API token for the cafe being registered
      * @throws Exception The exception that occurred
      */
-    public void register(String host, String token) throws Exception {
-        node.registerCafe(host, token);
+    public void register(String peerId, String token) throws Exception {
+        node.registerCafe(peerId, token);
     }
 
     /**
