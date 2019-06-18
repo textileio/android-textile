@@ -9,7 +9,7 @@ import mobile.Mobile_;
  */
 public class Schemas extends NodeDependent {
 
-    Schemas(Mobile_ node) {
+    Schemas(final Mobile_ node) {
         super(node);
     }
 

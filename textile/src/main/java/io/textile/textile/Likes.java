@@ -7,7 +7,7 @@ import mobile.Mobile_;
  */
 public class Likes extends NodeDependent {
 
-    Likes(Mobile_ node) {
+    Likes(final Mobile_ node) {
         super(node);
     }
 

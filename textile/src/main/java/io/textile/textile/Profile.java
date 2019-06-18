@@ -11,7 +11,7 @@ import mobile.Mobile_;
  */
 public class Profile extends NodeDependent {
 
-    Profile(Mobile_ node) {
+    Profile(final Mobile_ node) {
         super(node);
     }
 

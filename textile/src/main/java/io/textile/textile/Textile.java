@@ -123,10 +123,11 @@ public class Textile implements LifecycleObserver {
      */
     public String repoPath;
 
-    private HashSet<TextileEventListener> eventsListeners = new HashSet();
+    private HashSet<TextileEventListener> eventsListeners = new HashSet<>();
     private MessageHandler messageHandler = new MessageHandler(eventsListeners);
 
     private Mobile_ node;
+    private RequestHandler requestHandler;
     private Context applicationContext;
     private Intent lifecycleServiceIntent;
     private LifecycleService lifecycleService;
@@ -148,35 +149,36 @@ public class Textile implements LifecycleObserver {
         if (Textile.instance().node != null) {
             return null;
         }
-
         UploadService.HTTP_STACK = new OkHttpStack();
 
         Textile.instance().applicationContext = applicationContext;
-        File filesDir = applicationContext.getFilesDir();
-        String path = new File(filesDir, "textile-go").getAbsolutePath();
+        final File filesDir = applicationContext.getFilesDir();
+        final String path = new File(filesDir, "textile-go").getAbsolutePath();
         Textile.instance().repoPath = path;
         try {
             Textile.instance().newTextile(path, debug);
-            Textile.instance().createNodeDependents();
+            Textile.instance().createNodeDependents(applicationContext);
             Textile.instance().lifecycleServiceIntent = new Intent(applicationContext, LifecycleService.class);
             applicationContext.bindService(Textile.instance().lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
             applicationContext.startService(Textile.instance().lifecycleServiceIntent);
             return null;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             if (e.getMessage().equals("repo does not exist, initialization is required")) {
-                try {
-                    String recoveryPhrase = Textile.instance().newWallet(12);
-                    MobileWalletAccount account = Textile.instance().walletAccountAt(recoveryPhrase, 0, "");
-                    Textile.instance().initRepo(account.getSeed(), path, logToDisk, debug);
-                    Textile.instance().newTextile(path, debug);
-                    Textile.instance().createNodeDependents();
-                    Textile.instance().lifecycleServiceIntent = new Intent(applicationContext, LifecycleService.class);
-                    applicationContext.bindService(Textile.instance().lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
-                    applicationContext.startService(Textile.instance().lifecycleServiceIntent);
-                    return recoveryPhrase;
-                } catch (Exception innerError) {
-                    throw innerError;
-                }
+
+                // @todo These should be configurable
+                final int walletWordCount = 12;
+                final String walletPassphrase = "";
+                final int walletAccountIndex = 0;
+
+                final String recoveryPhrase = Textile.instance().newWallet(walletWordCount);
+                final MobileWalletAccount account = Textile.instance().walletAccountAt(recoveryPhrase, walletAccountIndex, walletPassphrase);
+                Textile.instance().initRepo(account.getSeed(), path, logToDisk, debug);
+                Textile.instance().newTextile(path, debug);
+                Textile.instance().createNodeDependents(applicationContext);
+                Textile.instance().lifecycleServiceIntent = new Intent(applicationContext, LifecycleService.class);
+                applicationContext.bindService(Textile.instance().lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
+                applicationContext.startService(Textile.instance().lifecycleServiceIntent);
+                return recoveryPhrase;
             } else {
                 throw e;
             }
@@ -199,12 +201,12 @@ public class Textile implements LifecycleObserver {
     }
 
     private MobileWalletAccount walletAccountAt(String phrase, long index, String password) throws Exception {
-        byte[] bytes = Mobile.walletAccountAt(phrase, index, password);
+        final byte[] bytes = Mobile.walletAccountAt(phrase, index, password);
         return MobileWalletAccount.parseFrom(bytes);
     }
 
     private void initRepo(String seed, String repoPath, boolean logToDisk, boolean debug) throws Exception {
-        InitConfig config = new InitConfig();
+        final InitConfig config = new InitConfig();
         config.setSeed(seed);
         config.setRepoPath(repoPath);
         config.setLogToDisk(logToDisk);
@@ -213,23 +215,33 @@ public class Textile implements LifecycleObserver {
     }
 
     private void migrateRepo(String repoPath) throws Exception {
-        MigrateConfig config = new MigrateConfig();
+        final MigrateConfig config = new MigrateConfig();
         config.setRepoPath(repoPath);
         Mobile.migrateRepo(config);
     }
 
     private void newTextile(String repoPath, boolean debug) throws Exception {
-        RunConfig config = new RunConfig();
+        final RunConfig config = new RunConfig();
         config.setRepoPath(repoPath);
         config.setDebug(debug);
+        // Having this part of the config is not ideal. We should instead make it a setter
+        // which can be used after node creation.
+        config.setCafeOutboxHandler(new core.CafeOutboxHandler() {
+            @Override
+            public void flush() {
+                if (requestHandler != null) {
+                    requestHandler.flush();
+                }
+            }
+        });
         node = Mobile.newTextile(config, messageHandler);
     }
 
     void start() {
         try {
             node.start();
-        } catch (Exception e) {
-            for (TextileEventListener listener : eventsListeners) {
+        } catch (final Exception e) {
+            for (final TextileEventListener listener : eventsListeners) {
                 listener.nodeFailedToStart(e);
             }
         }
@@ -238,21 +250,21 @@ public class Textile implements LifecycleObserver {
     void stop() {
         try {
             node.stop();
-        } catch (Exception e) {
-            for (TextileEventListener listener : eventsListeners) {
+        } catch (final Exception e) {
+            for (final TextileEventListener listener : eventsListeners) {
                 listener.nodeFailedToStop(e);
             }
         }
     }
 
     void notifyListenersOfPendingNodeStop(int seconds) {
-        for (TextileEventListener listener : eventsListeners) {
+        for (final TextileEventListener listener : eventsListeners) {
             listener.willStopNodeInBackgroundAfterDelay(seconds);
         }
     }
 
     void notifyListenersOfCanceledPendingNodeStop() {
-        for (TextileEventListener listener : eventsListeners) {
+        for (final TextileEventListener listener : eventsListeners) {
             listener.canceledPendingNodeStop();
         }
     }
@@ -277,7 +289,7 @@ public class Textile implements LifecycleObserver {
      * @throws Exception The exception that occurred
      */
     public Summary summary() throws Exception {
-        byte[] bytes = node.summary();
+        final byte[] bytes = node.summary();
         return Summary.parseFrom(bytes);
     }
 
@@ -285,7 +297,7 @@ public class Textile implements LifecycleObserver {
      * Reset the local Textile node instance so it can be re-initialized
      * @throws Exception The exception that occurred
      */
-    public void destroy() throws Exception {
+    public void destroy() throws Exception { // @todo does this need to throw?
         ProcessLifecycleOwner.get().getLifecycle().removeObserver(this);
         applicationContext.unbindService(connection);
         lifecycleService.stopNodeImmediately();
@@ -295,6 +307,8 @@ public class Textile implements LifecycleObserver {
         eventsListeners.clear();
         node = null;
         applicationContext = null;
+
+        requestHandler = null;
 
         account = null;
         cafes = null;
@@ -333,7 +347,9 @@ public class Textile implements LifecycleObserver {
         eventsListeners.remove(listener);
     }
 
-    private void createNodeDependents() {
+    private void createNodeDependents(Context applicationContext) {
+        requestHandler = new RequestHandler(node, applicationContext, 16);
+
         account = new Account(node);
         cafes = new Cafes(node);
         comments = new Comments(node);

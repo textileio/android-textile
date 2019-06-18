@@ -11,7 +11,7 @@ import mobile.SearchHandle;
  */
 public class Account extends NodeDependent {
 
-    Account(Mobile_ node) {
+    Account(final Mobile_ node) {
         super(node);
     }
 

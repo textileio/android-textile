@@ -7,7 +7,7 @@ import mobile.Mobile_;
  */
 public class Comments extends NodeDependent {
 
-    Comments(Mobile_ node) {
+    Comments(final Mobile_ node) {
         super(node);
     }
 

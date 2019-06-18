@@ -14,7 +14,7 @@ import mobile.SearchHandle;
  */
 public class Threads extends NodeDependent {
 
-    Threads(Mobile_ node) {
+    Threads(final Mobile_ node) {
         super(node);
     }
 

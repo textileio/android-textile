@@ -7,7 +7,7 @@ import mobile.Mobile_;
  */
 public class Ignores extends NodeDependent {
 
-    Ignores(Mobile_ node) {
+    Ignores(final Mobile_ node) {
         super(node);
     }
 

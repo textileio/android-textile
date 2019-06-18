@@ -13,7 +13,7 @@ import mobile.SearchHandle;
  */
 public class Contacts extends NodeDependent {
 
-    Contacts(Mobile_ node) {
+    Contacts(final Mobile_ node) {
         super(node);
     }
 

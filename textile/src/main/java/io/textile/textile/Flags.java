@@ -7,7 +7,7 @@ import mobile.Mobile_;
  */
 public class Flags extends NodeDependent {
 
-    Flags(Mobile_ node) {
+    Flags(final Mobile_ node) {
         super(node);
     }
 

@@ -2,7 +2,6 @@ package io.textile.textile;
 
 import io.textile.pb.Model.Block;
 import io.textile.pb.View;
-import io.textile.pb.View.Directory;
 import io.textile.pb.View.FilesList;
 import mobile.Callback;
 import mobile.Mobile_;
@@ -30,7 +29,7 @@ public class Files extends NodeDependent {
         void onError(Exception e);
     }
 
-    Files(Mobile_ node) {
+    Files(final Mobile_ node) {
         super(node);
     }
 

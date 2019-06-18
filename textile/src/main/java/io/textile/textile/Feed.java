@@ -12,7 +12,7 @@ import mobile.Mobile_;
  */
 public class Feed extends NodeDependent {
 
-    Feed(Mobile_ node) {
+    Feed(final Mobile_ node) {
         super(node);
     }
 

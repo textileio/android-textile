@@ -8,7 +8,7 @@ import mobile.Mobile_;
  */
 public class Logs extends NodeDependent {
 
-    Logs(Mobile_ node) {
+    Logs(final Mobile_ node) {
         super(node);
     }
 

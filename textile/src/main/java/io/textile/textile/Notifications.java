@@ -8,7 +8,7 @@ import mobile.Mobile_;
  */
 public class Notifications extends NodeDependent {
 
-    Notifications(Mobile_ node) {
+    Notifications(final Mobile_ node) {
         super(node);
     }
 

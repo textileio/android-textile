@@ -7,7 +7,7 @@ import mobile.Mobile_;
  */
 public class Ipfs extends NodeDependent {
 
-    Ipfs(Mobile_ node) {
+    Ipfs(final Mobile_ node) {
         super(node);
     }
 

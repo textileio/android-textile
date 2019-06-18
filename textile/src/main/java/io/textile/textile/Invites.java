@@ -9,7 +9,7 @@ import mobile.Mobile_;
  */
 public class Invites extends NodeDependent {
 
-    Invites(Mobile_ node) {
+    Invites(final Mobile_ node) {
         super(node);
     }
 

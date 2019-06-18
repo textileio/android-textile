@@ -6,7 +6,7 @@ abstract class NodeDependent {
 
     Mobile_ node;
 
-    public NodeDependent(Mobile_ node) {
+    public NodeDependent(final Mobile_ node) {
         this.node = node;
     }
 }
