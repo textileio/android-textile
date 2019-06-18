@@ -35,8 +35,6 @@ repositories {
 android {
     compileSdkVersion 28
 
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
@@ -44,7 +42,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -53,16 +50,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
     api 'io.textile:pb:0.2.6'
     api 'io.textile:mobile:0.2.6'
+    implementation "net.gotev:uploadservice-okhttp:3.4.2"
     implementation "android.arch.lifecycle:extensions:1.1.1"
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
@@ -129,7 +125,7 @@ task javadoc(type: Javadoc) {
 
 afterEvaluate {
     javadoc.classpath += files(android.libraryVariants.collect { variant ->
-        variant.javaCompile.classpath.files
+        variant.javaCompileProvider.get().classpath.files
     })
 }
 

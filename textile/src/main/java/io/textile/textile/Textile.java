@@ -10,6 +10,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import net.gotev.uploadservice.UploadService;
+import net.gotev.uploadservice.okhttp.OkHttpStack;
+
 import java.io.File;
 import java.util.HashSet;
 
@@ -145,6 +148,9 @@ public class Textile implements LifecycleObserver {
         if (Textile.instance().node != null) {
             return null;
         }
+
+        UploadService.HTTP_STACK = new OkHttpStack();
+
         Textile.instance().applicationContext = applicationContext;
         File filesDir = applicationContext.getFilesDir();
         String path = new File(filesDir, "textile-go").getAbsolutePath();
