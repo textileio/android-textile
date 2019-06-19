@@ -10,17 +10,14 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 /**
- * Instrumented test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * RequestHandler tests.
  */
 @RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+public class RequestHandlerTest {
     @Test
     public void useAppContext() {
-        // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("io.textile.textile.test", appContext.getPackageName());
+//        RequestHandler handler = new RequestHandler(appContext)
     }
 }

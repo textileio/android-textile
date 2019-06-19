@@ -10,6 +10,14 @@ import net.gotev.uploadservice.UploadStatusDelegate;
 
 import java.util.Map;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
 import mobile.Callback;
@@ -40,26 +48,25 @@ class RequestHandler extends NodeDependent {
             // 1. List a batch of request ids
             final Strings ids = Strings.parseFrom(node.cafeRequests(batchSize));
 
+            // 2. Mark each as pending so additional calls to flush do not yield the same requests
+            for (final String id : ids.getValuesList()) {
+                node.cafeRequestPending(id);
+            }
+
             // 2. Write each request to disk
             for (final String id : ids.getValuesList()) {
                 node.writeCafeRequest(id, new Callback() {
                     @Override
                     public void call(byte[] bytes, Exception e) {
                         if (e != null) {
-                            // noop for now
+                            // @todo Unmark as pending (new method needed)
                             return;
                         }
+                        // 4. Start the request
                         try {
-                            CafeHTTPRequest req = CafeHTTPRequest.parseFrom(bytes);
-
-                            // 3. Mark request as pending
-                            node.cafeRequestPending(id);
-
-                            // 4. Start the request
-                            String uploadId = startUpload(id, req);
-
+                            String uploadId = startUpload(id, CafeHTTPRequest.parseFrom(bytes));
                         } catch (Exception exception) {
-                            // noop for now
+                            // @todo Unmark as pending (new method needed)
                         }
                     }
                 });
