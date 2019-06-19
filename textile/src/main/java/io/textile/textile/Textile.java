@@ -123,11 +123,15 @@ public class Textile implements LifecycleObserver {
      */
     public String repoPath;
 
+    /**
+     * The number of requests to write to disk before adding to the background queue
+     */
+    public static int REQUESTS_BATCH_SIZE = 16;
+
     private HashSet<TextileEventListener> eventsListeners = new HashSet<>();
     private MessageHandler messageHandler = new MessageHandler(eventsListeners);
 
     private Mobile_ node;
-    private MobileRequests requests;
     private RequestsHandler requestsHandler;
     private Context applicationContext;
     private Intent lifecycleServiceIntent;
@@ -296,9 +300,9 @@ public class Textile implements LifecycleObserver {
 
     /**
      * Reset the local Textile node instance so it can be re-initialized
-     * @throws Exception The exception that occurred
+     * @throws Exception The exception that occurred (@todo does this need to throw?)
      */
-    public void destroy() throws Exception { // @todo does this need to throw?
+    public void destroy() throws Exception {
         ProcessLifecycleOwner.get().getLifecycle().removeObserver(this);
         applicationContext.unbindService(connection);
         lifecycleService.stopNodeImmediately();
@@ -309,7 +313,6 @@ public class Textile implements LifecycleObserver {
         node = null;
         applicationContext = null;
 
-        requests = null;
         requestsHandler = null;
 
         account = null;
@@ -350,8 +353,7 @@ public class Textile implements LifecycleObserver {
     }
 
     private void createNodeDependents(Context applicationContext) {
-        requests = new MobileRequests(node);
-        requestsHandler = new RequestsHandler(requests, applicationContext, 16);
+        requestsHandler = new RequestsHandler(node, applicationContext, REQUESTS_BATCH_SIZE);
 
         account = new Account(node);
         cafes = new Cafes(node);

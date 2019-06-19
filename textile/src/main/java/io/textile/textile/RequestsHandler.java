@@ -13,19 +13,20 @@ import java.util.Map;
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
 import mobile.Callback;
+import mobile.Mobile_;
 
 /**
  * Handles HTTP requests queued by the Textile node
  */
 class RequestsHandler {
 
-    private Requests api;
+    private Mobile_ node;
     private Context applicationContext;
     private int batchSize;
     private boolean flushing;
 
-    RequestsHandler(final Requests api, final Context applicationContext, final int batchSize) {
-        this.api = api;
+    RequestsHandler(final Mobile_ node, final Context applicationContext, final int batchSize) {
+        this.node = node;
         this.applicationContext = applicationContext;
         this.batchSize = batchSize;
         this.flushing = false;
@@ -39,16 +40,16 @@ class RequestsHandler {
 
         try {
             // 1. List a batch of request ids
-            final Strings ids = Strings.parseFrom(api.cafeRequests(batchSize));
+            final Strings ids = Strings.parseFrom(node.cafeRequests(batchSize));
 
             // 2. Mark each as pending so additional calls to flush do not yield the same requests
             for (final String id : ids.getValuesList()) {
-                api.cafeRequestPending(id);
+                node.cafeRequestPending(id);
             }
 
             // 2. Write each request to disk
             for (final String id : ids.getValuesList()) {
-                api.writeCafeRequest(id, new Callback() {
+                node.writeCafeRequest(id, new Callback() {
                     @Override
                     public void call(byte[] bytes, Exception e) {
                         if (e != null) {
@@ -94,7 +95,7 @@ class RequestsHandler {
                 message += ")";
 
                 try {
-                    api.failCafeRequest(id, message);
+                    node.failCafeRequest(id, message);
                 } catch (final Exception e) {
                     // noop
                 }
@@ -103,7 +104,7 @@ class RequestsHandler {
             @Override
             public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
                 try {
-                    api.completeCafeRequest(id);
+                    node.completeCafeRequest(id);
                 } catch (final Exception e) {
                     // noop
                 }
@@ -112,7 +113,7 @@ class RequestsHandler {
             @Override
             public void onCancelled(Context context, UploadInfo uploadInfo) {
                 try {
-                    api.failCafeRequest(id, "Request cancelled");
+                    node.failCafeRequest(id, "Request cancelled");
                 } catch (final Exception e) {
                     // noop
                 }

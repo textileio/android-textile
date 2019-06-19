@@ -44,11 +44,11 @@ android {
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
-//    testOptions {
-//        unitTests {
-//            includeAndroidResources = true
-//        }
-//    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 
     buildTypes {
         release {
@@ -68,6 +68,7 @@ dependencies {
     annotationProcessor 'android.arch.lifecycle:compiler:1.1.1'
     testImplementation 'junit:junit:4.12'
     // androidTestImplementation 'org.mockito:mockito-core:2.28.2'
+    androidTestImplementation 'org.awaitility:awaitility:3.1.6'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
