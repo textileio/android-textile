@@ -13,52 +13,12 @@ import java.util.Map;
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
 import mobile.Callback;
-import mobile.Mobile_;
-
-/**
- * Defines a mockable subset of Mobile_ used by RequestsHandler
- */
-interface Requests {
-    byte[] cafeRequests(long limit) throws Exception;
-    void cafeRequestPending(String id) throws Exception;
-    void completeCafeRequest(String id) throws Exception;
-    void failCafeRequest(String id, String reason) throws Exception;
-    void writeCafeRequest(String var1, Callback var2);
-}
-
-/**
- * Implements a subset of Mobile_ used by RequestsHandler
- */
-class MobileRequests extends NodeDependent implements Requests {
-    MobileRequests(final Mobile_ node) {
-        super(node);
-    }
-
-    public byte[] cafeRequests(long limit) throws Exception {
-        return node.cafeRequests(limit);
-    }
-
-    public void cafeRequestPending(String id) throws Exception {
-        node.cafeRequestPending(id);
-    }
-
-    public void completeCafeRequest(String id) throws Exception {
-        node.completeCafeRequest(id);
-    }
-
-    public void failCafeRequest(String id, String reason) throws Exception {
-        node.failCafeRequest(id, reason);
-    }
-
-    public void writeCafeRequest(String id, Callback cb) {
-        node.writeCafeRequest(id, cb);
-    }
-}
 
 /**
  * Handles HTTP requests queued by the Textile node
  */
 class RequestsHandler {
+
     private Requests api;
     private Context applicationContext;
     private int batchSize;
