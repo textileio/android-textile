@@ -53,14 +53,22 @@ class RequestsHandler {
                     @Override
                     public void call(byte[] bytes, Exception e) {
                         if (e != null) {
-                            // @todo Unmark as pending (new method needed)
+                            try {
+                                node.cafeRequestNotPending(id);
+                            } catch (Exception ee) {
+                                // noop
+                            }
                             return;
                         }
                         // 4. Start the request
                         try {
                             String uploadId = startUpload(id, CafeHTTPRequest.parseFrom(bytes));
-                        } catch (Exception exception) {
-                            // @todo Unmark as pending (new method needed)
+                        } catch (Exception ee) {
+                            try {
+                                node.cafeRequestNotPending(id);
+                            } catch (Exception eee) {
+                                // noop
+                            }
                         }
                     }
                 });
@@ -75,16 +83,20 @@ class RequestsHandler {
     private String startUpload(final String id, final CafeHTTPRequest req) throws Exception {
         UploadStatusDelegate statusDelegate = new UploadStatusDelegate() {
             @Override
-            public void onProgress(Context context, UploadInfo uploadInfo) {
-                // @todo emit progress events
+            public void onProgress(Context context, UploadInfo info) {
+                try {
+                    node.updateCafeRequestProgress(id, info.getUploadedBytes(), info.getTotalBytes());
+                } catch (final Exception e) {
+                    // noop
+                }
             }
 
             @Override
-            public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+            public void onError(Context context, UploadInfo info, ServerResponse response, Exception exception) {
                 String message = "Request failed (";
-                if (serverResponse != null) {
-                    message += "code=" + serverResponse.getHttpCode() + " ";
-                    message += "body=" + serverResponse.getBodyAsString() + " ";
+                if (response != null) {
+                    message += "code=" + response.getHttpCode() + " ";
+                    message += "body=" + response.getBodyAsString() + " ";
                 }
 
                 if (exception != null) {
@@ -102,7 +114,7 @@ class RequestsHandler {
             }
 
             @Override
-            public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+            public void onCompleted(Context context, UploadInfo info, ServerResponse response) {
                 try {
                     node.completeCafeRequest(id);
                 } catch (final Exception e) {
@@ -111,7 +123,7 @@ class RequestsHandler {
             }
 
             @Override
-            public void onCancelled(Context context, UploadInfo uploadInfo) {
+            public void onCancelled(Context context, UploadInfo info) {
                 try {
                     node.failCafeRequest(id, "Request cancelled");
                 } catch (final Exception e) {
