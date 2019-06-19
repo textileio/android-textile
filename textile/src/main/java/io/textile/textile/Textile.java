@@ -127,7 +127,8 @@ public class Textile implements LifecycleObserver {
     private MessageHandler messageHandler = new MessageHandler(eventsListeners);
 
     private Mobile_ node;
-    private RequestHandler requestHandler;
+    private MobileRequests requests;
+    private RequestsHandler requestsHandler;
     private Context applicationContext;
     private Intent lifecycleServiceIntent;
     private LifecycleService lifecycleService;
@@ -229,8 +230,8 @@ public class Textile implements LifecycleObserver {
         config.setCafeOutboxHandler(new core.CafeOutboxHandler() {
             @Override
             public void flush() {
-                if (requestHandler != null) {
-                    requestHandler.flush();
+                if (requestsHandler != null) {
+                    requestsHandler.flush();
                 }
             }
         });
@@ -308,7 +309,8 @@ public class Textile implements LifecycleObserver {
         node = null;
         applicationContext = null;
 
-        requestHandler = null;
+        requests = null;
+        requestsHandler = null;
 
         account = null;
         cafes = null;
@@ -348,7 +350,8 @@ public class Textile implements LifecycleObserver {
     }
 
     private void createNodeDependents(Context applicationContext) {
-        requestHandler = new RequestHandler(node, applicationContext, 16);
+        requests = new MobileRequests(node);
+        requestsHandler = new RequestsHandler(requests, applicationContext, 16);
 
         account = new Account(node);
         cafes = new Cafes(node);

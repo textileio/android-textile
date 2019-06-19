@@ -10,29 +10,62 @@ import net.gotev.uploadservice.UploadStatusDelegate;
 
 import java.util.Map;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
 import mobile.Callback;
 import mobile.Mobile_;
 
 /**
+ * Defines a mockable subset of Mobile_ used by RequestsHandler
+ */
+interface Requests {
+    byte[] cafeRequests(long limit) throws Exception;
+    void cafeRequestPending(String id) throws Exception;
+    void completeCafeRequest(String id) throws Exception;
+    void failCafeRequest(String id, String reason) throws Exception;
+    void writeCafeRequest(String var1, Callback var2);
+}
+
+/**
+ * Implements a subset of Mobile_ used by RequestsHandler
+ */
+class MobileRequests extends NodeDependent implements Requests {
+    MobileRequests(final Mobile_ node) {
+        super(node);
+    }
+
+    public byte[] cafeRequests(long limit) throws Exception {
+        return node.cafeRequests(limit);
+    }
+
+    public void cafeRequestPending(String id) throws Exception {
+        node.cafeRequestPending(id);
+    }
+
+    public void completeCafeRequest(String id) throws Exception {
+        node.completeCafeRequest(id);
+    }
+
+    public void failCafeRequest(String id, String reason) throws Exception {
+        node.failCafeRequest(id, reason);
+    }
+
+    public void writeCafeRequest(String id, Callback cb) {
+        node.writeCafeRequest(id, cb);
+    }
+}
+
+/**
  * Handles HTTP requests queued by the Textile node
  */
-class RequestHandler extends NodeDependent {
+class RequestsHandler {
+    private Requests api;
     private Context applicationContext;
     private int batchSize;
     private boolean flushing;
 
-    RequestHandler(final Mobile_ node, final Context applicationContext, final int batchSize) {
-        super(node);
+    RequestsHandler(final Requests api, final Context applicationContext, final int batchSize) {
+        this.api = api;
         this.applicationContext = applicationContext;
         this.batchSize = batchSize;
         this.flushing = false;
@@ -46,16 +79,16 @@ class RequestHandler extends NodeDependent {
 
         try {
             // 1. List a batch of request ids
-            final Strings ids = Strings.parseFrom(node.cafeRequests(batchSize));
+            final Strings ids = Strings.parseFrom(api.cafeRequests(batchSize));
 
             // 2. Mark each as pending so additional calls to flush do not yield the same requests
             for (final String id : ids.getValuesList()) {
-                node.cafeRequestPending(id);
+                api.cafeRequestPending(id);
             }
 
             // 2. Write each request to disk
             for (final String id : ids.getValuesList()) {
-                node.writeCafeRequest(id, new Callback() {
+                api.writeCafeRequest(id, new Callback() {
                     @Override
                     public void call(byte[] bytes, Exception e) {
                         if (e != null) {
@@ -101,7 +134,7 @@ class RequestHandler extends NodeDependent {
                 message += ")";
 
                 try {
-                    node.failCafeRequest(id, message);
+                    api.failCafeRequest(id, message);
                 } catch (final Exception e) {
                     // noop
                 }
@@ -110,7 +143,7 @@ class RequestHandler extends NodeDependent {
             @Override
             public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
                 try {
-                    node.completeCafeRequest(id);
+                    api.completeCafeRequest(id);
                 } catch (final Exception e) {
                     // noop
                 }
@@ -119,7 +152,7 @@ class RequestHandler extends NodeDependent {
             @Override
             public void onCancelled(Context context, UploadInfo uploadInfo) {
                 try {
-                    node.failCafeRequest(id, "Request cancelled");
+                    api.failCafeRequest(id, "Request cancelled");
                 } catch (final Exception e) {
                     // noop
                 }
