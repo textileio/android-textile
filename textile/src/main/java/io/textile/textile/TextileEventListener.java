@@ -1,9 +1,9 @@
 package io.textile.textile;
 
+import io.textile.pb.Model.CafeSyncGroupStatus;
 import io.textile.pb.Model.Contact;
 import io.textile.pb.Model.Thread;
 import io.textile.pb.Model.Notification;
-import io.textile.pb.View.FeedItem;
 
 /**
  * Interface that can be implemented in order to receive callbacks from Textile about events of interest
@@ -111,4 +111,22 @@ public interface TextileEventListener {
      * @param contact A contact query result
      */
     void contactQueryResult(String queryId, Contact contact);
+
+    /**
+     * Called when there is an update about a sync group
+     * @param status An object describing the sync status
+     */
+    void syncUpdate(CafeSyncGroupStatus status);
+
+    /**
+     * Called when a sync group is complete
+     * @param status An object describing the sync status
+     */
+    void syncComplete(CafeSyncGroupStatus status);
+
+    /**
+     * Called when a sync group has failed
+     * @param status An object describing the sync status
+     */
+    void syncFailed(CafeSyncGroupStatus status);
 }

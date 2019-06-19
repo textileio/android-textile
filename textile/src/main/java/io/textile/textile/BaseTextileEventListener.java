@@ -1,5 +1,6 @@
 package io.textile.textile;
 
+import io.textile.pb.Model.CafeSyncGroupStatus;
 import io.textile.pb.Model.Notification;
 import io.textile.pb.Model.Thread;
 import io.textile.pb.Model.Contact;
@@ -91,6 +92,21 @@ public abstract class BaseTextileEventListener implements TextileEventListener {
 
     @Override
     public void contactQueryResult(String queryId, Contact contact) {
+
+    }
+
+    @Override
+    public void syncUpdate(CafeSyncGroupStatus status) {
+
+    }
+
+    @Override
+    public void syncComplete(CafeSyncGroupStatus status) {
+
+    }
+
+    @Override
+    public void syncFailed(CafeSyncGroupStatus status) {
 
     }
 }

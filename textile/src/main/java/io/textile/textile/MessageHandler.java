@@ -5,6 +5,7 @@ import java.util.Set;
 import io.textile.pb.MessageOuterClass.Error;
 import io.textile.pb.Mobile.MobileEventType;
 import io.textile.pb.Mobile.MobileQueryEvent;
+import io.textile.pb.Model.CafeSyncGroupStatus;
 import io.textile.pb.Model.Notification;
 import io.textile.pb.Model.Thread;
 import io.textile.pb.Model.Contact;
@@ -122,6 +123,36 @@ class MessageHandler implements Messenger {
                                 listener.queryError(queryEvent.getId(), e);
                             }
                             break;
+                    }
+                } catch (final Exception e) {
+                    // noop
+                }
+                break;
+            case CAFE_SYNC_GROUP_UPDATE:
+                try {
+                    final CafeSyncGroupStatus status = CafeSyncGroupStatus.parseFrom(event.getData());
+                    for (final TextileEventListener listener : listeners) {
+                        listener.syncUpdate(status);
+                    }
+                } catch (final Exception e) {
+                    // noop
+                }
+                break;
+            case CAFE_SYNC_GROUP_COMPLETE:
+                try {
+                    final CafeSyncGroupStatus status = CafeSyncGroupStatus.parseFrom(event.getData());
+                    for (final TextileEventListener listener : listeners) {
+                        listener.syncComplete(status);
+                    }
+                } catch (final Exception e) {
+                    // noop
+                }
+                break;
+            case CAFE_SYNC_GROUP_FAILED:
+                try {
+                    final CafeSyncGroupStatus status = CafeSyncGroupStatus.parseFrom(event.getData());
+                    for (final TextileEventListener listener : listeners) {
+                        listener.syncFailed(status);
                     }
                 } catch (final Exception e) {
                     // noop
