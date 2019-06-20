@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.textile.pb.Model;
@@ -33,8 +35,15 @@ public class TextileTest {
 
     @Test
     public void test0_initialize() throws Exception {
-        final Context appContext = InstrumentationRegistry.getTargetContext();
-        final String phrase = Textile.initialize(appContext, true, false);
+        final Context ctx = InstrumentationRegistry.getTargetContext();
+        final File repo = new File(ctx.getFilesDir(), Textile.REPO_NAME);
+        if (repo.exists()) {
+            FileUtils.deleteDirectory(repo);
+        }
+
+        final String phrase = Textile.initialize(ctx, true, false);
+        assertNotEquals("", phrase);
+
         Textile.instance().addEventListener(new TestTextileListener());
     }
 
@@ -58,21 +67,19 @@ public class TextileTest {
         assertNotEquals("", Textile.instance().summary().getAddress());
     }
 
-//    @Test
-//    public void test3_waitForOnline() throws Exception {
-//        Textile.instance().
-//        await().atMost(5, SECONDS).untilTrue(ready);
-//    }
-
-//    @Test
-//    public void test3_registerCafe() throws Exception {
-//        Textile.instance().cafes.register(
-//                "12D3KooWLaJnBr1bqWkZCDhaFeGxKiCP91rt2gQ8rn7Lx7kcKAMY",
-//                "ukbN5nU1BhhiDwBPq3XrbUnqakzKnrVRBXc5u2oj1Np3DBttmn757PYsN2u2");
-//    }
+    @Test
+    public void test3_online() {
+        await().atMost(30, SECONDS).until(isOnline());
+    }
 
     @Test
-    public void test3_addThread() throws Exception {
+    public void test4_registerCafe() throws Exception {
+        Thread.sleep(5000);
+        Textile.instance().cafes.register(BuildConfig.CAFE_ID, BuildConfig.CAFE_TOKEN);
+    }
+
+    @Test
+    public void test5_addThread() throws Exception {
         final Model.Thread thread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
                 .setName("test")
                 .setKey(UUID.randomUUID().toString())
@@ -86,7 +93,7 @@ public class TextileTest {
     }
 
     @Test
-    public void test3_addData() throws Exception {
+    public void test5_addData() throws Exception {
         final Model.Thread thread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
                 .setName("data")
                 .setKey(UUID.randomUUID().toString())
@@ -112,11 +119,13 @@ public class TextileTest {
             }
         });
 
-        await().atMost(5, SECONDS).untilTrue(ready);
+        await().atMost(10, SECONDS).untilTrue(ready);
     }
 
     @Test
-    public void test3_addFiles() throws Exception {
+    public void test5_addFiles() throws Exception {
+        final Context ctx = InstrumentationRegistry.getTargetContext();
+
         final Model.Thread thread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
                 .setName("test")
                 .setKey(UUID.randomUUID().toString())
@@ -129,8 +138,7 @@ public class TextileTest {
 
         // 1. Add a single file
         final View.Strings input1 = View.Strings.newBuilder()
-                .addValues(TextileTest.getCacheFile(
-                        InstrumentationRegistry.getContext(), "TEST0.JPG").getAbsolutePath())
+                .addValues(TextileTest.getCacheFile(ctx, "TEST0.JPG").getAbsolutePath())
                 .build();
 
         final AtomicBoolean ready = new AtomicBoolean();
@@ -148,14 +156,12 @@ public class TextileTest {
             }
         });
 
-        await().untilTrue(ready);
+        await().atMost(30, SECONDS).untilTrue(ready);
 
         // 2. Add two files at once
         final View.Strings input2 = View.Strings.newBuilder()
-                .addValues(TextileTest.getCacheFile(
-                        InstrumentationRegistry.getContext(), "TEST0.JPG").getAbsolutePath())
-                .addValues(TextileTest.getCacheFile(
-                        InstrumentationRegistry.getContext(), "TEST1.JPG").getAbsolutePath())
+                .addValues(TextileTest.getCacheFile(ctx, "TEST0.JPG").getAbsolutePath())
+                .addValues(TextileTest.getCacheFile(ctx, "TEST1.JPG").getAbsolutePath())
                 .build();
 
         ready.getAndSet(false);
@@ -173,12 +179,21 @@ public class TextileTest {
             }
         });
 
-        await().untilTrue(ready);
+        await().atMost(30, SECONDS).untilTrue(ready);
     }
 
     @Test
     public void test99_destroy() throws Exception {
+        Thread.sleep(60000);
         Textile.instance().destroy();
+    }
+
+    private Callable<Boolean> isOnline() {
+        return new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                return Textile.instance().online();
+            }
+        };
     }
 
     private static File getCacheFile(Context context, String filename) throws IOException {

@@ -9,6 +9,10 @@ import net.gotev.uploadservice.UploadInfo;
 import net.gotev.uploadservice.UploadStatusDelegate;
 
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
@@ -23,61 +27,63 @@ class RequestsHandler {
     private Mobile_ node;
     private Context applicationContext;
     private int batchSize;
-    private boolean flushing;
+    private Logger logger;
 
     RequestsHandler(final Mobile_ node, final Context applicationContext, final int batchSize) {
         this.node = node;
         this.applicationContext = applicationContext;
         this.batchSize = batchSize;
-        this.flushing = false;
+
+        this.logger = Logger.getLogger("textile.requests");
+        this.logger.setLevel(Level.ALL);
+        final ConsoleHandler handler = new ConsoleHandler();
+        handler.setFormatter(new SimpleFormatter());
+        this.logger.addHandler(handler);
     }
 
     void flush() {
-        if (flushing) {
-            return;
-        }
-        flushing = true;
-
         try {
             // 1. List a batch of request ids
-            final Strings ids = Strings.parseFrom(node.cafeRequests(batchSize));
+            byte[] result = node.cafeRequests(batchSize);
+            if (result == null) {
+                return;
+            }
+            final Strings ids = Strings.parseFrom(result);
 
             // 2. Mark each as pending so additional calls to flush do not yield the same requests
             for (final String id : ids.getValuesList()) {
                 node.cafeRequestPending(id);
             }
 
-            // 2. Write each request to disk
+            // 3. Write each request to disk
             for (final String id : ids.getValuesList()) {
                 node.writeCafeRequest(id, new Callback() {
                     @Override
-                    public void call(byte[] bytes, Exception e) {
+                    public void call(byte[] req, Exception e) {
                         if (e != null) {
                             try {
                                 node.cafeRequestNotPending(id);
                             } catch (Exception ee) {
-                                // noop
+                                logger.warning(ee.getMessage());
                             }
                             return;
                         }
                         // 4. Start the request
                         try {
-                            String uploadId = startUpload(id, CafeHTTPRequest.parseFrom(bytes));
+                            String uploadId = startUpload(id, CafeHTTPRequest.parseFrom(req));
                         } catch (Exception ee) {
                             try {
                                 node.cafeRequestNotPending(id);
                             } catch (Exception eee) {
-                                // noop
+                                logger.warning(eee.getMessage());
                             }
                         }
                     }
                 });
             }
         } catch (Exception e) {
-            flushing = false;
+            logger.warning(e.getMessage());
         }
-
-        flushing = false;
     }
 
     private String startUpload(final String id, final CafeHTTPRequest req) throws Exception {
@@ -87,7 +93,7 @@ class RequestsHandler {
                 try {
                     node.updateCafeRequestProgress(id, info.getUploadedBytes(), info.getTotalBytes());
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
             }
 
@@ -109,7 +115,7 @@ class RequestsHandler {
                 try {
                     node.failCafeRequest(id, message);
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
             }
 
@@ -118,7 +124,7 @@ class RequestsHandler {
                 try {
                     node.completeCafeRequest(id);
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
             }
 
@@ -127,7 +133,7 @@ class RequestsHandler {
                 try {
                     node.failCafeRequest(id, "Request cancelled");
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
             }
         };

@@ -1,6 +1,10 @@
 package io.textile.textile;
 
 import java.util.Set;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import io.textile.pb.MessageOuterClass.Error;
 import io.textile.pb.Mobile.MobileEventType;
@@ -18,9 +22,16 @@ import mobile.Messenger;
 class MessageHandler implements Messenger {
 
     private Set<TextileEventListener> listeners;
+    private Logger logger;
 
     MessageHandler(final Set<TextileEventListener> listeners) {
         this.listeners = listeners;
+
+        this.logger = Logger.getLogger("textile.requests");
+        this.logger.setLevel(Level.ALL);
+        final ConsoleHandler handler = new ConsoleHandler();
+        handler.setFormatter(new SimpleFormatter());
+        this.logger.addHandler(handler);
     }
 
     @Override
@@ -69,7 +80,7 @@ class MessageHandler implements Messenger {
                             break;
                     }
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
                 break;
             case THREAD_UPDATE:
@@ -80,7 +91,7 @@ class MessageHandler implements Messenger {
                         listener.threadUpdateReceived(feedItem.getThread(), data);
                     }
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
                 break;
             case NOTIFICATION:
@@ -90,7 +101,7 @@ class MessageHandler implements Messenger {
                         listener.notificationReceived(notification);
                     }
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
                 break;
             case QUERY_RESPONSE:
@@ -125,7 +136,7 @@ class MessageHandler implements Messenger {
                             break;
                     }
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
                 break;
             case CAFE_SYNC_GROUP_UPDATE:
@@ -135,7 +146,7 @@ class MessageHandler implements Messenger {
                         listener.syncUpdate(status);
                     }
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
                 break;
             case CAFE_SYNC_GROUP_COMPLETE:
@@ -145,7 +156,7 @@ class MessageHandler implements Messenger {
                         listener.syncComplete(status);
                     }
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
                 break;
             case CAFE_SYNC_GROUP_FAILED:
@@ -155,7 +166,7 @@ class MessageHandler implements Messenger {
                         listener.syncFailed(status);
                     }
                 } catch (final Exception e) {
-                    // noop
+                    logger.warning(e.getMessage());
                 }
                 break;
         }

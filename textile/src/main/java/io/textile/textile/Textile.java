@@ -124,6 +124,11 @@ public class Textile implements LifecycleObserver {
     public String repoPath;
 
     /**
+     * The name of the repo that will be created for the node on disk
+     */
+    public static String REPO_NAME = "textile-go";
+
+    /**
      * The number of requests to write to disk before adding to the background queue
      */
     public static int REQUESTS_BATCH_SIZE = 16;
@@ -158,7 +163,7 @@ public class Textile implements LifecycleObserver {
 
         Textile.instance().applicationContext = applicationContext;
         final File filesDir = applicationContext.getFilesDir();
-        final String path = new File(filesDir, "textile-go").getAbsolutePath();
+        final String path = new File(filesDir, REPO_NAME).getAbsolutePath();
         Textile.instance().repoPath = path;
         try {
             Textile.instance().newTextile(path, debug);
@@ -260,6 +265,10 @@ public class Textile implements LifecycleObserver {
                 listener.nodeFailedToStop(e);
             }
         }
+    }
+
+    boolean online() {
+        return node.online();
     }
 
     void notifyListenersOfPendingNodeStop(int seconds) {

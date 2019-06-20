@@ -32,6 +32,18 @@ repositories {
     }
 }
 
+def getCafeID() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty("cafe.id")
+}
+
+def getCafeToken() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty("cafe.token")
+}
+
 android {
     compileSdkVersion 28
 
@@ -42,6 +54,9 @@ android {
         versionName '1.0'
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+
+        buildConfigField "String", "CAFE_ID", "\""+getCafeID()+"\""
+        buildConfigField "String", "CAFE_TOKEN", "\""+getCafeToken()+"\""
     }
 
     testOptions {
@@ -69,6 +84,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     // androidTestImplementation 'org.mockito:mockito-core:2.28.2'
     androidTestImplementation 'org.awaitility:awaitility:3.1.6'
+    androidTestImplementation 'commons-io:commons-io:2.6'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
