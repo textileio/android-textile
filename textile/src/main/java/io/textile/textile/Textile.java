@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import net.gotev.uploadservice.Logger;
 import net.gotev.uploadservice.UploadService;
 import net.gotev.uploadservice.okhttp.OkHttpStack;
 
@@ -129,6 +130,21 @@ public class Textile implements LifecycleObserver {
     public static String REPO_NAME = "textile-go";
 
     /**
+     * The number of words to use in the wallet's mnemonic phrase
+     */
+    public static int WALLET_WORD_COUNT = 12;
+
+    /**
+     * The BIP39 Passphrase (optional) to use when creating the wallet seed
+     */
+    public static String WALLET_PASSPHRASE = "";
+
+    /**
+     * The wallet's default account derivation path index
+     */
+    public static int WALLET_ACCOUNT_INDEX = 0;
+
+    /**
      * The number of requests to write to disk before adding to the background queue
      */
     public static int REQUESTS_BATCH_SIZE = 16;
@@ -139,6 +155,7 @@ public class Textile implements LifecycleObserver {
     private Mobile_ node;
     private RequestsHandler requestsHandler;
     private Context applicationContext;
+    private Intent uploadServiceIntent;
     private Intent lifecycleServiceIntent;
     private LifecycleService lifecycleService;
     private AppState appState = AppState.None;
@@ -148,7 +165,7 @@ public class Textile implements LifecycleObserver {
     }
 
     /**
-     * Initialize the shared Textile instace, possibly returning the wallet recovery phrase
+     * Initialize the shared Textile instance, possibly returning the wallet recovery phrase
      * @param applicationContext The host app's application context
      * @param debug Sets the log level to debug or not
      * @param logToDisk Whether or not to write Textile logs to disk
@@ -159,35 +176,26 @@ public class Textile implements LifecycleObserver {
         if (Textile.instance().node != null) {
             return null;
         }
+        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         UploadService.HTTP_STACK = new OkHttpStack();
+        if (debug) {
+            Logger.setLogLevel(Logger.LogLevel.DEBUG);
+        }
 
         Textile.instance().applicationContext = applicationContext;
         final File filesDir = applicationContext.getFilesDir();
         final String path = new File(filesDir, REPO_NAME).getAbsolutePath();
         Textile.instance().repoPath = path;
         try {
-            Textile.instance().newTextile(path, debug);
-            Textile.instance().createNodeDependents(applicationContext);
-            Textile.instance().lifecycleServiceIntent = new Intent(applicationContext, LifecycleService.class);
-            applicationContext.bindService(Textile.instance().lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
-            applicationContext.startService(Textile.instance().lifecycleServiceIntent);
+            Textile.create(path, debug);
             return null;
         } catch (final Exception e) {
             if (e.getMessage().equals("repo does not exist, initialization is required")) {
-
-                // @todo These should be configurable
-                final int walletWordCount = 12;
-                final String walletPassphrase = "";
-                final int walletAccountIndex = 0;
-
-                final String recoveryPhrase = Textile.instance().newWallet(walletWordCount);
-                final MobileWalletAccount account = Textile.instance().walletAccountAt(recoveryPhrase, walletAccountIndex, walletPassphrase);
+                final String recoveryPhrase = Textile.instance().newWallet(WALLET_WORD_COUNT);
+                final MobileWalletAccount account = Textile.instance()
+                        .walletAccountAt(recoveryPhrase, WALLET_ACCOUNT_INDEX, WALLET_PASSPHRASE);
                 Textile.instance().initRepo(account.getSeed(), path, logToDisk, debug);
-                Textile.instance().newTextile(path, debug);
-                Textile.instance().createNodeDependents(applicationContext);
-                Textile.instance().lifecycleServiceIntent = new Intent(applicationContext, LifecycleService.class);
-                applicationContext.bindService(Textile.instance().lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
-                applicationContext.startService(Textile.instance().lifecycleServiceIntent);
+                Textile.create(path, debug);
                 return recoveryPhrase;
             } else {
                 throw e;
@@ -201,6 +209,16 @@ public class Textile implements LifecycleObserver {
      */
     public static Textile instance() {
         return TextileHelper.INSTANCE;
+    }
+
+    private static void create(String repoPath, boolean debug) throws Exception {
+        Textile.instance().newTextile(repoPath, debug);
+        final Context ctx = Textile.instance().applicationContext;
+        Textile.instance().createNodeDependents(ctx);
+        Textile.instance().lifecycleServiceIntent = new Intent(ctx, LifecycleService.class);
+        ctx.bindService(Textile.instance()
+                .lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
+        ctx.startService(Textile.instance().lifecycleServiceIntent);
     }
 
     private Textile () {

@@ -4,6 +4,7 @@ jobs:
   tests:
     docker:
       - image: circleci/android:api-28-ndk
+      - image: textile/go-textile:latest-cafe
     steps:
       - checkout
       - restore_cache:
@@ -15,9 +16,20 @@ jobs:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}-{{ checksum "textile/build.gradle" }}
+      - setup_remote_docker
+      - run:
+          name: Run proxy
+          command: |
+            docker run -it --name textile-cafe-peer \
+              -p 4001:4001 -p 8081:8081 -p 5050:5050 -p 127.0.0.1:40600:40600 -p 40601:40601 \
+              textile/go-textile:latest-cafe
+          background: true
       - run:
           name: Run Tests
-          command: ./gradlew lint test connectedAndroidTest
+          command: |
+            export TEST_CAFE_ID=$(textile ipfs id)
+            export TEST_CAFE_TOKEN=$(textile tokens create)
+            ./gradlew lint test connectedAndroidTest
 
   publish:
     docker:

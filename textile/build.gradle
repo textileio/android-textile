@@ -32,16 +32,24 @@ repositories {
     }
 }
 
-def getCafeID() {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    return properties.getProperty("cafe.id")
+def getTestCafeID() {
+    String id = System.getenv("TEST_CAFE_ID")
+    if (id == null) {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        id = properties.getProperty("test.cafe.id")
+    }
+    return String.valueOf(id)
 }
 
-def getCafeToken() {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    return properties.getProperty("cafe.token")
+def getTestCafeToken() {
+    String token = System.getenv("TEST_CAFE_TOKEN")
+    if (token == null) {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        token = properties.getProperty("test.cafe.token")
+    }
+    return String.valueOf(token)
 }
 
 android {
@@ -50,13 +58,14 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
+
         versionCode 1
         versionName '1.0'
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
 
-        buildConfigField "String", "CAFE_ID", "\""+getCafeID()+"\""
-        buildConfigField "String", "CAFE_TOKEN", "\""+getCafeToken()+"\""
+        buildConfigField "String", "TEST_CAFE_ID", "\""+getTestCafeID()+"\""
+        buildConfigField "String", "TEST_CAFE_TOKEN", "\""+getTestCafeToken()+"\""
     }
 
     testOptions {

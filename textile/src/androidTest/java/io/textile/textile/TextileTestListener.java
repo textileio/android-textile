@@ -2,7 +2,7 @@ package io.textile.textile;
 
 import io.textile.pb.Model.CafeSyncGroupStatus;
 
-public class TestTextileListener extends BaseTextileEventListener {
+public class TextileTestListener extends BaseTextileEventListener {
 
     @Override
     public void nodeStarted() {
@@ -37,14 +37,13 @@ public class TestTextileListener extends BaseTextileEventListener {
     @Override
     public void syncUpdate(CafeSyncGroupStatus status) {
         super.nodeStarted();
-        long progress;
-        System.out.println(":::::> sync update: ");
+        int progress;
         if (status.getGroupsSizeTotal() > 0) {
-            progress = status.getGroupsSizeComplete() / status.getGroupsSizeTotal();
+            progress = (int) (status.getGroupsSizeComplete() * 100f / status.getGroupsSizeTotal());
         } else {
             progress = 0;
         }
-        System.out.println(":::::> sync update " + status.getId() + ": " + progress*100 + "%");
+        System.out.println(":::::> sync update " + status.getId() + ": " + progress + "%");
     }
 
     @Override

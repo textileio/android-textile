@@ -6,6 +6,7 @@ import net.gotev.uploadservice.BinaryUploadRequest;
 import net.gotev.uploadservice.HttpUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
 import net.gotev.uploadservice.UploadInfo;
+import net.gotev.uploadservice.UploadNotificationConfig;
 import net.gotev.uploadservice.UploadStatusDelegate;
 
 import java.util.Map;
@@ -18,6 +19,8 @@ import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
 import mobile.Callback;
 import mobile.Mobile_;
+
+import static net.gotev.uploadservice.Placeholders.*;
 
 /**
  * Handles HTTP requests queued by the Textile node
@@ -148,6 +151,41 @@ class RequestsHandler {
             request.addHeader(entry.getKey(), entry.getValue());
         }
 
+        UploadNotificationConfig note = new UploadNotificationConfig();
+
+        request.setNotificationConfig(getNotificationConfig(id));
+
         return request.startUpload();
+    }
+
+    private UploadNotificationConfig getNotificationConfig(final String uploadId) {
+        UploadNotificationConfig config = new UploadNotificationConfig();
+
+//        PendingIntent clickIntent = PendingIntent.getActivity(
+//                this, 1, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+
+//        config.setTitleForAllStatuses(getString(title))
+//                .setClickIntentForAllStatuses(clickIntent)
+//                .setClearOnActionForAllStatuses(true);
+
+        config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
+                + " at " + UPLOAD_RATE + " - " + PROGRESS;
+//        config.getProgress().iconResourceID = R.drawable.ic_upload;
+//        config.getProgress().iconColorResourceID = Color.BLUE;
+
+        config.getCompleted().autoClear = true;
+        config.getCompleted().message = "Upload completed successfully in " + ELAPSED_TIME;
+//        config.getCompleted().iconResourceID = R.drawable.ic_upload_success;
+//        config.getCompleted().iconColorResourceID = Color.GREEN;
+
+        config.getError().message = "Error while uploading";
+//        config.getError().iconResourceID = R.drawable.ic_upload_error;
+//        config.getError().iconColorResourceID = Color.RED;
+
+        config.getCancelled().message = "Upload has been cancelled";
+//        config.getCancelled().iconResourceID = R.drawable.ic_cancelled;
+//        config.getCancelled().iconColorResourceID = Color.YELLOW;
+
+        return config;
     }
 }

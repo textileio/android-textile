@@ -44,7 +44,7 @@ public class TextileTest {
         final String phrase = Textile.initialize(ctx, true, false);
         assertNotEquals("", phrase);
 
-        Textile.instance().addEventListener(new TestTextileListener());
+        Textile.instance().addEventListener(new TextileTestListener());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class TextileTest {
     @Test
     public void test4_registerCafe() throws Exception {
         Thread.sleep(5000);
-        Textile.instance().cafes.register(BuildConfig.CAFE_ID, BuildConfig.CAFE_TOKEN);
+        Textile.instance().cafes.register(BuildConfig.TEST_CAFE_ID, BuildConfig.TEST_CAFE_TOKEN);
     }
 
     @Test
@@ -93,6 +93,17 @@ public class TextileTest {
     }
 
     @Test
+    public void test5_addMessage() throws Exception {
+        final Model.Thread thread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
+                .setName("data")
+                .setKey(UUID.randomUUID().toString())
+                .build());
+
+        String blockId = Textile.instance().messages.add(thread.getId(), "hello");
+        assertNotEquals("", blockId);
+    }
+
+    @Test
     public void test5_addData() throws Exception {
         final Model.Thread thread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
                 .setName("data")
@@ -100,8 +111,6 @@ public class TextileTest {
                 .setSchema(AddThreadConfig.Schema.newBuilder()
                         .setPreset(AddThreadConfig.Schema.Preset.BLOB)
                         .build())
-                .setType(Model.Thread.Type.PRIVATE)
-                .setSharing(Model.Thread.Sharing.NOT_SHARED)
                 .build());
 
         final AtomicBoolean ready = new AtomicBoolean();
@@ -132,8 +141,6 @@ public class TextileTest {
                 .setSchema(AddThreadConfig.Schema.newBuilder()
                         .setPreset(AddThreadConfig.Schema.Preset.MEDIA)
                         .build())
-                .setType(Model.Thread.Type.OPEN)
-                .setSharing(Model.Thread.Sharing.SHARED)
                 .build());
 
         // 1. Add a single file
@@ -179,12 +186,11 @@ public class TextileTest {
             }
         });
 
-        await().atMost(30, SECONDS).untilTrue(ready);
+        await().atMost(60, SECONDS).untilTrue(ready);
     }
 
     @Test
     public void test99_destroy() throws Exception {
-        Thread.sleep(60000);
         Textile.instance().destroy();
     }
 
