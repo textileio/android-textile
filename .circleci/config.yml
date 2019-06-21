@@ -2,8 +2,8 @@ version: 2.1
 
 jobs:
   tests:
-    macos:
-      xcode: '10.2.1'
+    docker:
+      - image: circleci/android:api-28-ndk
     steps:
       - checkout
       - restore_cache:
@@ -16,27 +16,8 @@ jobs:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}-{{ checksum "textile/build.gradle" }}
       - run:
-          name: Install Android
-          command: |
-            brew cask install adoptopenjdk8
-            brew cask install android-sdk
-            echo "export ANDROID_HOME=/usr/local/share/android-sdk" >> ~/.bash_profile
-            source ~/.bash_profile
-            touch ~/.android/repositories.cfg
-            sdkmanager --update
-            sdkmanager "system-images;android-28;google_apis;x86"
-      - setup_remote_docker
-      - run:
-          name: Run Cafe
-          command: |
-            docker run -it --name textile-cafe-peer \
-              -p 4001:4001 -p 8081:8081 -p 5050:5050 -p 127.0.0.1:40600:40600 -p 40601:40601 \
-              textile/go-textile:latest-cafe
-          background: true
-      - run:
           name: Run Tests
-          command: |
-            ./gradlew lint test
+          command: ./gradlew lint test
 
   publish:
     docker:
