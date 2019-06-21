@@ -19,7 +19,7 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}-{{ checksum "textile/build.gradle" }}
       - setup_remote_docker
       - run:
-          name: Run proxy
+          name: Run Cafe
           command: |
             docker run -it --name textile-cafe-peer \
               -p 4001:4001 -p 8081:8081 -p 5050:5050 -p 127.0.0.1:40600:40600 -p 40601:40601 \
@@ -28,9 +28,32 @@ jobs:
       - run:
           name: Run Tests
           command: |
+            $ANDROID_SDK/tools/emulator -avd Nexus_5X_API_23 -wipe-data &
+            EMULATOR_PID=$!
+
+            # Wait for Android to finish booting
+            WAIT_CMD="$ANDROID_SDK/platform-tools/adb wait-for-device shell getprop init.svc.bootanim"
+            until $WAIT_CMD | grep -m 1 stopped; do
+              echo "Waiting..."
+              sleep 1
+            done
+
+            # Unlock the Lock Screen
+            $ANDROID_SDK/platform-tools/adb shell input keyevent 82
+
+            # Clear and capture logcat
+            $ANDROID_SDK/platform-tools/adb logcat -c
+            $ANDROID_SDK/platform-tools/adb logcat > build/logcat.log &
+            LOGCAT_PID=$!
+
+            # Run the tests
             export TEST_CAFE_ID=$(textile ipfs id)
             export TEST_CAFE_TOKEN=$(textile tokens create)
-            ./gradlew lint test connectedAndroidTest
+            ./gradlew lint test connectedAndroidTest -i
+
+            # Stop the background processes
+            kill $LOGCAT_PID
+            kill $EMULATOR_PID
 
   publish:
     docker:
