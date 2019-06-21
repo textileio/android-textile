@@ -4,16 +4,10 @@ import android.content.Context;
 
 import net.gotev.uploadservice.BinaryUploadRequest;
 import net.gotev.uploadservice.HttpUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
+import net.gotev.uploadservice.Logger;
 import net.gotev.uploadservice.UploadNotificationConfig;
-import net.gotev.uploadservice.UploadStatusDelegate;
 
 import java.util.Map;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
@@ -30,18 +24,11 @@ class RequestsHandler {
     private Mobile_ node;
     private Context applicationContext;
     private int batchSize;
-    private Logger logger;
 
     RequestsHandler(final Mobile_ node, final Context applicationContext, final int batchSize) {
         this.node = node;
         this.applicationContext = applicationContext;
         this.batchSize = batchSize;
-
-        this.logger = Logger.getLogger("textile.requests");
-        this.logger.setLevel(Level.ALL);
-        final ConsoleHandler handler = new ConsoleHandler();
-        handler.setFormatter(new SimpleFormatter());
-        this.logger.addHandler(handler);
     }
 
     void flush() {
@@ -67,7 +54,7 @@ class RequestsHandler {
                             try {
                                 node.cafeRequestNotPending(id);
                             } catch (Exception ee) {
-                                logger.warning(ee.getMessage());
+                                Logger.error(getClass().getSimpleName(), ee.getMessage());
                             }
                             return;
                         }
@@ -78,81 +65,28 @@ class RequestsHandler {
                             try {
                                 node.cafeRequestNotPending(id);
                             } catch (Exception eee) {
-                                logger.warning(eee.getMessage());
+                                Logger.error(getClass().getSimpleName(), eee.getMessage());
                             }
                         }
                     }
                 });
             }
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            Logger.error(getClass().getSimpleName(), e.getMessage());
         }
     }
 
     private String startUpload(final String id, final CafeHTTPRequest req) throws Exception {
-        UploadStatusDelegate statusDelegate = new UploadStatusDelegate() {
-            @Override
-            public void onProgress(Context context, UploadInfo info) {
-                try {
-                    node.updateCafeRequestProgress(id, info.getUploadedBytes(), info.getTotalBytes());
-                } catch (final Exception e) {
-                    logger.warning(e.getMessage());
-                }
-            }
-
-            @Override
-            public void onError(Context context, UploadInfo info, ServerResponse response, Exception exception) {
-                String message = "Request failed (";
-                if (response != null) {
-                    message += "code=" + response.getHttpCode() + " ";
-                    message += "body=" + response.getBodyAsString() + " ";
-                }
-
-                if (exception != null) {
-                    message += "error=" + exception.getMessage();
-                } else {
-                    message += "error=unknown";
-                }
-                message += ")";
-
-                try {
-                    node.failCafeRequest(id, message);
-                } catch (final Exception e) {
-                    logger.warning(e.getMessage());
-                }
-            }
-
-            @Override
-            public void onCompleted(Context context, UploadInfo info, ServerResponse response) {
-                try {
-                    node.completeCafeRequest(id);
-                } catch (final Exception e) {
-                    logger.warning(e.getMessage());
-                }
-            }
-
-            @Override
-            public void onCancelled(Context context, UploadInfo info) {
-                try {
-                    node.failCafeRequest(id, "Request cancelled");
-                } catch (final Exception e) {
-                    logger.warning(e.getMessage());
-                }
-            }
-        };
-
         HttpUploadRequest request = new BinaryUploadRequest(applicationContext, id, req.getUrl())
                 .setFileToUpload(req.getPath())
                 .setMethod(req.getType().toString())
-                .setMaxRetries(2)
-                .setDelegate(statusDelegate);
+                .setMaxRetries(2);
 
         for (Map.Entry<String,String> entry : req.getHeadersMap().entrySet()) {
             request.addHeader(entry.getKey(), entry.getValue());
         }
 
         UploadNotificationConfig note = new UploadNotificationConfig();
-
         request.setNotificationConfig(getNotificationConfig(id));
 
         return request.startUpload();
