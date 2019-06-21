@@ -74,7 +74,6 @@ public class TextileTest {
 
     @Test
     public void test4_registerCafe() throws Exception {
-        Thread.sleep(5000);
         Textile.instance().cafes.register(BuildConfig.TEST_CAFE_ID, BuildConfig.TEST_CAFE_TOKEN);
     }
 
@@ -191,6 +190,7 @@ public class TextileTest {
 
     @Test
     public void test99_destroy() throws Exception {
+        Thread.sleep(20000);
         Textile.instance().destroy();
     }
 

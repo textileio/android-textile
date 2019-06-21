@@ -145,6 +145,11 @@ public class Textile implements LifecycleObserver {
     public static int WALLET_ACCOUNT_INDEX = 0;
 
     /**
+     * The number of threads to use to handle concurrent uploads
+     */
+    public static int UPLOAD_POOL_SIZE = 8;
+
+    /**
      * The number of requests to write to disk before adding to the background queue
      */
     public static int REQUESTS_BATCH_SIZE = 16;
@@ -153,11 +158,16 @@ public class Textile implements LifecycleObserver {
     private MessageHandler messageHandler = new MessageHandler(eventsListeners);
 
     private Context applicationContext;
+
     private Mobile_ node;
-    private RequestsHandler requestsHandler;
-    private UploadServiceReceiver uploadServiceReceiver;
+
     private Intent lifecycleServiceIntent;
     private LifecycleService lifecycleService;
+
+    private RequestsHandler requestsHandler;
+    private Intent uploadReceiverServiceIntent;
+    private UploadReceiverService uploadReceiverService;
+
     private AppState appState = AppState.None;
 
     private static class TextileHelper {
@@ -182,11 +192,14 @@ public class Textile implements LifecycleObserver {
 
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         UploadService.HTTP_STACK = new OkHttpStack();
+        UploadService.UPLOAD_POOL_SIZE = Textile.UPLOAD_POOL_SIZE;
 
         Textile.instance().applicationContext = applicationContext;
+
         final File filesDir = applicationContext.getFilesDir();
         final String path = new File(filesDir, REPO_NAME).getAbsolutePath();
         Textile.instance().repoPath = path;
+
         try {
             Textile.create(path, debug);
             return null;
@@ -217,11 +230,16 @@ public class Textile implements LifecycleObserver {
 
         Textile.instance().newTextile(repoPath, debug);
         Textile.instance().createNodeDependents(ctx);
-        Textile.instance().lifecycleServiceIntent = new Intent(ctx, LifecycleService.class);
 
+        Textile.instance().lifecycleServiceIntent = new Intent(ctx, LifecycleService.class);
         ctx.bindService(Textile.instance()
-                .lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
+                .lifecycleServiceIntent, Textile.instance().lifecycleConnection, Context.BIND_AUTO_CREATE);
         ctx.startService(Textile.instance().lifecycleServiceIntent);
+
+        Textile.instance().uploadReceiverServiceIntent = new Intent(ctx, UploadReceiverService.class);
+        ctx.bindService(Textile.instance()
+                .uploadReceiverServiceIntent, Textile.instance().uploadReceiverConnection, Context.BIND_AUTO_CREATE);
+        ctx.startService(Textile.instance().uploadReceiverServiceIntent);
     }
 
     private Textile () {
@@ -334,7 +352,7 @@ public class Textile implements LifecycleObserver {
      */
     public void destroy() throws Exception {
         ProcessLifecycleOwner.get().getLifecycle().removeObserver(this);
-        applicationContext.unbindService(connection);
+        applicationContext.unbindService(lifecycleConnection);
         lifecycleService.stopNodeImmediately();
         lifecycleService = null;
         lifecycleServiceIntent = null;
@@ -343,8 +361,9 @@ public class Textile implements LifecycleObserver {
         node = null;
         applicationContext = null;
 
+        uploadReceiverService = null;
+        uploadReceiverServiceIntent = null;
         requestsHandler = null;
-        uploadServiceReceiver = null;
 
         account = null;
         cafes = null;
@@ -385,7 +404,6 @@ public class Textile implements LifecycleObserver {
 
     private void createNodeDependents(Context applicationContext) {
         requestsHandler = new RequestsHandler(node, applicationContext, REQUESTS_BATCH_SIZE);
-        uploadServiceReceiver = new UploadServiceReceiver(node);
 
         account = new Account(node);
         cafes = new Cafes(node);
@@ -434,7 +452,7 @@ public class Textile implements LifecycleObserver {
         }
     }
 
-    private ServiceConnection connection = new ServiceConnection() {
+    private ServiceConnection lifecycleConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             LifecycleService.LifecycleBinder binder = (LifecycleService.LifecycleBinder) service;
@@ -450,7 +468,20 @@ public class Textile implements LifecycleObserver {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            Logger.info(getClass().getSimpleName(), name + " disconnected");
+        }
+    };
 
+    private ServiceConnection uploadReceiverConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            UploadReceiverService.UploadReceiverBinder binder = (UploadReceiverService.UploadReceiverBinder) service;
+            uploadReceiverService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Logger.info(getClass().getSimpleName(), name + " disconnected");
         }
     };
 }

@@ -6,12 +6,7 @@
 
     <application android:usesCleartextTraffic="true">
         <service android:name=".LifecycleService" android:exported="false" />
+        <service android:name=".UploadReceiverService" android:exported="false" />
         <service android:name="net.gotev.uploadservice.UploadService" android:exported="false" />
-
-        <receiver android:name=".UploadServiceReceiver" android:exported="false">
-            <intent-filter>
-                <action android:name="io.textile.textile.uploadservice.broadcast.status" />
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>

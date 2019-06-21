@@ -24,6 +24,38 @@ public class Cafes extends NodeDependent {
     }
 
     /**
+     * Used to deregister a previously registered Textile Cafe
+     * @param peerId The peer id of the cafe you want to deregister
+     * @throws Exception The exception that occurred
+     */
+    public void deregister(String peerId) throws Exception {
+        node.deregisterCafe(peerId);
+    }
+
+    /**
+     * Used to refresh an individual Textile Cafe session
+     * @param peerId The peer id of the cafe who's session you want to refresh
+     * @return The refreshed cafe session
+     * @throws Exception The exception that occurred
+     */
+    public CafeSession refreshSession(String peerId) throws Exception {
+        /*
+         * refreshCafeSession returns null if no session is found.
+         * Be sure we return null in that case and not a default CafeSession
+         */
+        byte[] bytes = node.refreshCafeSession(peerId);
+        return bytes != null ? CafeSession.parseFrom(bytes) : null;
+    }
+
+    /**
+     * Triggers the async process of checking for messages from all registered cafes
+     * @throws Exception The exception that occurred
+     */
+    public void checkMessages() throws Exception {
+        node.checkCafeMessages();
+    }
+
+    /**
      * Fetches the CafeSession object for a previously registered Textile Cafe node
      * @param peerId The peer id of the previously registered cafe node
      * @return The CafeSession for the previously registered cafe
@@ -48,35 +80,27 @@ public class Cafes extends NodeDependent {
         return CafeSessionList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
-    /**
-     * Used to refresh an individual Textile Cafe session
-     * @param peerId The peer id of the cafe who's session you want to refresh
-     * @return The refreshed cafe session
-     * @throws Exception The exception that occurred
-     */
-    public CafeSession refreshSession(String peerId) throws Exception {
-        /*
-         * refreshCafeSession returns null if no session is found.
-         * Be sure we return null in that case and not a default CafeSession
-         */
-        byte[] bytes = node.refreshCafeSession(peerId);
-        return bytes != null ? CafeSession.parseFrom(bytes) : null;
+    byte[] cafeRequests(long limit) throws Exception {
+        return node.cafeRequests(limit);
     }
 
-    /**
-     * Used to deregister a previously registered Textile Cafe
-     * @param peerId The peer id of the cafe you want to deregister
-     * @throws Exception The exception that occurred
-     */
-    public void deregister(String peerId) throws Exception {
-        node.deregisterCafe(peerId);
+    void cafeRequestPending(String id) throws Exception {
+        node.cafeRequestPending(id);
     }
 
-    /**
-     * Triggers the async process of checking for messages from all registered cafes
-     * @throws Exception The exception that occurred
-     */
-    public void checkMessages() throws Exception {
-        node.checkCafeMessages();
+    void cafeRequestNotPending(String id) throws Exception {
+        node.cafeRequestNotPending(id);
+    }
+
+    void completeCafeRequest(String id) throws Exception {
+        node.completeCafeRequest(id);
+    }
+
+    void failCafeRequest(String id, String reason) throws Exception {
+        node.failCafeRequest(id, reason);
+    }
+
+    void updateCafeRequestProgress(String id, long transferred, long total) throws Exception {
+        node.updateCafeRequestProgress(id, transferred, total);
     }
 }

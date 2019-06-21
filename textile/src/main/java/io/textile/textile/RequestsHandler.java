@@ -1,6 +1,8 @@
 package io.textile.textile;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 
 import net.gotev.uploadservice.BinaryUploadRequest;
 import net.gotev.uploadservice.HttpUploadRequest;
@@ -95,12 +97,12 @@ class RequestsHandler {
     private UploadNotificationConfig getNotificationConfig(final String uploadId) {
         UploadNotificationConfig config = new UploadNotificationConfig();
 
-//        PendingIntent clickIntent = PendingIntent.getActivity(
-//                this, 1, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent clickIntent = PendingIntent.getActivity(applicationContext, 1, new Intent(
+                applicationContext, UploadReceiverService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
-//        config.setTitleForAllStatuses(getString(title))
-//                .setClickIntentForAllStatuses(clickIntent)
-//                .setClearOnActionForAllStatuses(true);
+        config.setTitleForAllStatuses("Textile")
+                .setClickIntentForAllStatuses(clickIntent)
+                .setClearOnActionForAllStatuses(true);
 
         config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
                 + " at " + UPLOAD_RATE + " - " + PROGRESS;
