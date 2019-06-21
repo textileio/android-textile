@@ -152,10 +152,10 @@ public class Textile implements LifecycleObserver {
     private HashSet<TextileEventListener> eventsListeners = new HashSet<>();
     private MessageHandler messageHandler = new MessageHandler(eventsListeners);
 
+    private Context applicationContext;
     private Mobile_ node;
     private RequestsHandler requestsHandler;
-    private Context applicationContext;
-    private Intent uploadServiceIntent;
+    private UploadServiceReceiver uploadServiceReceiver;
     private Intent lifecycleServiceIntent;
     private LifecycleService lifecycleService;
     private AppState appState = AppState.None;
@@ -176,11 +176,12 @@ public class Textile implements LifecycleObserver {
         if (Textile.instance().node != null) {
             return null;
         }
-        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-        UploadService.HTTP_STACK = new OkHttpStack();
         if (debug) {
             Logger.setLogLevel(Logger.LogLevel.DEBUG);
         }
+
+        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
+        UploadService.HTTP_STACK = new OkHttpStack();
 
         Textile.instance().applicationContext = applicationContext;
         final File filesDir = applicationContext.getFilesDir();
@@ -212,10 +213,12 @@ public class Textile implements LifecycleObserver {
     }
 
     private static void create(String repoPath, boolean debug) throws Exception {
-        Textile.instance().newTextile(repoPath, debug);
         final Context ctx = Textile.instance().applicationContext;
+
+        Textile.instance().newTextile(repoPath, debug);
         Textile.instance().createNodeDependents(ctx);
         Textile.instance().lifecycleServiceIntent = new Intent(ctx, LifecycleService.class);
+
         ctx.bindService(Textile.instance()
                 .lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
         ctx.startService(Textile.instance().lifecycleServiceIntent);
@@ -341,6 +344,7 @@ public class Textile implements LifecycleObserver {
         applicationContext = null;
 
         requestsHandler = null;
+        uploadServiceReceiver = null;
 
         account = null;
         cafes = null;
@@ -381,6 +385,7 @@ public class Textile implements LifecycleObserver {
 
     private void createNodeDependents(Context applicationContext) {
         requestsHandler = new RequestsHandler(node, applicationContext, REQUESTS_BATCH_SIZE);
+        uploadServiceReceiver = new UploadServiceReceiver(node);
 
         account = new Account(node);
         cafes = new Cafes(node);
