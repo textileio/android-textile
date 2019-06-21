@@ -4,14 +4,15 @@ jobs:
   tests:
     docker:
       - image: circleci/android:api-28-ndk
-      - image: textile/go-textile:latest-cafe
     steps:
       - checkout
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}-{{ checksum "textile/build.gradle" }}
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies
+          command: |
+            touch local.properties
+            ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
