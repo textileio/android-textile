@@ -33,23 +33,23 @@ repositories {
 }
 
 def getTestCafeID() {
-    String id = System.getenv("TEST_CAFE_ID")
-    if (id == null) {
+    try {
         Properties properties = new Properties()
         properties.load(project.rootProject.file('local.properties').newDataInputStream())
-        id = properties.getProperty("test.cafe.id")
+        return properties.getProperty('test.cafe.id')
+    } catch (Exception e) {
+        return String.valueOf(System.getenv('TEST_CAFE_ID'))
     }
-    return String.valueOf(id)
 }
 
 def getTestCafeToken() {
-    String token = System.getenv("TEST_CAFE_TOKEN")
-    if (token == null) {
+    try {
         Properties properties = new Properties()
         properties.load(project.rootProject.file('local.properties').newDataInputStream())
-        token = properties.getProperty("test.cafe.token")
+        return properties.getProperty('test.cafe.token')
+    } catch (Exception e) {
+        return String.valueOf(System.getenv('TEST_CAFE_TOKEN'))
     }
-    return String.valueOf(token)
 }
 
 android {
@@ -64,8 +64,8 @@ android {
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
 
-        buildConfigField "String", "TEST_CAFE_ID", "\""+getTestCafeID()+"\""
-        buildConfigField "String", "TEST_CAFE_TOKEN", "\""+getTestCafeToken()+"\""
+        buildConfigField 'String', 'TEST_CAFE_ID', '"'+getTestCafeID()+'"'
+        buildConfigField 'String', 'TEST_CAFE_TOKEN', '"'+getTestCafeToken()+'"'
     }
 
     testOptions {
@@ -176,8 +176,8 @@ artifacts {
 }
 
 bintray {
-    user = String.valueOf(System.getenv("BINTRAY_USERNAME"))
-	key = String.valueOf(System.getenv("BINTRAY_API_KEY"))
+    user = String.valueOf(System.getenv('BINTRAY_USERNAME'))
+	key = String.valueOf(System.getenv('BINTRAY_API_KEY'))
 
     configurations = ['archives']
     pkg {
