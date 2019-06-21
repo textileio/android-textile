@@ -1,33 +1,15 @@
 package io.textile.textile;
 
 import io.textile.pb.Model.Block;
-import io.textile.pb.View;
 import io.textile.pb.View.FilesList;
-import mobile.Callback;
+import mobile.DataCallback;
 import mobile.Mobile_;
+import mobile.ProtoCallback;
 
 /**
  * Provides access to Textile files related APIs
  */
 public class Files extends NodeDependent {
-
-    /**
-     * Interface representing an object that can be
-     * called with a Block result
-     */
-    public interface BlockHandler {
-        /**
-         * Called with a block result
-         * @param block The block
-         */
-        void onComplete(Block block);
-
-        /**
-         * Called in the case of an error
-         * @param e The exception
-         */
-        void onError(Exception e);
-    }
 
     Files(final Mobile_ node) {
         super(node);
@@ -39,16 +21,16 @@ public class Files extends NodeDependent {
      * @param threadId The thread id the data will be added to
      * @param handler An object that will get called with the resulting block
      */
-    public void addData(byte[] data, String threadId, String caption, final BlockHandler handler) {
-        node.addData(data, threadId, caption, new Callback() {
+    public void addData(byte[] data, String threadId, String caption, final Handlers.BlockHandler handler) {
+        node.addData(data, threadId, caption, new ProtoCallback() {
             @Override
-            public void call(byte[] bytes, Exception e) {
+            public void call(byte[] data, Exception e) {
                 if (e != null) {
                     handler.onError(e);
                     return;
                 }
                 try {
-                    handler.onComplete(Block.parseFrom(bytes));
+                    handler.onComplete(Block.parseFrom(data));
                 } catch (Exception exception) {
                     handler.onError(exception);
                 }
@@ -58,20 +40,20 @@ public class Files extends NodeDependent {
 
     /**
      * Add file(s) to to a Textile thread
-     * @param files A list of file paths
+     * @param files A comma-separated list of file paths
      * @param threadId The thread id the data will be added to
      * @param handler An object that will get called with the resulting block
      */
-    public void addFiles(View.Strings files, String threadId, String caption, final BlockHandler handler) {
-        node.addFiles(files.toByteArray(), threadId, caption, new Callback() {
+    public void addFiles(String files, String threadId, String caption, final Handlers.BlockHandler handler) {
+        node.addFiles(files, threadId, caption, new ProtoCallback() {
             @Override
-            public void call(byte[] bytes, Exception e) {
+            public void call(byte[] data, Exception e) {
                 if (e != null) {
                     handler.onError(e);
                     return;
                 }
                 try {
-                    handler.onComplete(Block.parseFrom(bytes));
+                    handler.onComplete(Block.parseFrom(data));
                 } catch (Exception exception) {
                     handler.onError(exception);
                 }
@@ -85,16 +67,16 @@ public class Files extends NodeDependent {
      * @param threadId The thread id the data will be added to
      * @param handler An object that will get called with the resulting block
      */
-    public void shareFiles(String hash, String threadId, String caption, final BlockHandler handler) {
-        node.shareFiles(hash, threadId, caption, new Callback() {
+    public void shareFiles(String hash, String threadId, String caption, final Handlers.BlockHandler handler) {
+        node.shareFiles(hash, threadId, caption, new ProtoCallback() {
             @Override
-            public void call(byte[] bytes, Exception e) {
+            public void call(byte[] data, Exception e) {
                 if (e != null) {
                     handler.onError(e);
                     return;
                 }
                 try {
-                    handler.onComplete(Block.parseFrom(bytes));
+                    handler.onComplete(Block.parseFrom(data));
                 } catch (Exception exception) {
                     handler.onError(exception);
                 }
@@ -118,22 +100,46 @@ public class Files extends NodeDependent {
     /**
      * Get raw data for a file hash
      * @param hash The hash to return data for
-     * @return The base64 string of data
-     * @throws Exception The exception that occurred
+     * @param handler An object that will get called with the resulting data and media type
      */
-    public String content(String hash) throws Exception {
-        return node.fileContent(hash);
+    public void content(String hash, final Handlers.DataHandler handler) {
+        node.fileContent(hash, new DataCallback() {
+            @Override
+            public void call(byte[] data, String media, Exception e) {
+                if (e != null) {
+                    handler.onError(e);
+                    return;
+                }
+                try {
+                    handler.onComplete(data, media);
+                } catch (Exception exception) {
+                    handler.onError(exception);
+                }
+            }
+        });
     }
 
     /**
      * Helper function to return the most appropriate image data for a minimun image width
      * @param path The IPFS path that includes image data for various image sizes
      * @param minWidth The width of the image the data will be used for
-     * @return The base64 string of image data
-     * @throws Exception The exception that occurred
+     * @param handler An object that will get called with the resulting data and media type
      */
-    public String imageContentForMinWidth(String path, long minWidth) throws Exception {
-        return node.imageFileContentForMinWidth(path, minWidth);
+    public void imageContentForMinWidth(String path, long minWidth, final Handlers.DataHandler handler) {
+        node.imageFileContentForMinWidth(path, minWidth, new DataCallback() {
+            @Override
+            public void call(byte[] data, String media, Exception e) {
+                if (e != null) {
+                    handler.onError(e);
+                    return;
+                }
+                try {
+                    handler.onComplete(data, media);
+                } catch (Exception exception) {
+                    handler.onError(exception);
+                }
+            }
+        });
     }
 
 }

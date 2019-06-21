@@ -73,8 +73,22 @@ public class TextileTest {
     }
 
     @Test
-    public void test4_registerCafe() throws Exception {
-        Textile.instance().cafes.register(BuildConfig.TEST_CAFE_ID, BuildConfig.TEST_CAFE_TOKEN);
+    public void test4_registerCafe() {
+        final AtomicBoolean ready = new AtomicBoolean();
+        Textile.instance().cafes.register(BuildConfig.TEST_CAFE_ID, BuildConfig.TEST_CAFE_TOKEN, new Handlers.ErrorHandler() {
+            @Override
+            public void onComplete() {
+                ready.getAndSet(true);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                assertNull(e);
+                ready.getAndSet(true);
+            }
+        });
+
+        await().atMost(10, SECONDS).untilTrue(ready);
     }
 
     @Test
@@ -113,7 +127,7 @@ public class TextileTest {
                 .build());
 
         final AtomicBoolean ready = new AtomicBoolean();
-        Textile.instance().files.addData("test".getBytes(), thread.getId(), "caption", new Files.BlockHandler() {
+        Textile.instance().files.addData("test".getBytes(), thread.getId(), "caption", new Handlers.BlockHandler() {
             @Override
             public void onComplete(Model.Block b) {
                 assertNotEquals("", b.getId());
@@ -143,12 +157,10 @@ public class TextileTest {
                 .build());
 
         // 1. Add a single file
-        final View.Strings input1 = View.Strings.newBuilder()
-                .addValues(TextileTest.getCacheFile(ctx, "TEST0.JPG").getAbsolutePath())
-                .build();
+        final String input1 = TextileTest.getCacheFile(ctx, "TEST0.JPG").getAbsolutePath();
 
         final AtomicBoolean ready = new AtomicBoolean();
-        Textile.instance().files.addFiles(input1, thread.getId(), "caption", new Files.BlockHandler() {
+        Textile.instance().files.addFiles(input1, thread.getId(), "caption", new Handlers.BlockHandler() {
             @Override
             public void onComplete(Model.Block block) {
                 assertNotEquals("", block.getId());
@@ -165,13 +177,11 @@ public class TextileTest {
         await().atMost(30, SECONDS).untilTrue(ready);
 
         // 2. Add two files at once
-        final View.Strings input2 = View.Strings.newBuilder()
-                .addValues(TextileTest.getCacheFile(ctx, "TEST0.JPG").getAbsolutePath())
-                .addValues(TextileTest.getCacheFile(ctx, "TEST1.JPG").getAbsolutePath())
-                .build();
+        final String input2 = TextileTest.getCacheFile(ctx, "TEST1.JPG").getAbsolutePath();
 
         ready.getAndSet(false);
-        Textile.instance().files.addFiles(input2, thread.getId(), "caption", new Files.BlockHandler() {
+        Textile.instance().files.addFiles(
+                input1 + "," + input2, thread.getId(), "caption", new Handlers.BlockHandler() {
             @Override
             public void onComplete(Model.Block block) {
                 assertNotEquals("", block.getId());

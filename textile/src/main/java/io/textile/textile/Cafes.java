@@ -2,7 +2,9 @@ package io.textile.textile;
 
 import io.textile.pb.Model.CafeSessionList;
 import io.textile.pb.Model.CafeSession;
+import mobile.Callback;
 import mobile.Mobile_;
+import mobile.ProtoCallback;
 
 /**
  * Provides access to Textile cafes related APIs
@@ -17,34 +19,71 @@ public class Cafes extends NodeDependent {
      * Used to register a remote Textile Cafe node with the local Textile node
      * @param host The peer id of the cafe being registered
      * @param token The API token for the cafe being registered
-     * @throws Exception The exception that occurred
+     * @param handler An object that will get called with the operation is complete
      */
-    public void register(String peerId, String token) throws Exception {
-        node.registerCafe(peerId, token);
+    public void register(String peerId, String token, final Handlers.ErrorHandler handler) {
+        node.registerCafe(peerId, token, new Callback() {
+            @Override
+            public void call(Exception e) {
+                if (e != null) {
+                    handler.onError(e);
+                    return;
+                }
+                try {
+                    handler.onComplete();
+                } catch (Exception exception) {
+                    handler.onError(exception);
+                }
+            }
+        });
     }
 
     /**
      * Used to deregister a previously registered Textile Cafe
      * @param peerId The peer id of the cafe you want to deregister
-     * @throws Exception The exception that occurred
+     * @param handler An object that will get called with the operation is complete
      */
-    public void deregister(String peerId) throws Exception {
-        node.deregisterCafe(peerId);
+    public void deregister(String peerId, final Handlers.ErrorHandler handler) {
+        node.deregisterCafe(peerId, new Callback() {
+            @Override
+            public void call(Exception e) {
+                if (e != null) {
+                    handler.onError(e);
+                    return;
+                }
+                try {
+                    handler.onComplete();
+                } catch (Exception exception) {
+                    handler.onError(exception);
+                }
+            }
+        });
     }
 
     /**
      * Used to refresh an individual Textile Cafe session
      * @param peerId The peer id of the cafe who's session you want to refresh
-     * @return The refreshed cafe session
-     * @throws Exception The exception that occurred
+     * @param handler An object that will get called with the result of the operation
      */
-    public CafeSession refreshSession(String peerId) throws Exception {
-        /*
-         * refreshCafeSession returns null if no session is found.
-         * Be sure we return null in that case and not a default CafeSession
-         */
-        byte[] bytes = node.refreshCafeSession(peerId);
-        return bytes != null ? CafeSession.parseFrom(bytes) : null;
+    public void refreshSession(String peerId, final Handlers.CafeSessionHandler handler) {
+        node.refreshCafeSession(peerId, new ProtoCallback() {
+            @Override
+            public void call(byte[] data, Exception e) {
+                if (e != null) {
+                    handler.onError(e);
+                    return;
+                }
+                if (data == null) {
+                    handler.onComplete(null);
+                    return;
+                }
+                try {
+                    handler.onComplete(CafeSession.parseFrom(data));
+                } catch (Exception exception) {
+                    handler.onError(exception);
+                }
+            }
+        });
     }
 
     /**

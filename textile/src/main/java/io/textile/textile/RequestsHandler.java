@@ -13,8 +13,8 @@ import java.util.Map;
 
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
-import mobile.Callback;
 import mobile.Mobile_;
+import mobile.ProtoCallback;
 
 import static net.gotev.uploadservice.Placeholders.*;
 
@@ -49,7 +49,7 @@ class RequestsHandler {
 
             // 3. Write each request to disk
             for (final String id : ids.getValuesList()) {
-                node.writeCafeRequest(id, new Callback() {
+                node.writeCafeRequest(id, new ProtoCallback() {
                     @Override
                     public void call(byte[] req, Exception e) {
                         if (e != null) {

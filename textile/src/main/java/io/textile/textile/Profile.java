@@ -3,8 +3,8 @@ package io.textile.textile;
 import io.textile.pb.Model;
 import io.textile.pb.Model.Peer;
 import io.textile.pb.Model.Thread;
-import mobile.Callback;
 import mobile.Mobile_;
+import mobile.ProtoCallback;
 
 /**
  * Provides access to Textile profile related APIs
@@ -57,8 +57,8 @@ public class Profile extends NodeDependent {
      * @param file The image file to use
      * @param handler An object that will get called with the resulting block
      */
-    public void setAvatar(String file, final Files.BlockHandler handler) {
-        node.setAvatar(file, new Callback() {
+    public void setAvatar(String file, final Handlers.BlockHandler handler) {
+        node.setAvatar(file, new ProtoCallback() {
             @Override
             public void call(byte[] bytes, Exception e) {
                 if (e != null) {

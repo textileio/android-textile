@@ -83,8 +83,8 @@ android {
 }
 
 dependencies {
-    api 'io.textile:pb:0.4.2'
-    api 'io.textile:mobile:0.4.2'
+    api 'io.textile:pb:0.5.0'
+    api 'io.textile:mobile:0.5.0'
     implementation 'net.gotev:uploadservice-okhttp:3.4.2'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     implementation 'com.android.support:support-media-compat:28.0.0'
