@@ -155,7 +155,7 @@ public class Textile implements LifecycleObserver {
      */
     public static int REQUESTS_BATCH_SIZE = 16;
 
-    Context applicationContext;
+    private Context applicationContext;
 
     private HashSet<TextileEventListener> eventsListeners = new HashSet<>();
     private MessageHandler messageHandler = new MessageHandler(eventsListeners);
@@ -228,7 +228,9 @@ public class Textile implements LifecycleObserver {
         final Context ctx = Textile.instance().applicationContext;
 
         Textile.instance().newTextile(repoPath, debug);
-        Textile.instance().createNodeDependents(ctx);
+        Textile.instance().createNodeDependents();
+
+        Textile.instance().requestsHandler = new RequestsHandler(REQUESTS_BATCH_SIZE);
 
         Textile.instance().lifecycleServiceIntent = new Intent(ctx, LifecycleService.class);
         ctx.bindService(Textile.instance()
@@ -307,6 +309,13 @@ public class Textile implements LifecycleObserver {
         for (final TextileEventListener listener : eventsListeners) {
             listener.canceledPendingNodeStop();
         }
+    }
+
+    /**
+     * @return The application context
+     */
+    public Context getApplicationContext() {
+        return applicationContext;
     }
 
     /**
@@ -395,9 +404,7 @@ public class Textile implements LifecycleObserver {
         eventsListeners.remove(listener);
     }
 
-    private void createNodeDependents(Context applicationContext) {
-        requestsHandler = new RequestsHandler(node, applicationContext, REQUESTS_BATCH_SIZE);
-
+    private void createNodeDependents() {
         account = new Account(node);
         cafes = new Cafes(node);
         comments = new Comments(node);

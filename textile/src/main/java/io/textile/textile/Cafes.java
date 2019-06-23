@@ -3,6 +3,7 @@ package io.textile.textile;
 import io.textile.pb.Model.CafeSessionList;
 import io.textile.pb.Model.CafeSession;
 import mobile.Mobile_;
+import mobile.ProtoCallback;
 
 /**
  * Provides access to Textile cafes related APIs
@@ -130,5 +131,9 @@ public class Cafes extends NodeDependent {
 
     void updateCafeRequestProgress(String id, long transferred, long total) throws Exception {
         node.updateCafeRequestProgress(id, transferred, total);
+    }
+
+    void writeCafeRequest(String id, ProtoCallback cb) {
+        node.writeCafeRequest(id, cb);
     }
 }

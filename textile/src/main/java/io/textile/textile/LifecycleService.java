@@ -34,14 +34,14 @@ public class LifecycleService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        broadcastReceiver.register(getApplicationContext());
+        broadcastReceiver.register(Textile.instance().getApplicationContext());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        broadcastReceiver.unregister(Textile.instance().getApplicationContext());
         stopNodeImmediately();
-        broadcastReceiver.unregister(getApplicationContext());
     }
 
     void startNode() {
