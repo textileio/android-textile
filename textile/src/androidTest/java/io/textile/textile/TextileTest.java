@@ -1,8 +1,9 @@
 package io.textile.textile;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.FixMethodOrder;
@@ -19,12 +20,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.textile.pb.Model;
-import io.textile.pb.View;
 import io.textile.pb.View.AddThreadConfig;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Textile tests.
@@ -35,7 +36,7 @@ public class TextileTest {
 
     @Test
     public void test0_initialize() throws Exception {
-        final Context ctx = InstrumentationRegistry.getTargetContext();
+        final Context ctx = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File repo = new File(ctx.getFilesDir(), Textile.REPO_NAME);
         if (repo.exists()) {
             FileUtils.deleteDirectory(repo);
@@ -88,7 +89,7 @@ public class TextileTest {
             }
         });
 
-        await().atMost(10, SECONDS).untilTrue(ready);
+        await().atMost(30, SECONDS).untilTrue(ready);
     }
 
     @Test
@@ -129,8 +130,8 @@ public class TextileTest {
         final AtomicBoolean ready = new AtomicBoolean();
         Textile.instance().files.addData("test".getBytes(), thread.getId(), "caption", new Handlers.BlockHandler() {
             @Override
-            public void onComplete(Model.Block b) {
-                assertNotEquals("", b.getId());
+            public void onComplete(Model.Block block) {
+                assertNotEquals("", block.getId());
                 ready.getAndSet(true);
             }
 
@@ -141,12 +142,12 @@ public class TextileTest {
             }
         });
 
-        await().atMost(10, SECONDS).untilTrue(ready);
+        await().atMost(30, SECONDS).untilTrue(ready);
     }
 
     @Test
     public void test5_addFiles() throws Exception {
-        final Context ctx = InstrumentationRegistry.getTargetContext();
+        final Context ctx = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         final Model.Thread thread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
                 .setName("test")
@@ -200,16 +201,11 @@ public class TextileTest {
 
     @Test
     public void test99_destroy() throws Exception {
-        Thread.sleep(20000);
         Textile.instance().destroy();
     }
 
     private Callable<Boolean> isOnline() {
-        return new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                return Textile.instance().online();
-            }
-        };
+        return () -> Textile.instance().online();
     }
 
     private static File getCacheFile(Context context, String filename) throws IOException {

@@ -5,6 +5,7 @@ import com.google.protobuf.Timestamp;
 
 import java.util.Date;
 
+import io.textile.pb.View.Announce;
 import io.textile.pb.View.Comment;
 import io.textile.pb.View.FeedItem;
 import io.textile.pb.View.Files;
@@ -25,43 +26,43 @@ public class Util {
         FeedItemData feedItemData;
         String typeUrl = feedItem.getPayload().getTypeUrl();
         ByteString bytes = feedItem.getPayload().getValue();
-        if (typeUrl.equals("/Text")) {
-            feedItemData = new FeedItemData();
-            feedItemData.block = feedItem.getBlock();
-            feedItemData.type = FeedItemType.TEXT;
-            feedItemData.text = Text.parseFrom(bytes);
-        } else if (typeUrl.equals("/Comment")) {
-            feedItemData = new FeedItemData();
-            feedItemData.block = feedItem.getBlock();
-            feedItemData.type = FeedItemType.COMMENT;
-            feedItemData.comment = Comment.parseFrom(bytes);
-        } else if (typeUrl.equals("/Like")) {
-            feedItemData = new FeedItemData();
-            feedItemData.block = feedItem.getBlock();
-            feedItemData.type = FeedItemType.LIKE;
-            feedItemData.like = Like.parseFrom(bytes);
-        } else if (typeUrl.equals("/Files")) {
-            feedItemData = new FeedItemData();
-            feedItemData.block = feedItem.getBlock();
-            feedItemData.type = FeedItemType.FILES;
-            feedItemData.files = Files.parseFrom(bytes);
-        } else if (typeUrl.equals("/Ignore")) {
-            feedItemData = new FeedItemData();
-            feedItemData.block = feedItem.getBlock();
-            feedItemData.type = FeedItemType.IGNORE;
-            feedItemData.ignore = Ignore.parseFrom(bytes);
-        } else if (typeUrl.equals("/Join")) {
-            feedItemData = new FeedItemData();
-            feedItemData.block = feedItem.getBlock();
-            feedItemData.type = FeedItemType.JOIN;
-            feedItemData.join = Join.parseFrom(bytes);
-        } else if (typeUrl.equals("/Leave")) {
-            feedItemData = new FeedItemData();
-            feedItemData.block = feedItem.getBlock();
-            feedItemData.type = FeedItemType.LEAVE;
-            feedItemData.leave = Leave.parseFrom(bytes);
-        } else {
-            throw new Exception("Unknown feed item typeUrl: " + typeUrl);
+
+        feedItemData = new FeedItemData();
+        feedItemData.block = feedItem.getBlock();
+        switch (typeUrl) {
+            case "/Text":
+                feedItemData.type = FeedItemType.TEXT;
+                feedItemData.text = Text.parseFrom(bytes);
+                break;
+            case "/Comment":
+                feedItemData.type = FeedItemType.COMMENT;
+                feedItemData.comment = Comment.parseFrom(bytes);
+                break;
+            case "/Like":
+                feedItemData.type = FeedItemType.LIKE;
+                feedItemData.like = Like.parseFrom(bytes);
+                break;
+            case "/Files":
+                feedItemData.type = FeedItemType.FILES;
+                feedItemData.files = Files.parseFrom(bytes);
+                break;
+            case "/Ignore":
+                feedItemData.type = FeedItemType.IGNORE;
+                feedItemData.ignore = Ignore.parseFrom(bytes);
+                break;
+            case "/Join":
+                feedItemData.type = FeedItemType.JOIN;
+                feedItemData.join = Join.parseFrom(bytes);
+                break;
+            case "/Leave":
+                feedItemData.type = FeedItemType.LEAVE;
+                feedItemData.leave = Leave.parseFrom(bytes);
+            case "/Announce":
+                feedItemData.type = FeedItemType.ANNOUNCE;
+                feedItemData.announce = Announce.parseFrom(bytes);
+                break;
+            default:
+                throw new Exception("Unknown feed item typeUrl: " + typeUrl);
         }
         return feedItemData;
     }

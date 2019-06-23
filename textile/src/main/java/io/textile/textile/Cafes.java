@@ -2,9 +2,7 @@ package io.textile.textile;
 
 import io.textile.pb.Model.CafeSessionList;
 import io.textile.pb.Model.CafeSession;
-import mobile.Callback;
 import mobile.Mobile_;
-import mobile.ProtoCallback;
 
 /**
  * Provides access to Textile cafes related APIs
@@ -22,18 +20,15 @@ public class Cafes extends NodeDependent {
      * @param handler An object that will get called with the operation is complete
      */
     public void register(String peerId, String token, final Handlers.ErrorHandler handler) {
-        node.registerCafe(peerId, token, new Callback() {
-            @Override
-            public void call(Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete();
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.registerCafe(peerId, token, (e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete();
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }
@@ -44,18 +39,15 @@ public class Cafes extends NodeDependent {
      * @param handler An object that will get called with the operation is complete
      */
     public void deregister(String peerId, final Handlers.ErrorHandler handler) {
-        node.deregisterCafe(peerId, new Callback() {
-            @Override
-            public void call(Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete();
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.deregisterCafe(peerId, (e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete();
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }
@@ -66,22 +58,19 @@ public class Cafes extends NodeDependent {
      * @param handler An object that will get called with the result of the operation
      */
     public void refreshSession(String peerId, final Handlers.CafeSessionHandler handler) {
-        node.refreshCafeSession(peerId, new ProtoCallback() {
-            @Override
-            public void call(byte[] data, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                if (data == null) {
-                    handler.onComplete(null);
-                    return;
-                }
-                try {
-                    handler.onComplete(CafeSession.parseFrom(data));
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.refreshCafeSession(peerId, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            if (data == null) {
+                handler.onComplete(null);
+                return;
+            }
+            try {
+                handler.onComplete(CafeSession.parseFrom(data));
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }

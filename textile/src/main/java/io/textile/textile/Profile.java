@@ -4,7 +4,6 @@ import io.textile.pb.Model;
 import io.textile.pb.Model.Peer;
 import io.textile.pb.Model.Thread;
 import mobile.Mobile_;
-import mobile.ProtoCallback;
 
 /**
  * Provides access to Textile profile related APIs
@@ -58,18 +57,15 @@ public class Profile extends NodeDependent {
      * @param handler An object that will get called with the resulting block
      */
     public void setAvatar(String file, final Handlers.BlockHandler handler) {
-        node.setAvatar(file, new ProtoCallback() {
-            @Override
-            public void call(byte[] bytes, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete(Model.Block.parseFrom(bytes));
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.setAvatar(file, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(Model.Block.parseFrom(data));
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }

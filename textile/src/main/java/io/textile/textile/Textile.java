@@ -1,14 +1,15 @@
 package io.textile.textile;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.OnLifecycleEvent;
-import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import net.gotev.uploadservice.Logger;
 import net.gotev.uploadservice.UploadService;
@@ -154,10 +155,10 @@ public class Textile implements LifecycleObserver {
      */
     public static int REQUESTS_BATCH_SIZE = 16;
 
+    Context applicationContext;
+
     private HashSet<TextileEventListener> eventsListeners = new HashSet<>();
     private MessageHandler messageHandler = new MessageHandler(eventsListeners);
-
-    private Context applicationContext;
 
     private Mobile_ node;
 
@@ -165,8 +166,6 @@ public class Textile implements LifecycleObserver {
     private LifecycleService lifecycleService;
 
     private RequestsHandler requestsHandler;
-    private Intent uploadReceiverServiceIntent;
-    private UploadReceiverService uploadReceiverService;
 
     private AppState appState = AppState.None;
 
@@ -233,13 +232,8 @@ public class Textile implements LifecycleObserver {
 
         Textile.instance().lifecycleServiceIntent = new Intent(ctx, LifecycleService.class);
         ctx.bindService(Textile.instance()
-                .lifecycleServiceIntent, Textile.instance().lifecycleConnection, Context.BIND_AUTO_CREATE);
+                .lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
         ctx.startService(Textile.instance().lifecycleServiceIntent);
-
-        Textile.instance().uploadReceiverServiceIntent = new Intent(ctx, UploadReceiverService.class);
-        ctx.bindService(Textile.instance()
-                .uploadReceiverServiceIntent, Textile.instance().uploadReceiverConnection, Context.BIND_AUTO_CREATE);
-        ctx.startService(Textile.instance().uploadReceiverServiceIntent);
     }
 
     private Textile () {
@@ -275,12 +269,9 @@ public class Textile implements LifecycleObserver {
         config.setDebug(debug);
         // Having this part of the config is not ideal. We should instead make it a setter
         // which can be used after node creation.
-        config.setCafeOutboxHandler(new core.CafeOutboxHandler() {
-            @Override
-            public void flush() {
-                if (requestsHandler != null) {
-                    requestsHandler.flush();
-                }
+        config.setCafeOutboxHandler(() -> {
+            if (requestsHandler != null) {
+                requestsHandler.flush();
             }
         });
         node = Mobile.newTextile(config, messageHandler);
@@ -304,10 +295,6 @@ public class Textile implements LifecycleObserver {
                 listener.nodeFailedToStop(e);
             }
         }
-    }
-
-    boolean online() {
-        return node.online();
     }
 
     void notifyListenersOfPendingNodeStop(int seconds) {
@@ -347,23 +334,29 @@ public class Textile implements LifecycleObserver {
     }
 
     /**
+     * Get a summary of the local Textile node and it's data
+     * @return A boolean indicating the online status of the node
+     */
+    public boolean online() {
+        return node.online();
+    }
+
+    /**
      * Reset the local Textile node instance so it can be re-initialized
      * @throws Exception The exception that occurred (@todo does this need to throw?)
      */
     public void destroy() throws Exception {
         ProcessLifecycleOwner.get().getLifecycle().removeObserver(this);
-        applicationContext.unbindService(lifecycleConnection);
+        applicationContext.unbindService(connection);
         lifecycleService.stopNodeImmediately();
         lifecycleService = null;
         lifecycleServiceIntent = null;
 
+        requestsHandler = null;
+
         eventsListeners.clear();
         node = null;
         applicationContext = null;
-
-        uploadReceiverService = null;
-        uploadReceiverServiceIntent = null;
-        requestsHandler = null;
 
         account = null;
         cafes = null;
@@ -452,31 +445,13 @@ public class Textile implements LifecycleObserver {
         }
     }
 
-    private ServiceConnection lifecycleConnection = new ServiceConnection() {
+    private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             LifecycleService.LifecycleBinder binder = (LifecycleService.LifecycleBinder) service;
             lifecycleService = binder.getService();
-            lifecycleService.nodeStoppedListener = new LifecycleService.NodeStoppedListener() {
-                @Override
-                public void onNodeStopped() {
-                    Textile.this.appState = AppState.None;
-                }
-            };
+            lifecycleService.nodeStoppedListener = () -> Textile.this.appState = AppState.None;
             ProcessLifecycleOwner.get().getLifecycle().addObserver(Textile.this);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Logger.info(getClass().getSimpleName(), name + " disconnected");
-        }
-    };
-
-    private ServiceConnection uploadReceiverConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            UploadReceiverService.UploadReceiverBinder binder = (UploadReceiverService.UploadReceiverBinder) service;
-            uploadReceiverService = binder.getService();
         }
 
         @Override

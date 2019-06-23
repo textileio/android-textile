@@ -7,6 +7,7 @@ import io.textile.pb.View.Join;
 import io.textile.pb.View.Leave;
 import io.textile.pb.View.Like;
 import io.textile.pb.View.Text;
+import io.textile.pb.View.Announce;
 
 public class FeedItemData {
     public FeedItemType type;
@@ -18,4 +19,5 @@ public class FeedItemData {
     public Ignore ignore;
     public Join join;
     public Leave leave;
+    public Announce announce;
 }

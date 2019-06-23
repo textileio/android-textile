@@ -1,6 +1,5 @@
 package io.textile.textile;
 
-import mobile.DataCallback;
 import mobile.Mobile_;
 
 /**
@@ -27,18 +26,15 @@ public class Ipfs extends NodeDependent {
      * @param handler An object that will get called with the resulting data and media type
      */
     public void dataAtPath(String path, final Handlers.DataHandler handler) {
-        node.dataAtPath(path, new DataCallback() {
-            @Override
-            public void call(byte[] data, String media, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete(data, media);
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.dataAtPath(path, (data, media, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(data, media);
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }

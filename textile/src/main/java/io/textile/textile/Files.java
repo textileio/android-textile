@@ -2,9 +2,7 @@ package io.textile.textile;
 
 import io.textile.pb.Model.Block;
 import io.textile.pb.View.FilesList;
-import mobile.DataCallback;
 import mobile.Mobile_;
-import mobile.ProtoCallback;
 
 /**
  * Provides access to Textile files related APIs
@@ -17,23 +15,20 @@ public class Files extends NodeDependent {
 
     /**
      * Add raw data to to a Textile thread
-     * @param data Raw bytes
+     * @param input Raw bytes
      * @param threadId The thread id the data will be added to
      * @param handler An object that will get called with the resulting block
      */
-    public void addData(byte[] data, String threadId, String caption, final Handlers.BlockHandler handler) {
-        node.addData(data, threadId, caption, new ProtoCallback() {
-            @Override
-            public void call(byte[] data, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete(Block.parseFrom(data));
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+    public void addData(byte[] input, String threadId, String caption, final Handlers.BlockHandler handler) {
+        node.addData(input, threadId, caption, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(Block.parseFrom(data));
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }
@@ -45,18 +40,15 @@ public class Files extends NodeDependent {
      * @param handler An object that will get called with the resulting block
      */
     public void addFiles(String files, String threadId, String caption, final Handlers.BlockHandler handler) {
-        node.addFiles(files, threadId, caption, new ProtoCallback() {
-            @Override
-            public void call(byte[] data, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete(Block.parseFrom(data));
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.addFiles(files, threadId, caption, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(Block.parseFrom(data));
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }
@@ -68,18 +60,15 @@ public class Files extends NodeDependent {
      * @param handler An object that will get called with the resulting block
      */
     public void shareFiles(String hash, String threadId, String caption, final Handlers.BlockHandler handler) {
-        node.shareFiles(hash, threadId, caption, new ProtoCallback() {
-            @Override
-            public void call(byte[] data, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete(Block.parseFrom(data));
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.shareFiles(hash, threadId, caption, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(Block.parseFrom(data));
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }
@@ -103,18 +92,15 @@ public class Files extends NodeDependent {
      * @param handler An object that will get called with the resulting data and media type
      */
     public void content(String hash, final Handlers.DataHandler handler) {
-        node.fileContent(hash, new DataCallback() {
-            @Override
-            public void call(byte[] data, String media, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete(data, media);
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.fileContent(hash, (data, media, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(data, media);
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }
@@ -126,18 +112,15 @@ public class Files extends NodeDependent {
      * @param handler An object that will get called with the resulting data and media type
      */
     public void imageContentForMinWidth(String path, long minWidth, final Handlers.DataHandler handler) {
-        node.imageFileContentForMinWidth(path, minWidth, new DataCallback() {
-            @Override
-            public void call(byte[] data, String media, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onComplete(data, media);
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+        node.imageFileContentForMinWidth(path, minWidth, (data, media, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(data, media);
+            } catch (Exception exception) {
+                handler.onError(exception);
             }
         });
     }

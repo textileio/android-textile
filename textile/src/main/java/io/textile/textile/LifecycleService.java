@@ -22,6 +22,8 @@ public class LifecycleService extends Service {
     private LifecycleBinder binder = new LifecycleBinder();
     private Timer timer;
 
+    private RequestsBroadcastReceiver broadcastReceiver = new RequestsBroadcastReceiver();
+
     NodeStoppedListener nodeStoppedListener;
 
     @Override
@@ -30,9 +32,16 @@ public class LifecycleService extends Service {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        broadcastReceiver.register(getApplicationContext());
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         stopNodeImmediately();
+        broadcastReceiver.unregister(getApplicationContext());
     }
 
     void startNode() {

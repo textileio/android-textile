@@ -2,67 +2,22 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'textile'
-
-    publishedGroupId = 'io.textile'
-    libraryName = 'textile'
-    artifact = 'textile'
-
-    libraryDescription = 'Textile SDK for Android'
-
-    siteUrl = 'https://github.com/textileio/android-textile'
-    gitUrl = 'https://github.com/textileio/android-textile.git'
-
-    libraryVersion = '0.0.1-dev'
-
-    developerId = 'textile'
-    developerName = 'Textile'
-    developerEmail = 'contact@textile.io'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ['Apache-2.0']
-}
-
 repositories {
     maven {
         url 'https://dl.bintray.com/textile/maven'
     }
 }
 
-def getTestCafeID() {
-    try {
-        Properties properties = new Properties()
-        properties.load(project.rootProject.file('local.properties').newDataInputStream())
-        return properties.getProperty('test.cafe.id')
-    } catch (Exception e) {
-        return String.valueOf(System.getenv('TEST_CAFE_ID'))
-    }
-}
-
-def getTestCafeToken() {
-    try {
-        Properties properties = new Properties()
-        properties.load(project.rootProject.file('local.properties').newDataInputStream())
-        return properties.getProperty('test.cafe.token')
-    } catch (Exception e) {
-        return String.valueOf(System.getenv('TEST_CAFE_TOKEN'))
-    }
-}
-
 android {
-    compileSdkVersion 28
+    compileSdkVersion targetSdk
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
-
+        minSdkVersion minSdk
+        targetSdkVersion targetSdk
         versionCode 1
         versionName '1.0'
 
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField 'String', 'TEST_CAFE_ID', '"'+getTestCafeID()+'"'
         buildConfigField 'String', 'TEST_CAFE_TOKEN', '"'+getTestCafeToken()+'"'
@@ -80,22 +35,45 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    api 'io.textile:pb:0.5.0'
-    api 'io.textile:mobile:0.5.0'
-    implementation 'net.gotev:uploadservice-okhttp:3.4.2'
-    implementation 'android.arch.lifecycle:extensions:1.1.1'
-    implementation 'com.android.support:support-media-compat:28.0.0'
-    implementation 'com.android.support:support-v4:28.0.0'
-    annotationProcessor 'android.arch.lifecycle:compiler:1.1.1'
-    testImplementation 'junit:junit:4.12'
-    // androidTestImplementation 'org.mockito:mockito-core:2.28.2'
-    androidTestImplementation 'org.awaitility:awaitility:3.1.6'
-    androidTestImplementation 'commons-io:commons-io:2.6'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // Textile
+    api "io.textile:pb:$textileVersion"
+    api "io.textile:mobile:$textileVersion"
+
+    // Support
+    implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
+
+    // UploadService
+    implementation "net.gotev:uploadservice-okhttp:$uploadServiceVersion"
+
+    // Testing
+    testImplementation "junit:junit:$junitVersion"
+
+    // Core library
+    androidTestImplementation "androidx.test:core:$androidxTestCoreVersion"
+
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
+    // androidTestImplementation "androidx.test:rules:$androidxTestRulesVersion"
+
+    // Assertions
+    androidTestImplementation "androidx.test.ext:junit:$androidxTestExtJunitVersion"
+    // androidTestImplementation "androidx.test.ext:truth:$androidxTestExtTruthVersion"
+
+    // Utils
+    androidTestImplementation "org.awaitility:awaitility:$awaitilityVersion"
+    androidTestImplementation "commons-io:commons-io:$commonsIOVersion"
 }
 
 group = publishedGroupId
@@ -194,5 +172,25 @@ bintray {
         version {
             desc = libraryDescription
         }
+    }
+}
+
+def getTestCafeID() {
+    try {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        return properties.getProperty('test.cafe.id')
+    } catch (Exception e) {
+        return String.valueOf(System.getenv('TEST_CAFE_ID'))
+    }
+}
+
+def getTestCafeToken() {
+    try {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        return properties.getProperty('test.cafe.token')
+    } catch (Exception e) {
+        return String.valueOf(System.getenv('TEST_CAFE_TOKEN'))
     }
 }

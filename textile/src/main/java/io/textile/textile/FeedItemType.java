@@ -7,5 +7,6 @@ public enum FeedItemType {
     FILES,
     IGNORE,
     JOIN,
-    LEAVE
+    LEAVE,
+    ANNOUNCE
 }

@@ -1,8 +1,6 @@
 package io.textile.textile;
 
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 
 import net.gotev.uploadservice.BinaryUploadRequest;
 import net.gotev.uploadservice.HttpUploadRequest;
@@ -14,9 +12,6 @@ import java.util.Map;
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
 import mobile.Mobile_;
-import mobile.ProtoCallback;
-
-import static net.gotev.uploadservice.Placeholders.*;
 
 /**
  * Handles HTTP requests queued by the Textile node
@@ -49,26 +44,23 @@ class RequestsHandler {
 
             // 3. Write each request to disk
             for (final String id : ids.getValuesList()) {
-                node.writeCafeRequest(id, new ProtoCallback() {
-                    @Override
-                    public void call(byte[] req, Exception e) {
-                        if (e != null) {
-                            try {
-                                node.cafeRequestNotPending(id);
-                            } catch (Exception ee) {
-                                Logger.error(getClass().getSimpleName(), ee.getMessage());
-                            }
-                            return;
-                        }
-                        // 4. Start the request
+                node.writeCafeRequest(id, (req, e) -> {
+                    if (e != null) {
                         try {
-                            String uploadId = startUpload(id, CafeHTTPRequest.parseFrom(req));
+                            node.cafeRequestNotPending(id);
                         } catch (Exception ee) {
-                            try {
-                                node.cafeRequestNotPending(id);
-                            } catch (Exception eee) {
-                                Logger.error(getClass().getSimpleName(), eee.getMessage());
-                            }
+                            Logger.error(getClass().getSimpleName(), ee.getMessage());
+                        }
+                        return;
+                    }
+                    // 4. Start the request
+                    try {
+                        String uploadId = startUpload(id, CafeHTTPRequest.parseFrom(req));
+                    } catch (Exception ee) {
+                        try {
+                            node.cafeRequestNotPending(id);
+                        } catch (Exception eee) {
+                            Logger.error(getClass().getSimpleName(), eee.getMessage());
                         }
                     }
                 });
@@ -79,49 +71,25 @@ class RequestsHandler {
     }
 
     private String startUpload(final String id, final CafeHTTPRequest req) throws Exception {
+        UploadNotificationConfig config = new UploadNotificationConfig();
+        config.setTitleForAllStatuses("Sync");
+        config.setRingToneEnabled(false);
+        config.getCompleted().autoClear = true;
+        config.getProgress().autoClear = true;
+        config.getCancelled().autoClear = true;
+        config.getError().autoClear = true;
+
         HttpUploadRequest request = new BinaryUploadRequest(applicationContext, id, req.getUrl())
                 .setFileToUpload(req.getPath())
                 .setMethod(req.getType().toString())
-                .setMaxRetries(2);
+                .setMaxRetries(2)
+                .setNotificationConfig(config)
+                .setDelegate(null);
 
         for (Map.Entry<String,String> entry : req.getHeadersMap().entrySet()) {
             request.addHeader(entry.getKey(), entry.getValue());
         }
 
-        UploadNotificationConfig note = new UploadNotificationConfig();
-        request.setNotificationConfig(getNotificationConfig(id));
-
         return request.startUpload();
-    }
-
-    private UploadNotificationConfig getNotificationConfig(final String uploadId) {
-        UploadNotificationConfig config = new UploadNotificationConfig();
-
-        PendingIntent clickIntent = PendingIntent.getActivity(applicationContext, 1, new Intent(
-                applicationContext, UploadReceiverService.class), PendingIntent.FLAG_UPDATE_CURRENT);
-
-        config.setTitleForAllStatuses("Textile")
-                .setClickIntentForAllStatuses(clickIntent)
-                .setClearOnActionForAllStatuses(true);
-
-        config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
-                + " at " + UPLOAD_RATE + " - " + PROGRESS;
-//        config.getProgress().iconResourceID = R.drawable.ic_upload;
-//        config.getProgress().iconColorResourceID = Color.BLUE;
-
-        config.getCompleted().autoClear = true;
-        config.getCompleted().message = "Upload completed successfully in " + ELAPSED_TIME;
-//        config.getCompleted().iconResourceID = R.drawable.ic_upload_success;
-//        config.getCompleted().iconColorResourceID = Color.GREEN;
-
-        config.getError().message = "Error while uploading";
-//        config.getError().iconResourceID = R.drawable.ic_upload_error;
-//        config.getError().iconColorResourceID = Color.RED;
-
-        config.getCancelled().message = "Upload has been cancelled";
-//        config.getCancelled().iconResourceID = R.drawable.ic_cancelled;
-//        config.getCancelled().iconColorResourceID = Color.YELLOW;
-
-        return config;
     }
 }
