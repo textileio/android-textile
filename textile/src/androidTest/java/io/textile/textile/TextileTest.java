@@ -45,7 +45,7 @@ public class TextileTest {
         final String phrase = Textile.initialize(ctx, true, false);
         assertNotEquals("", phrase);
 
-        Textile.instance().addEventListener(new TextileTestListener());
+        Textile.instance().addEventListener(new TextileLoggingListener());
     }
 
     @Test

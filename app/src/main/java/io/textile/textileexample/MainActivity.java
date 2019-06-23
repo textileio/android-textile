@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.UUID;
 
 import io.textile.pb.Model;
+import io.textile.textile.BuildConfig;
 import io.textile.textile.Handlers;
 import io.textile.textile.Textile;
+import io.textile.textile.TextileLoggingListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,25 +24,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onButtonClick(View v) {
-//        destroyTextile();
-//        initTextile();
+        // destroyTextile();
+        // initTextile();
 
+        // Uncomment below for a small sync test
         Textile.instance().cafes.register(
-                "12D3KooWGN8VAsPHsHeJtoTbbzsGjs2LTmQZ6wFKvuPich1TYmYY",
-                "uggU4NcVGFSPchULpa2zG2NRjw2bFzaiJo3BYAgaFyzCUPRLuAgToE3HXPyo",
-                new Handlers.ErrorHandler() {
+                BuildConfig.TEST_CAFE_ID, BuildConfig.TEST_CAFE_TOKEN, new Handlers.ErrorHandler() {
             @Override
             public void onComplete() {
                 try {
-                    final Model.Thread thread = Textile.instance().threads.add(io.textile.pb.View.AddThreadConfig.newBuilder()
-                            .setName("data")
-                            .setKey(UUID.randomUUID().toString())
-                            .setSchema(io.textile.pb.View.AddThreadConfig.Schema.newBuilder()
-                                    .setPreset(io.textile.pb.View.AddThreadConfig.Schema.Preset.BLOB)
-                                    .build())
-                            .build());
+                    final Model.Thread thread =
+                            Textile.instance().threads.add(io.textile.pb.View.AddThreadConfig.newBuilder()
+                                    .setName("data")
+                                    .setKey(UUID.randomUUID().toString())
+                                    .setSchema(io.textile.pb.View.AddThreadConfig.Schema.newBuilder()
+                                            .setPreset(io.textile.pb.View.AddThreadConfig.Schema.Preset.BLOB)
+                                            .build())
+                                    .build());
 
-                    Textile.instance().files.addData("test".getBytes(), thread.getId(), "caption", new Handlers.BlockHandler() {
+                    Textile.instance().files.addData(
+                            "test".getBytes(), thread.getId(), "caption", new Handlers.BlockHandler() {
                         @Override
                         public void onComplete(Model.Block block) {
                             System.out.println("Added data with block ID: " + block.getId());
@@ -68,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private void initTextile() {
         try {
             String phrase = Textile.initialize(getApplicationContext(), true, false);
-            Textile.instance().addEventListener(new TextileListener());
+            Textile.instance().addEventListener(new TextileLoggingListener());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

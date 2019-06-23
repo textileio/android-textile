@@ -2,7 +2,8 @@ package io.textile.textile;
 
 import io.textile.pb.Model.CafeSyncGroupStatus;
 
-public class TextileTestListener extends BaseTextileEventListener {
+public class TextileLoggingListener extends BaseTextileEventListener {
+
     @Override
     public void nodeStarted() {
         super.nodeStarted();
