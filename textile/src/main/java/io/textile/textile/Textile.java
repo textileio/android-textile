@@ -31,6 +31,8 @@ import mobile.RunConfig;
  */
 public class Textile implements LifecycleObserver {
 
+    private static final String TAG = "Textile";
+
     enum AppState {
         None, Background, Foreground, BackgroundFromForeground
     }
@@ -463,7 +465,7 @@ public class Textile implements LifecycleObserver {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Logger.info(getClass().getSimpleName(), name + " disconnected");
+            Logger.info(TAG, name + " disconnected");
         }
     };
 }

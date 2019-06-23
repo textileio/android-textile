@@ -21,6 +21,8 @@ import io.textile.pb.View.Strings;
  */
 class RequestsHandler {
 
+    private static final String TAG = "RequestsHandler";
+
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private int batchSize;
 
@@ -45,14 +47,15 @@ class RequestsHandler {
                         .collect(Collectors.toList());
                 final CompletableFuture<Void> allFutures = CompletableFuture.allOf(
                         futures.toArray(new CompletableFuture[0]));
-                final CompletableFuture<List<String>> uploads = allFutures
+                final CompletableFuture<List<String>> results = allFutures
                         .thenApply(f -> futures.stream()
                                 .map(CompletableFuture::join)
                                 .collect(Collectors.toList()));
-                uploads.get();
+                final List<String> uploads = results.get();
 
+                Logger.debug(TAG, "Uploads started: " + uploads.toString());
             } catch (Exception e) {
-                Logger.error(getClass().getSimpleName(), e.getMessage());
+                Logger.error(TAG, e.getMessage());
             }
             return null;
         });
@@ -60,7 +63,7 @@ class RequestsHandler {
         try {
             future.get();
         } catch (Exception e) {
-            Logger.error(getClass().getSimpleName(), e.getMessage());
+            Logger.error(TAG, e.getMessage());
         }
     }
 

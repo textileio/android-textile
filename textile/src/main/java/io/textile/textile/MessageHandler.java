@@ -19,6 +19,8 @@ import mobile.Messenger;
 
 class MessageHandler implements Messenger {
 
+    private static final String TAG = "MessageHandler";
+
     private Set<TextileEventListener> listeners;
 
     MessageHandler(final Set<TextileEventListener> listeners) {
@@ -71,7 +73,7 @@ class MessageHandler implements Messenger {
                             break;
                     }
                 } catch (final Exception e) {
-                    Logger.error(getClass().getSimpleName(), e.getMessage());
+                    Logger.error(TAG, e.getMessage());
                 }
                 break;
             case THREAD_UPDATE:
@@ -82,7 +84,7 @@ class MessageHandler implements Messenger {
                         listener.threadUpdateReceived(feedItem.getThread(), data);
                     }
                 } catch (final Exception e) {
-                    Logger.error(getClass().getSimpleName(), e.getMessage());
+                    Logger.error(TAG, e.getMessage());
                 }
                 break;
             case NOTIFICATION:
@@ -92,7 +94,7 @@ class MessageHandler implements Messenger {
                         listener.notificationReceived(notification);
                     }
                 } catch (final Exception e) {
-                    Logger.error(getClass().getSimpleName(), e.getMessage());
+                    Logger.error(TAG, e.getMessage());
                 }
                 break;
             case QUERY_RESPONSE:
@@ -127,7 +129,7 @@ class MessageHandler implements Messenger {
                             break;
                     }
                 } catch (final Exception e) {
-                    Logger.error(getClass().getSimpleName(), e.getMessage());
+                    Logger.error(TAG, e.getMessage());
                 }
                 break;
             case CAFE_SYNC_GROUP_UPDATE:
@@ -137,7 +139,7 @@ class MessageHandler implements Messenger {
                         listener.syncUpdate(status);
                     }
                 } catch (final Exception e) {
-                    Logger.error(getClass().getSimpleName(), e.getMessage());
+                    Logger.error(TAG, e.getMessage());
                 }
                 break;
             case CAFE_SYNC_GROUP_COMPLETE:
@@ -147,7 +149,7 @@ class MessageHandler implements Messenger {
                         listener.syncComplete(status);
                     }
                 } catch (final Exception e) {
-                    Logger.error(getClass().getSimpleName(), e.getMessage());
+                    Logger.error(TAG, e.getMessage());
                 }
                 break;
             case CAFE_SYNC_GROUP_FAILED:
@@ -157,7 +159,7 @@ class MessageHandler implements Messenger {
                         listener.syncFailed(status);
                     }
                 } catch (final Exception e) {
-                    Logger.error(getClass().getSimpleName(), e.getMessage());
+                    Logger.error(TAG, e.getMessage());
                 }
                 break;
         }
