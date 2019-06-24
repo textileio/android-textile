@@ -32,7 +32,7 @@ public class Handlers {
         /**
          * Called with a data and meta result
          * @param data The data
-         * @param meta The media type
+         * @param media The media type
          */
         void onComplete(byte[] data, String media);
 

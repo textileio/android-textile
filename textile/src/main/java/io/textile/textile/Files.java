@@ -17,6 +17,7 @@ public class Files extends NodeDependent {
      * Add raw data to to a Textile thread
      * @param input Raw bytes
      * @param threadId The thread id the data will be added to
+     * @param caption A caption for the input
      * @param handler An object that will get called with the resulting block
      */
     public void addData(byte[] input, String threadId, String caption, final Handlers.BlockHandler handler) {
@@ -37,6 +38,7 @@ public class Files extends NodeDependent {
      * Add file(s) to to a Textile thread
      * @param files A comma-separated list of file paths
      * @param threadId The thread id the data will be added to
+     * @param caption A caption for the input
      * @param handler An object that will get called with the resulting block
      */
     public void addFiles(String files, String threadId, String caption, final Handlers.BlockHandler handler) {
@@ -57,6 +59,7 @@ public class Files extends NodeDependent {
      * Share files to a Textile thread
      * @param hash The hash of the files graph to share
      * @param threadId The thread id the data will be added to
+     * @param caption A caption for the shared input
      * @param handler An object that will get called with the resulting block
      */
     public void shareFiles(String hash, String threadId, String caption, final Handlers.BlockHandler handler) {

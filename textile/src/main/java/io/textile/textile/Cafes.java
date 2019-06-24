@@ -16,7 +16,7 @@ public class Cafes extends NodeDependent {
 
     /**
      * Used to register a remote Textile Cafe node with the local Textile node
-     * @param host The peer id of the cafe being registered
+     * @param peerId The peer id of the cafe being registered
      * @param token The API token for the cafe being registered
      * @param handler An object that will get called with the operation is complete
      */
