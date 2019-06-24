@@ -44,7 +44,7 @@ ext {
     lifecycleVersion = '2.0.0'
 
     // UploadService
-    uploadServiceVersion = '3.5.2'
+    uploadServiceVersion = '3.5.3'
 
     // Demo App
     constraintLayoutVersion = '1.1.3'

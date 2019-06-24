@@ -83,18 +83,12 @@ class RequestsHandler {
                     return;
                 }
 
-                // Mark as pending
                 try {
+                    // Mark as pending
                     Textile.instance().cafes.cafeRequestPending(id);
-                } catch (final Exception eee) {
-                    inner.completeExceptionally(eee);
-                    return;
-                }
 
-                // Start the upload
-                try {
-                    final String uploadId = startUpload(id, CafeHTTPRequest.parseFrom(req));
-                    inner.complete(uploadId);
+                    // Start the upload
+                    inner.complete(startUpload(id, CafeHTTPRequest.parseFrom(req)));
                 } catch (final Exception ee) {
                     try {
                         Textile.instance().cafes.cafeRequestNotPending(id);

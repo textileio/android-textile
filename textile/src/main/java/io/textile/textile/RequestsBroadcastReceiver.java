@@ -1,7 +1,6 @@
 package io.textile.textile;
 
 import android.content.Context;
-import android.content.Intent;
 
 import net.gotev.uploadservice.Logger;
 import net.gotev.uploadservice.ServerResponse;
@@ -11,12 +10,6 @@ import net.gotev.uploadservice.UploadServiceBroadcastReceiver;
 public class RequestsBroadcastReceiver extends UploadServiceBroadcastReceiver {
 
     private static final String TAG = "RequestsBroadcastReceiver";
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Logger.debug(TAG, "Received event");
-        super.onReceive(context, intent);
-    }
 
     @Override
     public void onProgress(Context context, UploadInfo info) {

@@ -55,7 +55,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
 
     // UploadService
-    implementation "net.gotev:uploadservice-okhttp:$uploadServiceVersion"
+    implementation "com.github.textileio:android-upload-service:$uploadServiceVersion"
 
     // Testing
     testImplementation "junit:junit:$junitVersion"
