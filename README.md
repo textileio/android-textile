@@ -1,10 +1,12 @@
 # android-textile
 
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat)](https://github.com/RichardLitt/standard-readme)
-![Bintray](https://img.shields.io/bintray/v/textile/maven/textile.svg)
-![GitHub](https://img.shields.io/github/license/textileio/android-textile.svg)
-![Platform](https://img.shields.io/badge/platform-android-lightgrey.svg)
-[![CircleCI](https://circleci.com/gh/textileio/android-textile.svg?style=svg)](https://circleci.com/gh/textileio/android-textile)
+[![Made by Textile](https://img.shields.io/badge/made%20by-Textile-informational.svg?style=popout-square)](https://textile.io)
+[![Chat on Slack](https://img.shields.io/badge/slack-slack.textile.io-informational.svg?style=popout-square)](https://slack.textile.io)
+[![GitHub license](https://img.shields.io/github/license/textileio/android-textile.svg?style=popout-square)](./LICENSE)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/textileio/android-textile/master.svg?style=popout-square)](https://circleci.com/gh/textileio/go-textile)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=popout-square)](https://github.com/RichardLitt/standard-readme)
+![Platform](https://img.shields.io/badge/platform-android-lightgrey.svg?style=popout-square)
+![Bintray](https://img.shields.io/badge/dynamic/json.svg?label=latest&query=name&style=flat-square&url=https%3A%2F%2Fapi.bintray.com%2Fpackages%2Ftextile%2Fmaven%2Ftextile%2Fversions%2F_latest)
 
 > Textile provides encrypted, recoverable, schema-based, and cross-application data storage built on IPFS and libp2p. We like to think of it as a decentralized data wallet with built-in protocols for sharing and recovery, or more simply, an open and programmable iCloud.
 
@@ -27,7 +29,8 @@ First, you'll need to add Textile's Bintray Maven repository to you project's to
 allprojects {
     repositories {
         ...
-        maven { url "https://dl.bintray.com/textile/maven" }
+        maven { url 'https://dl.bintray.com/textile/maven' }
+        maven { url 'https://jitpack.io' }
         ...
     }
 }
@@ -38,7 +41,7 @@ Next, add the Textile dependency to your app module's `build.gradle` `dependenci
 ```cmd
 dependencies {
     ...
-    implementation 'io.textile:textile:0.1.20'
+    implementation 'io.textile:textile:1.1.0'
     ...
 }
 ```
@@ -52,6 +55,7 @@ This repo contains an example project. To run it, clone the repo, build and run 
 ## Maintainers
 
 [@asutula](https://github.com/asutula)
+[@sanderpick](https://github.com/sanderpick)
 
 ## Contributing
 
