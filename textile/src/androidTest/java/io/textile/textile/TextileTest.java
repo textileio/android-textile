@@ -2,9 +2,8 @@ package io.textile.textile;
 
 import android.content.Context;
 import android.content.IntentFilter;
-
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.runner.AndroidJUnit4;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.FixMethodOrder;
@@ -166,6 +165,9 @@ public class TextileTest {
                     }
                 });
         await().atMost(60, SECONDS).untilTrue(ready);
+
+        // Wait for uploads to finish
+        Thread.sleep(20000);
 
         // Destroy
         Textile.instance().destroy();

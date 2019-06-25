@@ -17,7 +17,7 @@ android {
         versionCode 1
         versionName '1.0'
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField 'String', 'TEST_CAFE_ID', '"'+getTestCafeID()+'"'
         buildConfigField 'String', 'TEST_CAFE_TOKEN', '"'+getTestCafeToken()+'"'
@@ -48,11 +48,15 @@ dependencies {
     api "io.textile:mobile:$textileVersion"
 
     // Support
-    implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
+    // implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
+    implementation "com.android.support:appcompat-v7:$appcompatVersion"
+    implementation "com.android.support:support-v4:$appcompatVersion"
 
     // Lifecycle
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
+    // implementation "androidx.lifecycle:lifecycle-extensions:$androidxLifecycleVersion"
+    // implementation "androidx.lifecycle:lifecycle-common-java8:$androidxLifecycleVersion"
+    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVersion"
 
     // UploadService
     implementation "com.github.textileio:android-upload-service:$uploadServiceVersion"
@@ -61,14 +65,15 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
 
     // Core library
-    androidTestImplementation "androidx.test:core:$androidxTestCoreVersion"
+    // androidTestImplementation "androidx.test:core:$androidxTestCoreVersion"
 
     // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
+    // androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
     // androidTestImplementation "androidx.test:rules:$androidxTestRulesVersion"
+    androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
 
     // Assertions
-    androidTestImplementation "androidx.test.ext:junit:$androidxTestExtJunitVersion"
+    // androidTestImplementation "androidx.test.ext:junit:$androidxTestExtJunitVersion"
     // androidTestImplementation "androidx.test.ext:truth:$androidxTestExtTruthVersion"
 
     // Utils

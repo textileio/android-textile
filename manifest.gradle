@@ -22,29 +22,31 @@ ext {
     // Gradle classpath dependencies versions
     gradleVersion = '3.4.1'
     mavenGradleVersion = '2.1'
-    gradleVersionsPluginVersion = '0.20.0'
     bintrayPluginVersion = '1.7'
 
     // Library and app testing dependencies versions
     junitVersion = '4.12'
-    androidxTestCoreVersion = '1.2.0'
-    androidxTestRunnerVersion = '1.2.0'
-    androidxTestRulesVersion = '1.2.0'
-    androidxTestExtJunitVersion = '1.1.1'
-    androidxTestExtTruthVersion = '1.2.0'
-    androidxTestEspressoVersion = '3.2.0'
+    // androidxTestCoreVersion = '1.2.0'
+    // androidxTestRunnerVersion = '1.2.0'
+    // androidxTestRulesVersion = '1.2.0'
+    // androidxTestExtJunitVersion = '1.1.1'
+    // androidxTestExtTruthVersion = '1.2.0'
+    // androidxTestEspressoVersion = '3.2.0'
+    testRunnerVersion = '1.0.2'
 
     // Library and app dependencies versions
-    androidxAppcompatVersion = '1.0.2'
+    // androidxAppcompatVersion = '1.0.2'
+    appcompatVersion = '28.0.0'
 
     // Textile
     textileVersion = '0.5.0'
 
     // Lifecycle
-    lifecycleVersion = '2.0.0'
+    // androidxLifecycleVersion = '2.0.0'
+    lifecycleVersion = '1.1.1'
 
     // UploadService
-    uploadServiceVersion = '3.5.3'
+    uploadServiceVersion = '3.5.4'
 
     // Demo App
     constraintLayoutVersion = '1.1.3'
