@@ -18,7 +18,7 @@ public class Comments extends NodeDependent {
      * @return The id of the new comment block
      * @throws Exception The exception that occurred
      */
-    public String add(String blockId, String body) throws Exception {
+    public String add(final String blockId, final String body) throws Exception {
         return node.addComment(blockId, body);
     }
 }

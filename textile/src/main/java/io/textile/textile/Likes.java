@@ -17,7 +17,7 @@ public class Likes extends NodeDependent {
      * @return The hash of the newly created like block
      * @throws Exception The exception that occurred
      */
-    public String add(String blockId) throws Exception {
+    public String add(final String blockId) throws Exception {
         return node.addLike(blockId);
     }
 }

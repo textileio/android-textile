@@ -23,19 +23,19 @@ public class TextileLoggingListener extends BaseTextileEventListener {
     }
 
     @Override
-    public void threadAdded(String threadId) {
+    public void threadAdded(final String threadId) {
         super.threadAdded(threadId);
         System.out.println("------------> thread added: " + threadId);
     }
 
     @Override
-    public void threadRemoved(String threadId) {
+    public void threadRemoved(final String threadId) {
         super.threadRemoved(threadId);
         System.out.println("------------> thread removed: " + threadId);
     }
 
     @Override
-    public void syncUpdate(CafeSyncGroupStatus status) {
+    public void syncUpdate(final CafeSyncGroupStatus status) {
         super.syncUpdate(status);
         int progress;
         if (status.getGroupsSizeTotal() > 0) {
@@ -47,13 +47,13 @@ public class TextileLoggingListener extends BaseTextileEventListener {
     }
 
     @Override
-    public void syncComplete(CafeSyncGroupStatus status) {
+    public void syncComplete(final CafeSyncGroupStatus status) {
         super.syncComplete(status);
         System.out.println("------------> sync complete: " + status.getId());
     }
 
     @Override
-    public void syncFailed(CafeSyncGroupStatus status) {
+    public void syncFailed(final CafeSyncGroupStatus status) {
         super.syncFailed(status);
         System.out.println("------------> sync failed: " + status.getId());
     }

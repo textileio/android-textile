@@ -21,7 +21,7 @@ public class Handlers {
          * Called in the case of an error
          * @param e The exception
          */
-        void onError(Exception e);
+        void onError(final Exception e);
     }
 
     /**
@@ -34,13 +34,13 @@ public class Handlers {
          * @param data The data
          * @param media The media type
          */
-        void onComplete(byte[] data, String media);
+        void onComplete(final byte[] data, final String media);
 
         /**
          * Called in the case of an error
          * @param e The exception
          */
-        void onError(Exception e);
+        void onError(final Exception e);
     }
 
     /**
@@ -52,13 +52,13 @@ public class Handlers {
          * Called with a block result
          * @param block The block
          */
-        void onComplete(Model.Block block);
+        void onComplete(final Model.Block block);
 
         /**
          * Called in the case of an error
          * @param e The exception
          */
-        void onError(Exception e);
+        void onError(final Exception e);
     }
 
     /**
@@ -70,13 +70,13 @@ public class Handlers {
          * Called with a cafe session
          * @param session The cafe session
          */
-        void onComplete(Model.CafeSession session);
+        void onComplete(final Model.CafeSession session);
 
         /**
          * Called in the case of an error
          * @param e The exception
          */
-        void onError(Exception e);
+        void onError(final Exception e);
     }
 
 }

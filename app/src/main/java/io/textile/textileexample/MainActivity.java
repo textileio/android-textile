@@ -32,10 +32,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void destroyTextile() {
-        try {
-            Textile.instance().destroy();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        Textile.instance().destroy();
     }
 }

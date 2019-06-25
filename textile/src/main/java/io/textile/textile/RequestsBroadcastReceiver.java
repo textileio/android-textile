@@ -7,22 +7,27 @@ import net.gotev.uploadservice.ServerResponse;
 import net.gotev.uploadservice.UploadInfo;
 import net.gotev.uploadservice.UploadServiceBroadcastReceiver;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 public class RequestsBroadcastReceiver extends UploadServiceBroadcastReceiver {
 
     private static final String TAG = "RequestsBroadcastReceiver";
 
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+
     @Override
-    public void onProgress(Context context, UploadInfo info) {
-        try {
-            Textile.instance().cafes.updateCafeRequestProgress(
-                    info.getUploadId(), info.getUploadedBytes(), info.getTotalBytes());
-        } catch (final Exception e) {
-            Logger.error(TAG, e.getMessage());
-        }
+    public void onProgress(final Context context, final UploadInfo info) {
+        handle(() -> Textile.instance().cafes.updateCafeRequestProgress(
+                info.getUploadId(), info.getUploadedBytes(), info.getTotalBytes()));
     }
 
     @Override
-    public void onError(Context context, UploadInfo info, ServerResponse response, Exception exception) {
+    public void onError(
+            final Context context, final UploadInfo info, final ServerResponse response,
+            final Exception exception) {
         String message = "Request failed (";
         if (response != null) {
             message += "code=" + response.getHttpCode() + " ";
@@ -35,30 +40,20 @@ public class RequestsBroadcastReceiver extends UploadServiceBroadcastReceiver {
             message += "error=unknown";
         }
         message += ")";
+        final String fmessage = message;
 
-        try {
-            Textile.instance().cafes.failCafeRequest(info.getUploadId(), message);
-        } catch (final Exception e) {
-            Logger.error(TAG, e.getMessage());
-        }
+        handle(() -> Textile.instance().cafes.failCafeRequest(info.getUploadId(), fmessage));
     }
 
     @Override
-    public void onCompleted(Context context, UploadInfo info, ServerResponse response) {
-        try {
-            Textile.instance().cafes.completeCafeRequest(info.getUploadId());
-        } catch (final Exception e) {
-            Logger.error(TAG, e.getMessage());
-        }
+    public void onCompleted(final Context context, final UploadInfo info, final ServerResponse response) {
+        handle(() -> Textile.instance().cafes.completeCafeRequest(info.getUploadId()));
     }
 
     @Override
-    public void onCancelled(Context context, UploadInfo info) {
-        try {
-            Textile.instance().cafes.failCafeRequest(info.getUploadId(), "Request cancelled");
-        } catch (final Exception e) {
-            Logger.error(TAG, e.getMessage());
-        }
+    public void onCancelled(final Context context, final UploadInfo info) {
+        handle(() -> Textile.instance().cafes.failCafeRequest(
+                info.getUploadId(), "Request cancelled"));
     }
 
     @Override
@@ -71,5 +66,14 @@ public class RequestsBroadcastReceiver extends UploadServiceBroadcastReceiver {
     public void unregister(final Context context) {
         super.unregister(context);
         Logger.info(TAG, "Unregistered");
+    }
+
+    private void handle(final Callable<Void> callable) {
+        final Future<Void> future = executor.submit(callable);
+        try {
+            future.get();
+        } catch (final Exception e) {
+            Logger.error(TAG, e.getMessage());
+        }
     }
 }

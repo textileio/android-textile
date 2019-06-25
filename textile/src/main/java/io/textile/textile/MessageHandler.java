@@ -28,7 +28,7 @@ class MessageHandler implements Messenger {
     }
 
     @Override
-    public void notify(Event event) {
+    public void notify(final Event event) {
         switch (MobileEventType.forNumber(event.getType())) {
             case NODE_START:
                 for (final TextileEventListener listener : listeners) {

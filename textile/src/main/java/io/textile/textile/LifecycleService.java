@@ -25,7 +25,7 @@ public class LifecycleService extends Service {
     NodeStoppedListener nodeStoppedListener;
 
     @Override
-    public LifecycleBinder onBind(Intent intent) {
+    public LifecycleBinder onBind(final Intent intent) {
         return binder;
     }
 
@@ -49,7 +49,7 @@ public class LifecycleService extends Service {
             timer.cancel();
             timer = null;
         }
-        int delaySeconds = 60;
+        final int delaySeconds = 60;
         Textile.instance().notifyListenersOfPendingNodeStop(delaySeconds);
         timer = new Timer();
         timer.schedule(new TimerTask() {

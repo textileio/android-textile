@@ -182,7 +182,7 @@ public class Textile implements LifecycleObserver {
      * @return The wallet recovery phrase if it's the first time the node is being initialize, nil otherwise
      * @throws Exception The exception that occurred
      */
-    public static String initialize(Context applicationContext, boolean debug, boolean logToDisk) throws Exception {
+    public static String initialize(final Context applicationContext, final boolean debug, final boolean logToDisk) throws Exception {
         if (Textile.instance().node != null) {
             return null;
         }
@@ -225,7 +225,7 @@ public class Textile implements LifecycleObserver {
         return TextileHelper.INSTANCE;
     }
 
-    private static void create(String repoPath, boolean debug) throws Exception {
+    private static void create(final String repoPath, final boolean debug) throws Exception {
         final Context ctx = Textile.instance().applicationContext;
 
         Textile.instance().newTextile(repoPath, debug);
@@ -242,16 +242,16 @@ public class Textile implements LifecycleObserver {
     private Textile () {
     }
 
-    private String newWallet(long wordCount) throws Exception {
+    private String newWallet(final long wordCount) throws Exception {
         return Mobile.newWallet(wordCount);
     }
 
-    private MobileWalletAccount walletAccountAt(String phrase, long index, String password) throws Exception {
+    private MobileWalletAccount walletAccountAt(final String phrase, final long index, final String password) throws Exception {
         final byte[] bytes = Mobile.walletAccountAt(phrase, index, password);
         return MobileWalletAccount.parseFrom(bytes);
     }
 
-    private void initRepo(String seed, String repoPath, boolean logToDisk, boolean debug) throws Exception {
+    private void initRepo(final String seed, final String repoPath, final boolean logToDisk, final boolean debug) throws Exception {
         final InitConfig config = new InitConfig();
         config.setSeed(seed);
         config.setRepoPath(repoPath);
@@ -260,13 +260,13 @@ public class Textile implements LifecycleObserver {
         Mobile.initRepo(config);
     }
 
-    private void migrateRepo(String repoPath) throws Exception {
+    private void migrateRepo(final String repoPath) throws Exception {
         final MigrateConfig config = new MigrateConfig();
         config.setRepoPath(repoPath);
         Mobile.migrateRepo(config);
     }
 
-    private void newTextile(String repoPath, boolean debug) throws Exception {
+    private void newTextile(final String repoPath, final boolean debug) throws Exception {
         final RunConfig config = new RunConfig();
         config.setRepoPath(repoPath);
         config.setDebug(debug);
@@ -300,7 +300,7 @@ public class Textile implements LifecycleObserver {
         }
     }
 
-    void notifyListenersOfPendingNodeStop(int seconds) {
+    void notifyListenersOfPendingNodeStop(final int seconds) {
         for (final TextileEventListener listener : eventsListeners) {
             listener.willStopNodeInBackgroundAfterDelay(seconds);
         }
@@ -353,9 +353,8 @@ public class Textile implements LifecycleObserver {
 
     /**
      * Reset the local Textile node instance so it can be re-initialized
-     * @throws Exception The exception that occurred (@todo does this need to throw?)
      */
-    public void destroy() throws Exception {
+    public void destroy() {
         ProcessLifecycleOwner.get().getLifecycle().removeObserver(this);
         applicationContext.unbindService(connection);
         lifecycleService.stopNodeImmediately();
@@ -455,7 +454,7 @@ public class Textile implements LifecycleObserver {
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
             LifecycleService.LifecycleBinder binder = (LifecycleService.LifecycleBinder) service;
             lifecycleService = binder.getService();
             lifecycleService.nodeStoppedListener = () -> Textile.this.appState = AppState.None;
@@ -463,7 +462,7 @@ public class Textile implements LifecycleObserver {
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName name) {
+        public void onServiceDisconnected(final ComponentName name) {
             Logger.info(TAG, name + " disconnected");
         }
     };

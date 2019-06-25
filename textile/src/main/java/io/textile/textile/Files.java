@@ -20,7 +20,7 @@ public class Files extends NodeDependent {
      * @param caption A caption for the input
      * @param handler An object that will get called with the resulting block
      */
-    public void addData(byte[] input, String threadId, String caption, final Handlers.BlockHandler handler) {
+    public void addData(final byte[] input, final String threadId, final String caption, final Handlers.BlockHandler handler) {
         node.addData(input, threadId, caption, (data, e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -28,7 +28,7 @@ public class Files extends NodeDependent {
             }
             try {
                 handler.onComplete(Block.parseFrom(data));
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });
@@ -41,7 +41,7 @@ public class Files extends NodeDependent {
      * @param caption A caption for the input
      * @param handler An object that will get called with the resulting block
      */
-    public void addFiles(String files, String threadId, String caption, final Handlers.BlockHandler handler) {
+    public void addFiles(final String files, final String threadId, final String caption, final Handlers.BlockHandler handler) {
         node.addFiles(files, threadId, caption, (data, e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -49,7 +49,7 @@ public class Files extends NodeDependent {
             }
             try {
                 handler.onComplete(Block.parseFrom(data));
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });
@@ -62,7 +62,7 @@ public class Files extends NodeDependent {
      * @param caption A caption for the shared input
      * @param handler An object that will get called with the resulting block
      */
-    public void shareFiles(String hash, String threadId, String caption, final Handlers.BlockHandler handler) {
+    public void shareFiles(final String hash, final String threadId, final String caption, final Handlers.BlockHandler handler) {
         node.shareFiles(hash, threadId, caption, (data, e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -70,7 +70,7 @@ public class Files extends NodeDependent {
             }
             try {
                 handler.onComplete(Block.parseFrom(data));
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });
@@ -84,8 +84,8 @@ public class Files extends NodeDependent {
      * @return An object containing a list of files data
      * @throws Exception The exception that occurred
      */
-    public FilesList list(String threadId, String offset, long limit) throws Exception {
-        byte[] bytes = node.files(threadId, offset, limit);
+    public FilesList list(final String threadId, final String offset, final long limit) throws Exception {
+        final byte[] bytes = node.files(threadId, offset, limit);
         return FilesList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
@@ -94,7 +94,7 @@ public class Files extends NodeDependent {
      * @param hash The hash to return data for
      * @param handler An object that will get called with the resulting data and media type
      */
-    public void content(String hash, final Handlers.DataHandler handler) {
+    public void content(final String hash, final Handlers.DataHandler handler) {
         node.fileContent(hash, (data, media, e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -102,7 +102,7 @@ public class Files extends NodeDependent {
             }
             try {
                 handler.onComplete(data, media);
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });
@@ -114,7 +114,7 @@ public class Files extends NodeDependent {
      * @param minWidth The width of the image the data will be used for
      * @param handler An object that will get called with the resulting data and media type
      */
-    public void imageContentForMinWidth(String path, long minWidth, final Handlers.DataHandler handler) {
+    public void imageContentForMinWidth(final String path, final long minWidth, final Handlers.DataHandler handler) {
         node.imageFileContentForMinWidth(path, minWidth, (data, media, e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -122,10 +122,9 @@ public class Files extends NodeDependent {
             }
             try {
                 handler.onComplete(data, media);
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });
     }
-
 }

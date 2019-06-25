@@ -54,7 +54,7 @@ class RequestsHandler {
                 final List<String> uploads = results.get();
 
                 Logger.debug(TAG, "Uploads started: " + uploads.toString());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Logger.error(TAG, e.getMessage());
             }
             return null;
@@ -62,12 +62,12 @@ class RequestsHandler {
 
         try {
             future.get();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(TAG, e.getMessage());
         }
     }
 
-    private CompletableFuture<String> getUpload(String id) {
+    private CompletableFuture<String> getUpload(final String id) {
         return CompletableFuture.supplyAsync(() -> {
             final CompletableFuture<String> inner = new CompletableFuture<>();
 

@@ -35,7 +35,7 @@ public class Account extends NodeDependent {
      * @return The encrypted data
      * @throws Exception The exception that occurred
      */
-    public byte[] encrypt(byte[] bytes) throws Exception {
+    public byte[] encrypt(final byte[] bytes) throws Exception {
         return node.encrypt(bytes);
     }
 
@@ -45,7 +45,7 @@ public class Account extends NodeDependent {
      * @return The decrypted data
      * @throws Exception The exception that occurred
      */
-    public byte[] decrypt(byte[] bytes) throws Exception {
+    public byte[] decrypt(final byte[] bytes) throws Exception {
         return node.decrypt(bytes);
     }
 
@@ -55,7 +55,7 @@ public class Account extends NodeDependent {
      * @throws Exception The exception that occurred
      */
     public Contact contact() throws Exception {
-        byte[] bytes = node.accountContact();
+        final byte[] bytes = node.accountContact();
         return Contact.parseFrom(bytes);
     }
 
@@ -65,7 +65,7 @@ public class Account extends NodeDependent {
      * @return A handle that can be used to cancel the account sync
      * @throws Exception The exception that occurred
      */
-    public SearchHandle sync(QueryOptions options) throws Exception {
+    public SearchHandle sync(final QueryOptions options) throws Exception {
         return node.syncAccount(options.toByteArray());
     }
 }

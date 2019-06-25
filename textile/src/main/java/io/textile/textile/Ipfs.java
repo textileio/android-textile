@@ -25,7 +25,7 @@ public class Ipfs extends NodeDependent {
      * @param path The IPFS path for the data you want to retrieve
      * @param handler An object that will get called with the resulting data and media type
      */
-    public void dataAtPath(String path, final Handlers.DataHandler handler) {
+    public void dataAtPath(final String path, final Handlers.DataHandler handler) {
         node.dataAtPath(path, (data, media, e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -33,7 +33,7 @@ public class Ipfs extends NodeDependent {
             }
             try {
                 handler.onComplete(data, media);
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });

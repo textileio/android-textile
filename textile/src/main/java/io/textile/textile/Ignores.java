@@ -17,7 +17,7 @@ public class Ignores extends NodeDependent {
      * @return The hash of the new ignore block
      * @throws Exception The exception that occurred
      */
-    public String add(String blockId) throws Exception {
+    public String add(final String blockId) throws Exception {
         return node.addIgnore(blockId);
     }
 }

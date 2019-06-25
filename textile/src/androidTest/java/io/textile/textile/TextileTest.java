@@ -85,7 +85,7 @@ public class TextileTest {
         await().atMost(30, SECONDS).untilTrue(ready);
 
         // Add a blob thread
-        final Model.Thread blobThread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
+        Model.Thread blobThread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
                 .setName("data")
                 .setKey(UUID.randomUUID().toString())
                 .setSchema(AddThreadConfig.Schema.newBuilder()
@@ -95,7 +95,7 @@ public class TextileTest {
         assertNotEquals("", blobThread.getId());
 
         // Add a media thread
-        final Model.Thread mediaThread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
+        Model.Thread mediaThread = Textile.instance().threads.add(AddThreadConfig.newBuilder()
                 .setName("test")
                 .setKey(UUID.randomUUID().toString())
                 .setSchema(AddThreadConfig.Schema.newBuilder()
@@ -129,7 +129,7 @@ public class TextileTest {
         await().atMost(30, SECONDS).untilTrue(ready);
 
         // Add a single file to the media thread
-        final String input1 = TextileTest.getCacheFile(ctx, "TEST0.JPG").getAbsolutePath();
+        String input1 = TextileTest.getCacheFile(ctx, "TEST0.JPG").getAbsolutePath();
         ready.getAndSet(false);
         Textile.instance().files.addFiles(
                 input1, mediaThread.getId(), "caption", new Handlers.BlockHandler() {
@@ -148,7 +148,7 @@ public class TextileTest {
         await().atMost(30, SECONDS).untilTrue(ready);
 
         // Add two files at once to the media thread
-        final String input2 = TextileTest.getCacheFile(ctx, "TEST1.JPG").getAbsolutePath();
+        String input2 = TextileTest.getCacheFile(ctx, "TEST1.JPG").getAbsolutePath();
         ready.getAndSet(false);
         Textile.instance().files.addFiles(
                 input1 + "," + input2, mediaThread.getId(), "caption", new Handlers.BlockHandler() {

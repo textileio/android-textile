@@ -20,7 +20,7 @@ public class Cafes extends NodeDependent {
      * @param token The API token for the cafe being registered
      * @param handler An object that will get called with the operation is complete
      */
-    public void register(String peerId, String token, final Handlers.ErrorHandler handler) {
+    public void register(final String peerId, final String token, final Handlers.ErrorHandler handler) {
         node.registerCafe(peerId, token, (e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -28,7 +28,7 @@ public class Cafes extends NodeDependent {
             }
             try {
                 handler.onComplete();
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });
@@ -39,7 +39,7 @@ public class Cafes extends NodeDependent {
      * @param peerId The peer id of the cafe you want to deregister
      * @param handler An object that will get called with the operation is complete
      */
-    public void deregister(String peerId, final Handlers.ErrorHandler handler) {
+    public void deregister(final String peerId, final Handlers.ErrorHandler handler) {
         node.deregisterCafe(peerId, (e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -47,7 +47,7 @@ public class Cafes extends NodeDependent {
             }
             try {
                 handler.onComplete();
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });
@@ -58,7 +58,7 @@ public class Cafes extends NodeDependent {
      * @param peerId The peer id of the cafe who's session you want to refresh
      * @param handler An object that will get called with the result of the operation
      */
-    public void refreshSession(String peerId, final Handlers.CafeSessionHandler handler) {
+    public void refreshSession(final String peerId, final Handlers.CafeSessionHandler handler) {
         node.refreshCafeSession(peerId, (data, e) -> {
             if (e != null) {
                 handler.onError(e);
@@ -70,7 +70,7 @@ public class Cafes extends NodeDependent {
             }
             try {
                 handler.onComplete(CafeSession.parseFrom(data));
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 handler.onError(exception);
             }
         });
@@ -90,12 +90,12 @@ public class Cafes extends NodeDependent {
      * @return The CafeSession for the previously registered cafe
      * @throws Exception The exception that occurred
      */
-    public CafeSession session(String peerId) throws Exception {
+    public CafeSession session(final String peerId) throws Exception {
         /*
          * cafeSession returns null if no session is found.
          * Be sure we return null in that case and not a default CafeSession
          */
-        byte[] bytes = node.cafeSession(peerId);
+        final byte[] bytes = node.cafeSession(peerId);
         return bytes != null ? CafeSession.parseFrom(bytes) : null;
     }
 
@@ -105,35 +105,38 @@ public class Cafes extends NodeDependent {
      * @throws Exception The exception that occurred
      */
     public CafeSessionList sessions() throws Exception {
-        byte[] bytes = node.cafeSessions();
+        final byte[] bytes = node.cafeSessions();
         return CafeSessionList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
-    byte[] cafeRequests(long limit) throws Exception {
+    byte[] cafeRequests(final long limit) throws Exception {
         return node.cafeRequests(limit);
     }
 
-    void cafeRequestPending(String id) throws Exception {
+    void cafeRequestPending(final String id) throws Exception {
         node.cafeRequestPending(id);
     }
 
-    void cafeRequestNotPending(String id) throws Exception {
+    void cafeRequestNotPending(final String id) throws Exception {
         node.cafeRequestNotPending(id);
     }
 
-    void completeCafeRequest(String id) throws Exception {
+    Void completeCafeRequest(final String id) throws Exception {
         node.completeCafeRequest(id);
+        return null;
     }
 
-    void failCafeRequest(String id, String reason) throws Exception {
+    Void failCafeRequest(final String id, final String reason) throws Exception {
         node.failCafeRequest(id, reason);
+        return null;
     }
 
-    void updateCafeRequestProgress(String id, long transferred, long total) throws Exception {
+    Void updateCafeRequestProgress(final String id, final long transferred, final long total) throws Exception {
         node.updateCafeRequestProgress(id, transferred, total);
+        return null;
     }
 
-    void writeCafeRequest(String id, ProtoCallback cb) {
+    void writeCafeRequest(final String id, final ProtoCallback cb) {
         node.writeCafeRequest(id, cb);
     }
 }

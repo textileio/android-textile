@@ -17,7 +17,7 @@ public class Logs extends NodeDependent {
      * @param level Object containing a dictionary of log level for each logging system
      * @throws Exception The exception that occurred
      */
-    public void setLevel(LogLevel level) throws Exception {
+    public void setLevel(final LogLevel level) throws Exception {
         node.setLogLevel(level.toByteArray());
     }
 }
