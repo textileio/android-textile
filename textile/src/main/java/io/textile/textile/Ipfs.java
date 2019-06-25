@@ -7,7 +7,7 @@ import mobile.Mobile_;
  */
 public class Ipfs extends NodeDependent {
 
-    Ipfs(Mobile_ node) {
+    Ipfs(final Mobile_ node) {
         super(node);
     }
 
@@ -23,10 +23,19 @@ public class Ipfs extends NodeDependent {
     /**
      * Get raw data stored at an IPFS path
      * @param path The IPFS path for the data you want to retrieve
-     * @return The raw data
-     * @throws Exception The exception that occurred
+     * @param handler An object that will get called with the resulting data and media type
      */
-    public byte[] dataAtPath(String path) throws Exception {
-        return node.dataAtPath(path);
+    public void dataAtPath(final String path, final Handlers.DataHandler handler) {
+        node.dataAtPath(path, (data, media, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(data, media);
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
     }
 }

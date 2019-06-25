@@ -1,10 +1,7 @@
 package io.textile.textile;
 
-import io.textile.pb.Mobile.MobilePreparedFiles;
 import io.textile.pb.Model.Block;
-import io.textile.pb.View.Directory;
 import io.textile.pb.View.FilesList;
-import mobile.Callback;
 import mobile.Mobile_;
 
 /**
@@ -12,122 +9,71 @@ import mobile.Mobile_;
  */
 public class Files extends NodeDependent {
 
-    /**
-     * Interface representing an object that can be
-     * called with the results of prepare
-     */
-    public interface PreparedFilesHandler {
-        /**
-         * Called with the results of prepare
-         * @param preparedFiles The prepared file data
-         */
-        void onFilesPrepared(MobilePreparedFiles preparedFiles);
-
-        /**
-         * Called in the case of an error while preparing files
-         * @param e The exception
-         */
-        void onError(Exception e);
-    }
-
-    Files(Mobile_ node) {
+    Files(final Mobile_ node) {
         super(node);
     }
 
     /**
-     * Prepare raw data to later add to a Textile thread
-     * @param data Raw base64 string data
+     * Add raw data to to a Textile thread
+     * @param input Raw bytes
      * @param threadId The thread id the data will be added to
-     * @param handler An object that will get called with the results of the prepare operation
+     * @param caption A caption for the input
+     * @param handler An object that will get called with the resulting block
      */
-    public void prepare(String data, String threadId, final PreparedFilesHandler handler) {
-        node.prepareFiles(data, threadId, new Callback() {
-            @Override
-            public void call(byte[] bytes, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onFilesPrepared(MobilePreparedFiles.parseFrom(bytes));
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+    public void addData(final byte[] input, final String threadId, final String caption, final Handlers.BlockHandler handler) {
+        node.addData(input, threadId, caption, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(Block.parseFrom(data));
+            } catch (final Exception exception) {
+                handler.onError(exception);
             }
         });
     }
 
     /**
-     * Prepare file data to later add to a Textile thread
-     * @param path The path to the file containing the data to prepare
+     * Add file(s) to to a Textile thread
+     * @param files A comma-separated list of file paths
      * @param threadId The thread id the data will be added to
-     * @param handler An object that will get called with the results of the prepare operation
+     * @param caption A caption for the input
+     * @param handler An object that will get called with the resulting block
      */
-    public void prepareByPath(String path, String threadId, final PreparedFilesHandler handler) {
-        node.prepareFilesByPath(path, threadId, new Callback() {
-            @Override
-            public void call(byte[] bytes, Exception e) {
-                if (e != null) {
-                    handler.onError(e);
-                    return;
-                }
-                try {
-                    handler.onFilesPrepared(MobilePreparedFiles.parseFrom(bytes));
-                } catch (Exception exception) {
-                    handler.onError(exception);
-                }
+    public void addFiles(final String files, final String threadId, final String caption, final Handlers.BlockHandler handler) {
+        node.addFiles(files, threadId, caption, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(Block.parseFrom(data));
+            } catch (final Exception exception) {
+                handler.onError(exception);
             }
         });
     }
 
     /**
-     * Prepare raw data synchronously to later add to a Textile thread
-     * @param data Raw base64 string data
+     * Share files to a Textile thread
+     * @param hash The hash of the files graph to share
      * @param threadId The thread id the data will be added to
-     * @return An object containing data about the prepared files that will be used to add to the thread later
-     * @throws Exception The exception that occurred
+     * @param caption A caption for the shared input
+     * @param handler An object that will get called with the resulting block
      */
-    public MobilePreparedFiles prepareSync(String data, String threadId) throws Exception {
-        byte[] bytes = node.prepareFilesSync(data, threadId);
-        return MobilePreparedFiles.parseFrom(bytes);
-    }
-
-    /**
-     * Prepare file data synchronously to later add to a Textile thread
-     * @param path The path to the file containing the data to prepare
-     * @param threadId The thread id the data will be added to
-     * @return An object containing data about the prepared files that will be used to add to the thread later
-     * @throws Exception The exception that occurred
-     */
-    public MobilePreparedFiles prepareByPathSync(String path, String threadId) throws Exception {
-        byte[] bytes = node.prepareFilesByPathSync(path, threadId);
-        return MobilePreparedFiles.parseFrom(bytes);
-    }
-
-    /**
-     * Add data to a Textile thread
-     * @param directory The Directory data that was previously prepared
-     * @param threadId The thread to add the data to
-     * @param caption A caption to associate with the data
-     * @return The Block representing the added data
-     * @throws Exception The exception that occurred
-     */
-    public Block add(Directory directory, String threadId, String caption) throws Exception {
-        byte[] bytes = node.addFiles(directory.toByteArray(), threadId, caption);
-        return Block.parseFrom(bytes);
-    }
-
-    /**
-     * Add data from a Textile thread to another Textile thread
-     * @param target The target from the source thread of the data to add
-     * @param threadId The thread to add the data to
-     * @param caption A caption to associate with the data
-     * @return The Block representing the added data
-     * @throws Exception The exception that occurred
-     */
-    public Block addByTarget(String target, String threadId, String caption) throws Exception {
-        byte[] bytes = node.addFilesByTarget(target, threadId, caption);
-        return Block.parseFrom(bytes);
+    public void shareFiles(final String hash, final String threadId, final String caption, final Handlers.BlockHandler handler) {
+        node.shareFiles(hash, threadId, caption, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(Block.parseFrom(data));
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
     }
 
     /**
@@ -138,30 +84,47 @@ public class Files extends NodeDependent {
      * @return An object containing a list of files data
      * @throws Exception The exception that occurred
      */
-    public FilesList list(String threadId, String offset, long limit) throws Exception {
-        byte[] bytes = node.files(threadId, offset, limit);
+    public FilesList list(final String threadId, final String offset, final long limit) throws Exception {
+        final byte[] bytes = node.files(threadId, offset, limit);
         return FilesList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
     /**
      * Get raw data for a file hash
      * @param hash The hash to return data for
-     * @return The base64 string of data
-     * @throws Exception The exception that occurred
+     * @param handler An object that will get called with the resulting data and media type
      */
-    public String content(String hash) throws Exception {
-        return node.fileContent(hash);
+    public void content(final String hash, final Handlers.DataHandler handler) {
+        node.fileContent(hash, (data, media, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(data, media);
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
     }
 
     /**
      * Helper function to return the most appropriate image data for a minimun image width
      * @param path The IPFS path that includes image data for various image sizes
      * @param minWidth The width of the image the data will be used for
-     * @return The base64 string of image data
-     * @throws Exception The exception that occurred
+     * @param handler An object that will get called with the resulting data and media type
      */
-    public String imageContentForMinWidth(String path, long minWidth) throws Exception {
-        return node.imageFileContentForMinWidth(path, minWidth);
+    public void imageContentForMinWidth(final String path, final long minWidth, final Handlers.DataHandler handler) {
+        node.imageFileContentForMinWidth(path, minWidth, (data, media, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(data, media);
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
     }
-
 }

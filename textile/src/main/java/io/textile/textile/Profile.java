@@ -1,5 +1,6 @@
 package io.textile.textile;
 
+import io.textile.pb.Model;
 import io.textile.pb.Model.Peer;
 import io.textile.pb.Model.Thread;
 import mobile.Mobile_;
@@ -9,7 +10,7 @@ import mobile.Mobile_;
  */
 public class Profile extends NodeDependent {
 
-    Profile(Mobile_ node) {
+    Profile(final Mobile_ node) {
         super(node);
     }
 
@@ -19,7 +20,7 @@ public class Profile extends NodeDependent {
      * @throws Exception The exception that occurred
      */
     public Peer get() throws Exception {
-        byte[] bytes = node.profile();
+        final byte[] bytes = node.profile();
         return Peer.parseFrom(bytes);
     }
 
@@ -37,7 +38,7 @@ public class Profile extends NodeDependent {
      * @param name The new user name
      * @throws Exception The exception that occurred
      */
-    public void setName(String name) throws Exception {
+    public void setName(final String name) throws Exception {
         node.setName(name);
     }
 
@@ -51,12 +52,31 @@ public class Profile extends NodeDependent {
     }
 
     /**
+     * Set the avatar
+     * @param file The image file to use
+     * @param handler An object that will get called with the resulting block
+     */
+    public void setAvatar(final String file, final Handlers.BlockHandler handler) {
+        node.setAvatar(file, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete(Model.Block.parseFrom(data));
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
+    }
+
+    /**
      * Get the Textile account thread
      * @return The account thread
      * @throws Exception The exception that occurred
      */
     public Thread accountThread() throws Exception {
-        byte[] bytes = node.accountThread();
+        final byte[] bytes = node.accountThread();
         return Thread.parseFrom(bytes);
     }
 }

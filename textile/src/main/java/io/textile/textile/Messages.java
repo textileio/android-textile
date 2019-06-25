@@ -8,7 +8,7 @@ import mobile.Mobile_;
  */
 public class Messages extends NodeDependent {
 
-    Messages(Mobile_ node) {
+    Messages(final Mobile_ node) {
         super(node);
     }
 
@@ -19,7 +19,7 @@ public class Messages extends NodeDependent {
      * @return The hash of the newly created message block
      * @throws Exception The exception that occurred
      */
-    public String add(String threadId, String body) throws Exception {
+    public String add(final String threadId, final String body) throws Exception {
         return node.addMessage(threadId, body);
     }
 
@@ -31,8 +31,8 @@ public class Messages extends NodeDependent {
      * @return An object containing a list of messages
      * @throws Exception The exception that occurred
      */
-    public TextList list(String offset, long limit, String threadId) throws Exception {
-        byte[] bytes = node.messages(offset, limit, threadId);
+    public TextList list(final String offset, long limit, final String threadId) throws Exception {
+        final byte[] bytes = node.messages(offset, limit, threadId);
         return TextList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 }

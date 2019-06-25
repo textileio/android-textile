@@ -8,7 +8,7 @@ import mobile.Mobile_;
  */
 public class Notifications extends NodeDependent {
 
-    Notifications(Mobile_ node) {
+    Notifications(final Mobile_ node) {
         super(node);
     }
 
@@ -19,8 +19,8 @@ public class Notifications extends NodeDependent {
      * @return An object containing a list of notifications
      * @throws Exception The exception that occurred
      */
-    public NotificationList list(String offset, long limit) throws Exception {
-        byte[] bytes = node.notifications(offset, limit);
+    public NotificationList list(final String offset, final long limit) throws Exception {
+        final byte[] bytes = node.notifications(offset, limit);
         return NotificationList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
@@ -36,7 +36,7 @@ public class Notifications extends NodeDependent {
      * @param notificationId The id of the notification to mark as read
      * @throws Exception The exception that occurred
      */
-    public void read(String notificationId) throws Exception {
+    public void read(final String notificationId) throws Exception {
         node.readNotification(notificationId);
     }
 
@@ -54,7 +54,7 @@ public class Notifications extends NodeDependent {
      * @return The hash of the newly created thread join block
      * @throws Exception The exception that occurred
      */
-    public String acceptInvite(String notificationId) throws Exception {
+    public String acceptInvite(final String notificationId) throws Exception {
         return node.acceptInviteViaNotification(notificationId);
     }
 
@@ -63,7 +63,7 @@ public class Notifications extends NodeDependent {
      * @param notificationId The id of the invite notification
      * @throws Exception The exception that occurred
      */
-    public void ignoreInvite(String notificationId) throws Exception {
+    public void ignoreInvite(final String notificationId) throws Exception {
         node.ignoreInviteViaNotification(notificationId);
     }
 }

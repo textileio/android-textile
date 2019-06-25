@@ -2,49 +2,31 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'textile'
-
-    publishedGroupId = 'io.textile'
-    libraryName = 'textile'
-    artifact = 'textile'
-
-    libraryDescription = 'Textile SDK for Android'
-
-    siteUrl = 'https://github.com/textileio/android-textile'
-    gitUrl = 'https://github.com/textileio/android-textile.git'
-
-    libraryVersion = '0.0.1-dev'
-
-    developerId = 'textile'
-    developerName = 'Textile'
-    developerEmail = 'contact@textile.io'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
-
 repositories {
     maven {
-        url "https://dl.bintray.com/textile/maven"
+        url 'https://dl.bintray.com/textile/maven'
     }
 }
 
 android {
-    compileSdkVersion 28
-
-
+    compileSdkVersion targetSdk
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion minSdk
+        targetSdkVersion targetSdk
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        buildConfigField 'String', 'TEST_CAFE_ID', '"'+getTestCafeID()+'"'
+        buildConfigField 'String', 'TEST_CAFE_TOKEN', '"'+getTestCafeToken()+'"'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 
     buildTypes {
@@ -54,16 +36,49 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    api 'io.textile:pb:0.2.6'
-    api 'io.textile:mobile:0.2.6'
-    implementation "android.arch.lifecycle:extensions:1.1.1"
-    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // Textile
+    api "io.textile:pb:$textileVersion"
+    api "io.textile:mobile:$textileVersion"
+
+    // Support
+    // implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
+    implementation "com.android.support:appcompat-v7:$appcompatVersion"
+    implementation "com.android.support:support-v4:$appcompatVersion"
+
+    // Lifecycle
+    // implementation "androidx.lifecycle:lifecycle-extensions:$androidxLifecycleVersion"
+    // implementation "androidx.lifecycle:lifecycle-common-java8:$androidxLifecycleVersion"
+    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVersion"
+
+    // UploadService
+    implementation "com.github.textileio:android-upload-service:$uploadServiceVersion"
+
+    // Testing
+    testImplementation "junit:junit:$junitVersion"
+
+    // Core library
+    // androidTestImplementation "androidx.test:core:$androidxTestCoreVersion"
+
+    // AndroidJUnitRunner and JUnit Rules
+    // androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
+    // androidTestImplementation "androidx.test:rules:$androidxTestRulesVersion"
+    androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
+
+    // Assertions
+    // androidTestImplementation "androidx.test.ext:junit:$androidxTestExtJunitVersion"
+    // androidTestImplementation "androidx.test.ext:truth:$androidxTestExtTruthVersion"
+
+    // Utils
+    androidTestImplementation "org.awaitility:awaitility:$awaitilityVersion"
+    androidTestImplementation "commons-io:commons-io:$commonsIOVersion"
 }
 
 group = publishedGroupId
@@ -129,7 +144,7 @@ task javadoc(type: Javadoc) {
 
 afterEvaluate {
     javadoc.classpath += files(android.libraryVariants.collect { variant ->
-        variant.javaCompile.classpath.files
+        variant.javaCompileProvider.get().classpath.files
     })
 }
 
@@ -144,8 +159,8 @@ artifacts {
 }
 
 bintray {
-    user = String.valueOf(System.getenv("BINTRAY_USERNAME"))
-	key = String.valueOf(System.getenv("BINTRAY_API_KEY"))
+    user = String.valueOf(System.getenv('BINTRAY_USERNAME'))
+	key = String.valueOf(System.getenv('BINTRAY_API_KEY'))
 
     configurations = ['archives']
     pkg {
@@ -162,5 +177,25 @@ bintray {
         version {
             desc = libraryDescription
         }
+    }
+}
+
+def getTestCafeID() {
+    try {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        return properties.getProperty('test.cafe.id')
+    } catch (Exception e) {
+        return String.valueOf(System.getenv('TEST_CAFE_ID'))
+    }
+}
+
+def getTestCafeToken() {
+    try {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        return properties.getProperty('test.cafe.token')
+    } catch (Exception e) {
+        return String.valueOf(System.getenv('TEST_CAFE_TOKEN'))
     }
 }

@@ -14,7 +14,7 @@ import mobile.SearchHandle;
  */
 public class Threads extends NodeDependent {
 
-    Threads(Mobile_ node) {
+    Threads(final Mobile_ node) {
         super(node);
     }
 
@@ -24,8 +24,8 @@ public class Threads extends NodeDependent {
      * @return The newly created thread
      * @throws Exception The exception that occurred
      */
-    public Thread add(AddThreadConfig config) throws Exception {
-        byte[] bytes = node.addThread(config.toByteArray());
+    public Thread add(final AddThreadConfig config) throws Exception {
+        final byte[] bytes = node.addThread(config.toByteArray());
         return Thread.parseFrom(bytes);
     }
 
@@ -34,7 +34,7 @@ public class Threads extends NodeDependent {
      * @param thread The updated representation of the thread to update
      * @throws Exception The exception that occurred
      */
-    public void addOrUpdate(Thread thread) throws Exception {
+    public void addOrUpdate(final Thread thread) throws Exception {
         node.addOrUpdateThread(thread.toByteArray());
     }
 
@@ -44,7 +44,7 @@ public class Threads extends NodeDependent {
      * @param name The new name for the thread
      * @throws Exception The exception that occurred
      */
-    public void rename(String threadId, String name) throws Exception {
+    public void renamefinal (final String threadId, final String name) throws Exception {
         node.renameThread(threadId, name);
     }
 
@@ -54,12 +54,12 @@ public class Threads extends NodeDependent {
      * @return The corresponding thread object
      * @throws Exception The exception that occurred
      */
-    public Thread get(String threadId) throws Exception {
+    public Thread get(final String threadId) throws Exception {
         /*
          * thread throws an Exception if no thread is found.
          * We can assume that bytes is valid once we get to Thread.parseFrom(bytes)
          */
-        byte[] bytes = node.thread(threadId);
+        final byte[] bytes = node.thread(threadId);
         return Thread.parseFrom(bytes);
     }
 
@@ -69,7 +69,7 @@ public class Threads extends NodeDependent {
      * @throws Exception The exception that occurred
      */
     public ThreadList list() throws Exception {
-        byte[] bytes = node.threads();
+        final byte[] bytes = node.threads();
         return ThreadList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
@@ -79,8 +79,8 @@ public class Threads extends NodeDependent {
      * @return An object containing a list of contacts
      * @throws Exception The exception that occurred
      */
-    public PeerList peers(String threadId) throws Exception {
-        byte[] bytes = node.threadPeers(threadId);
+    public PeerList peers(final String threadId) throws Exception {
+        final byte[] bytes = node.threadPeers(threadId);
         return PeerList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
@@ -90,7 +90,7 @@ public class Threads extends NodeDependent {
      * @return The hash of the newly created thread leave block
      * @throws Exception The exception that occurred
      */
-    public String remove(String threadId) throws Exception {
+    public String remove(final String threadId) throws Exception {
         return node.removeThread(threadId);
     }
 
@@ -109,7 +109,7 @@ public class Threads extends NodeDependent {
      * @return A handle that can be used to cancel the search
      * @throws Exception The exception that occurred
      */
-    public SearchHandle searchSnapshots(ThreadSnapshotQuery query, QueryOptions options) throws Exception {
+    public SearchHandle searchSnapshots(final ThreadSnapshotQuery query, final QueryOptions options) throws Exception {
         return node.searchThreadSnapshots(query.toByteArray(), options.toByteArray());
     }
 }

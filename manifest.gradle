@@ -1,0 +1,65 @@
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'textile'
+
+    publishedGroupId = 'io.textile'
+    libraryName = 'textile'
+    artifact = 'textile'
+
+    demoAppId = 'io.textile.textileexample'
+
+    libraryDescription = 'Textile SDK for Android'
+    libraryKeywords = ['textile', 'ipfs', 'libp2p', 'decentralized', 'encrypted', 'android']
+
+    siteUrl = 'https://github.com/textileio/android-textile'
+    gitUrl = 'https://github.com/textileio/android-textile.git'
+
+    libraryVersion = '0.0.1-dev'
+
+    minSdk = 24
+    targetSdk = 28
+
+    // Gradle classpath dependencies versions
+    gradleVersion = '3.4.1'
+    mavenGradleVersion = '2.1'
+    bintrayPluginVersion = '1.7'
+
+    // Library and app testing dependencies versions
+    junitVersion = '4.12'
+    // androidxTestCoreVersion = '1.2.0'
+    // androidxTestRunnerVersion = '1.2.0'
+    // androidxTestRulesVersion = '1.2.0'
+    // androidxTestExtJunitVersion = '1.1.1'
+    // androidxTestExtTruthVersion = '1.2.0'
+    // androidxTestEspressoVersion = '3.2.0'
+    testRunnerVersion = '1.0.2'
+
+    // Library and app dependencies versions
+    // androidxAppcompatVersion = '1.0.2'
+    appcompatVersion = '28.0.0'
+
+    // Textile
+    textileVersion = '0.5.0'
+
+    // Lifecycle
+    // androidxLifecycleVersion = '2.0.0'
+    lifecycleVersion = '1.1.1'
+
+    // UploadService
+    uploadServiceVersion = '3.5.4'
+
+    // Demo App
+    constraintLayoutVersion = '1.1.3'
+
+    // Demo App Tests
+    awaitilityVersion = '3.1.6'
+    commonsIOVersion = '2.6'
+
+    developerId = 'textile'
+    developerName = 'Textile'
+    developerEmail = 'contact@textile.io'
+
+    licenseName = 'MIT'
+    licenseUrl = 'https://github.com/textileio/android-textile/blob/master/LICENSE'
+    allLicenses = ['MIT']
+}

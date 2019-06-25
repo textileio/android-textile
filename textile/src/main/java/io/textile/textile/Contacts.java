@@ -13,7 +13,7 @@ import mobile.SearchHandle;
  */
 public class Contacts extends NodeDependent {
 
-    Contacts(Mobile_ node) {
+    Contacts(final Mobile_ node) {
         super(node);
     }
 
@@ -22,7 +22,7 @@ public class Contacts extends NodeDependent {
      * @param contact The new contact to add, usually returned from a Contact search
      * @throws Exception The exception that occurred
      */
-    public void add(Contact contact) throws Exception {
+    public void add(final Contact contact) throws Exception {
         node.addContact(contact.toByteArray());
     }
 
@@ -32,12 +32,12 @@ public class Contacts extends NodeDependent {
      * @return The Contact object corresponding to the address
      * @throws Exception The exception that occurred
      */
-    public Contact get(String address) throws Exception {
+    public Contact get(final String address) throws Exception {
         /*
          * contact throws an Exception if no contact is found.
          * We can assume that bytes is valid once we get to Contact.parseFrom(bytes)
          */
-        byte[] bytes = node.contact(address);
+        final byte[] bytes = node.contact(address);
         return Contact.parseFrom(bytes);
     }
 
@@ -47,7 +47,7 @@ public class Contacts extends NodeDependent {
      * @throws Exception The exception that occurred
      */
     public ContactList list() throws Exception {
-        byte[] bytes = node.contacts();
+        final byte[] bytes = node.contacts();
         return ContactList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
@@ -56,7 +56,7 @@ public class Contacts extends NodeDependent {
      * @param address The address of the contact to remove
      * @throws Exception The exception that occurred
      */
-    public void remove(String address) throws Exception {
+    public void remove(final String address) throws Exception {
         node.removeContact(address);
     }
 
@@ -66,8 +66,8 @@ public class Contacts extends NodeDependent {
      * @return An object containing a list of all threads the contact and the local node account participate in
      * @throws Exception The exception that occurred
      */
-    public ThreadList threads(String address) throws Exception {
-        byte[] bytes = node.contactThreads(address);
+    public ThreadList threads(final String address) throws Exception {
+        final byte[] bytes = node.contactThreads(address);
         return ThreadList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
@@ -78,7 +78,7 @@ public class Contacts extends NodeDependent {
      * @return A handle that can be used to cancel the search
      * @throws Exception The exception that occurred
      */
-    public SearchHandle search(ContactQuery query, QueryOptions options) throws Exception {
+    public SearchHandle search(final ContactQuery query, final QueryOptions options) throws Exception {
         return node.searchContacts(query.toByteArray(), options.toByteArray());
     }
 }

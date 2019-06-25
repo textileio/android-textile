@@ -3,24 +3,85 @@ package io.textile.textile;
 import io.textile.pb.Model.CafeSessionList;
 import io.textile.pb.Model.CafeSession;
 import mobile.Mobile_;
+import mobile.ProtoCallback;
 
 /**
  * Provides access to Textile cafes related APIs
  */
 public class Cafes extends NodeDependent {
 
-    Cafes(Mobile_ node) {
+    Cafes(final Mobile_ node) {
         super(node);
     }
 
     /**
      * Used to register a remote Textile Cafe node with the local Textile node
-     * @param host The fully qualified host URL
+     * @param peerId The peer id of the cafe being registered
      * @param token The API token for the cafe being registered
+     * @param handler An object that will get called with the operation is complete
+     */
+    public void register(final String peerId, final String token, final Handlers.ErrorHandler handler) {
+        node.registerCafe(peerId, token, (e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete();
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
+    }
+
+    /**
+     * Used to deregister a previously registered Textile Cafe
+     * @param peerId The peer id of the cafe you want to deregister
+     * @param handler An object that will get called with the operation is complete
+     */
+    public void deregister(final String peerId, final Handlers.ErrorHandler handler) {
+        node.deregisterCafe(peerId, (e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete();
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
+    }
+
+    /**
+     * Used to refresh an individual Textile Cafe session
+     * @param peerId The peer id of the cafe who's session you want to refresh
+     * @param handler An object that will get called with the result of the operation
+     */
+    public void refreshSession(final String peerId, final Handlers.CafeSessionHandler handler) {
+        node.refreshCafeSession(peerId, (data, e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            if (data == null) {
+                handler.onComplete(null);
+                return;
+            }
+            try {
+                handler.onComplete(CafeSession.parseFrom(data));
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
+    }
+
+    /**
+     * Triggers the async process of checking for messages from all registered cafes
      * @throws Exception The exception that occurred
      */
-    public void register(String host, String token) throws Exception {
-        node.registerCafe(host, token);
+    public void checkMessages() throws Exception {
+        node.checkCafeMessages();
     }
 
     /**
@@ -29,12 +90,12 @@ public class Cafes extends NodeDependent {
      * @return The CafeSession for the previously registered cafe
      * @throws Exception The exception that occurred
      */
-    public CafeSession session(String peerId) throws Exception {
+    public CafeSession session(final String peerId) throws Exception {
         /*
          * cafeSession returns null if no session is found.
          * Be sure we return null in that case and not a default CafeSession
          */
-        byte[] bytes = node.cafeSession(peerId);
+        final byte[] bytes = node.cafeSession(peerId);
         return bytes != null ? CafeSession.parseFrom(bytes) : null;
     }
 
@@ -44,39 +105,38 @@ public class Cafes extends NodeDependent {
      * @throws Exception The exception that occurred
      */
     public CafeSessionList sessions() throws Exception {
-        byte[] bytes = node.cafeSessions();
+        final byte[] bytes = node.cafeSessions();
         return CafeSessionList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
-    /**
-     * Used to refresh an individual Textile Cafe session
-     * @param peerId The peer id of the cafe who's session you want to refresh
-     * @return The refreshed cafe session
-     * @throws Exception The exception that occurred
-     */
-    public CafeSession refreshSession(String peerId) throws Exception {
-        /*
-         * refreshCafeSession returns null if no session is found.
-         * Be sure we return null in that case and not a default CafeSession
-         */
-        byte[] bytes = node.refreshCafeSession(peerId);
-        return bytes != null ? CafeSession.parseFrom(bytes) : null;
+    byte[] cafeRequests(final long limit) throws Exception {
+        return node.cafeRequests(limit);
     }
 
-    /**
-     * Used to deregister a previously registered Textile Cafe
-     * @param peerId The peer id of the cafe you want to deregister
-     * @throws Exception The exception that occurred
-     */
-    public void deregister(String peerId) throws Exception {
-        node.deregisterCafe(peerId);
+    void cafeRequestPending(final String id) throws Exception {
+        node.cafeRequestPending(id);
     }
 
-    /**
-     * Triggers the async process of checking for messages from all registered cafes
-     * @throws Exception The exception that occurred
-     */
-    public void checkMessages() throws Exception {
-        node.checkCafeMessages();
+    void cafeRequestNotPending(final String id) throws Exception {
+        node.cafeRequestNotPending(id);
+    }
+
+    Void completeCafeRequest(final String id) throws Exception {
+        node.completeCafeRequest(id);
+        return null;
+    }
+
+    Void failCafeRequest(final String id, final String reason) throws Exception {
+        node.failCafeRequest(id, reason);
+        return null;
+    }
+
+    Void updateCafeRequestProgress(final String id, final long transferred, final long total) throws Exception {
+        node.updateCafeRequestProgress(id, transferred, total);
+        return null;
+    }
+
+    void writeCafeRequest(final String id, final ProtoCallback cb) {
+        node.writeCafeRequest(id, cb);
     }
 }

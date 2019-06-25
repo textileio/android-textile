@@ -7,7 +7,7 @@ import mobile.Mobile_;
  */
 public class Flags extends NodeDependent {
 
-    Flags(Mobile_ node) {
+    Flags(final Mobile_ node) {
         super(node);
     }
 
@@ -17,7 +17,7 @@ public class Flags extends NodeDependent {
      * @return The hash of the new flag block
      * @throws Exception The exception that occurred
      */
-    public String add(String blockId) throws Exception {
+    public String add(final String blockId) throws Exception {
         return node.addFlag(blockId);
     }
 }

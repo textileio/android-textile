@@ -9,7 +9,7 @@ import mobile.Mobile_;
  */
 public class Invites extends NodeDependent {
 
-    Invites(Mobile_ node) {
+    Invites(final Mobile_ node) {
         super(node);
     }
 
@@ -19,7 +19,7 @@ public class Invites extends NodeDependent {
      * @param address The address of the contact to invite
      * @throws Exception The exception that occurred
      */
-    public void add(String threadId, String address) throws Exception {
+    public void add(final String threadId, final String address) throws Exception {
         node.addInvite(threadId, address);
     }
 
@@ -29,8 +29,8 @@ public class Invites extends NodeDependent {
      * @return An object representing the external invite
      * @throws Exception The exception that occurred
      */
-    public ExternalInvite addExternal(String threadId) throws Exception {
-        byte[] bytes = node.addExternalInvite(threadId);
+    public ExternalInvite addExternal(final String threadId) throws Exception {
+        final byte[] bytes = node.addExternalInvite(threadId);
         return ExternalInvite.parseFrom(bytes);
     }
 
@@ -40,7 +40,7 @@ public class Invites extends NodeDependent {
      * @throws Exception The exception that occurred
      */
     public InviteViewList list() throws Exception {
-        byte[] bytes = node.invites();
+        final byte[] bytes = node.invites();
         return InviteViewList.parseFrom(bytes != null ? bytes : new byte[0]);
     }
 
@@ -50,7 +50,7 @@ public class Invites extends NodeDependent {
      * @return The hash of the new thread join block
      * @throws Exception The exception that occurred
      */
-    public String accept(String inviteId) throws Exception {
+    public String accept(final String inviteId) throws Exception {
         return node.acceptInvite(inviteId);
     }
 
@@ -61,7 +61,7 @@ public class Invites extends NodeDependent {
      * @return The hash of the new thread join block
      * @throws Exception The exception that occurred
      */
-    public String acceptExternal(String inviteId, String key) throws Exception {
+    public String acceptExternal(final String inviteId, final String key) throws Exception {
         return node.acceptExternalInvite(inviteId, key);
     }
 
@@ -70,7 +70,7 @@ public class Invites extends NodeDependent {
      * @param inviteId The id of the invite to ignore
      * @throws Exception The exception that occurred
      */
-    public void ignore(String inviteId) throws Exception {
+    public void ignore(final String inviteId) throws Exception {
         node.ignoreInvite(inviteId);
     }
 }

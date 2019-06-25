@@ -12,7 +12,7 @@ import mobile.Mobile_;
  */
 public class Feed extends NodeDependent {
 
-    Feed(Mobile_ node) {
+    Feed(final Mobile_ node) {
         super(node);
     }
 
@@ -22,11 +22,11 @@ public class Feed extends NodeDependent {
      * @return A list of feed items
      * @throws Exception The exception that occurred
      */
-    public ArrayList<FeedItemData> list(FeedRequest request) throws Exception {
-        byte[] bytes = node.feed(request.toByteArray());
-        FeedItemList list = FeedItemList.parseFrom(bytes != null ? bytes : new byte[0]);
-        ArrayList<FeedItemData> results = new ArrayList<>();
-        for (FeedItem feedItem : list.getItemsList()) {
+    public ArrayList<FeedItemData> list(final FeedRequest request) throws Exception {
+        final byte[] bytes = node.feed(request.toByteArray());
+        final FeedItemList list = FeedItemList.parseFrom(bytes != null ? bytes : new byte[0]);
+        final ArrayList<FeedItemData> results = new ArrayList<>();
+        for (final FeedItem feedItem : list.getItemsList()) {
             results.add(Util.feedItemData(feedItem));
         }
         return results;

@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.textile.textile">
-    <application>
+    <application android:usesCleartextTraffic="true">
         <service android:name=".LifecycleService" android:exported="false" />
+        <receiver android:name=".RequestsBroadcastReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="io.textile.textile.uploadservice.broadcast.status" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
