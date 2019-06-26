@@ -44,7 +44,7 @@ public class Threads extends NodeDependent {
      * @param name The new name for the thread
      * @throws Exception The exception that occurred
      */
-    public void renamefinal (final String threadId, final String name) throws Exception {
+    public void rename(final String threadId, final String name) throws Exception {
         node.renameThread(threadId, name);
     }
 
