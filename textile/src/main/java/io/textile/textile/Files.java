@@ -15,13 +15,13 @@ public class Files extends NodeDependent {
 
     /**
      * Add raw data to to a Textile thread
-     * @param input Raw bytes
+     * @param base64 Raw data as a base64 string
      * @param threadId The thread id the data will be added to
      * @param caption A caption for the input
      * @param handler An object that will get called with the resulting block
      */
-    public void addData(final byte[] input, final String threadId, final String caption, final Handlers.BlockHandler handler) {
-        node.addData(input, threadId, caption, (data, e) -> {
+    public void addData(final String base64, final String threadId, final String caption, final Handlers.BlockHandler handler) {
+        node.addData(base64, threadId, caption, (data, e) -> {
             if (e != null) {
                 handler.onError(e);
                 return;
