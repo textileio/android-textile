@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Base64;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.FixMethodOrder;
@@ -112,8 +113,8 @@ public class TextileTest {
 
         // add some data to the blob thread
         ready.getAndSet(false);
-        Textile.instance().files.addData(
-                "test".getBytes(), blobThread.getId(), "caption", new Handlers.BlockHandler() {
+        Textile.instance().files.addData(Base64.encodeToString("test".getBytes(), Base64.DEFAULT),
+                blobThread.getId(), "caption", new Handlers.BlockHandler() {
             @Override
             public void onComplete(Model.Block block) {
                 assertNotEquals("", block.getId());

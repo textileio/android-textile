@@ -7,6 +7,7 @@ import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
@@ -170,6 +171,8 @@ public class Textile implements LifecycleObserver {
 
     private AppState appState = AppState.None;
 
+    private static final RequestsBroadcastReceiver broadcastReceiver = new RequestsBroadcastReceiver();
+
     private static class TextileHelper {
         private static final Textile INSTANCE = new Textile();
     }
@@ -232,6 +235,10 @@ public class Textile implements LifecycleObserver {
         Textile.instance().createNodeDependents();
 
         Textile.instance().requestsHandler = new RequestsHandler(REQUESTS_BATCH_SIZE);
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BuildConfig.APPLICATION_ID + ".uploadservice.broadcast.status");
+        ctx.registerReceiver(broadcastReceiver, intentFilter);
 
         Textile.instance().lifecycleServiceIntent = new Intent(ctx, LifecycleService.class);
         ctx.bindService(Textile.instance()
