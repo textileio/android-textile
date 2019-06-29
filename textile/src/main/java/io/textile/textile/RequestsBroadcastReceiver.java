@@ -5,6 +5,7 @@ import android.content.Context;
 import net.gotev.uploadservice.Logger;
 import net.gotev.uploadservice.ServerResponse;
 import net.gotev.uploadservice.UploadInfo;
+import net.gotev.uploadservice.UploadService;
 import net.gotev.uploadservice.UploadServiceBroadcastReceiver;
 
 import java.util.concurrent.Callable;
@@ -48,12 +49,14 @@ public class RequestsBroadcastReceiver extends UploadServiceBroadcastReceiver {
     @Override
     public void onCompleted(final Context context, final UploadInfo info, final ServerResponse response) {
         handle(() -> Textile.instance().cafes.completeCafeRequest(info.getUploadId()));
+        handle(this::flushNext);
     }
 
     @Override
     public void onCancelled(final Context context, final UploadInfo info) {
         handle(() -> Textile.instance().cafes.failCafeRequest(
                 info.getUploadId(), "Request cancelled"));
+        handle(this::flushNext);
     }
 
     @Override
@@ -75,5 +78,12 @@ public class RequestsBroadcastReceiver extends UploadServiceBroadcastReceiver {
         } catch (final Exception e) {
             Logger.error(TAG, e.getMessage());
         }
+    }
+
+    private Void flushNext() {
+        if (!UploadService.getTaskList().isEmpty()) {
+            Textile.instance().requestsHandler.flush();
+        }
+        return null;
     }
 }

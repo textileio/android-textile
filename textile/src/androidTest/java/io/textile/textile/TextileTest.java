@@ -52,12 +52,6 @@ public class TextileTest {
         // Setup events
         Textile.instance().addEventListener(new TextileLoggingListener());
 
-        // manually register a receiver for sync
-        RequestsBroadcastReceiver broadcastReceiver = new RequestsBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("io.textile.textile.uploadservice.broadcast.status");
-        Textile.instance().getApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
-
         // start
         Textile.instance().start();
 

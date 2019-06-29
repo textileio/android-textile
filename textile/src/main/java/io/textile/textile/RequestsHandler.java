@@ -75,8 +75,11 @@ class RequestsHandler {
             Textile.instance().cafes.writeCafeRequest(id, (req, e) -> {
                 if (e != null) {
                     try {
-                        Textile.instance().cafes.cafeRequestNotPending(id);
-                        inner.completeExceptionally(e);
+                        Textile.instance().cafes.failCafeRequest(id, e.getMessage());
+
+                        // Since we want to keep processing, complete w/ an arbitrary string (an
+                        // exception will stop the recursize flush)
+                        inner.complete("failed");
                     } catch (final Exception ee) {
                         inner.completeExceptionally(ee);
                     }
@@ -91,7 +94,7 @@ class RequestsHandler {
                     inner.complete(startUpload(id, CafeHTTPRequest.parseFrom(req)));
                 } catch (final Exception ee) {
                     try {
-                        Textile.instance().cafes.cafeRequestNotPending(id);
+                        Textile.instance().cafes.failCafeRequest(id, ee.getMessage());
                         inner.completeExceptionally(ee);
                     } catch (final Exception eee) {
                         inner.completeExceptionally(eee);
