@@ -157,6 +157,8 @@ public class Textile implements LifecycleObserver {
      */
     public static int REQUESTS_BATCH_SIZE = 16;
 
+    RequestsHandler requestsHandler;
+
     private Context applicationContext;
 
     private HashSet<TextileEventListener> eventsListeners = new HashSet<>();
@@ -166,8 +168,6 @@ public class Textile implements LifecycleObserver {
 
     private Intent lifecycleServiceIntent;
     private LifecycleService lifecycleService;
-
-    private RequestsHandler requestsHandler;
 
     private AppState appState = AppState.None;
 
