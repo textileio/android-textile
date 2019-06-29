@@ -76,10 +76,7 @@ class RequestsHandler {
                 if (e != null) {
                     try {
                         Textile.instance().cafes.failCafeRequest(id, e.getMessage());
-
-                        // Since we want to keep processing, complete w/ an arbitrary string (an
-                        // exception will stop the recursize flush)
-                        inner.complete("failed");
+                        inner.completeExceptionally(e);
                     } catch (final Exception ee) {
                         inner.completeExceptionally(ee);
                     }
