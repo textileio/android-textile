@@ -66,6 +66,7 @@ public class LifecycleService extends Service {
             timer = null;
         }
         Textile.instance().stop();
+        // Sometimes this function is run while nodeStoppedListener is still null, crashing the app
         if (timer != null) {
             nodeStoppedListener.onNodeStopped();
             timer = null;
