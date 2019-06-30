@@ -66,7 +66,10 @@ public class LifecycleService extends Service {
             timer = null;
         }
         Textile.instance().stop();
-        nodeStoppedListener.onNodeStopped();
+        if (timer != null) {
+            nodeStoppedListener.onNodeStopped();
+            timer = null;
+        }
         stopSelf();
     }
 
