@@ -75,7 +75,9 @@ public class LifecycleService extends Service {
 
     void cancelPendingNodeStop() {
         Textile.instance().notifyListenersOfCanceledPendingNodeStop();
-        timer.cancel();
-        timer = null;
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 }
