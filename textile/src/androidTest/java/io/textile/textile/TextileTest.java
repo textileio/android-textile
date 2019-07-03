@@ -35,19 +35,26 @@ import static org.junit.Assert.assertNull;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TextileTest {
 
+    static String REPO_NAME = "textile-go";
+
     @Test
     public void integrationTest() throws Exception {
         Context ctx = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
+        final File filesDir = ctx.getFilesDir();
+        final String path = new File(filesDir, REPO_NAME).getAbsolutePath();
+
         // Wipe repo
-        File repo = new File(ctx.getFilesDir(), Textile.REPO_NAME);
+        File repo = new File(path);
         if (repo.exists()) {
             FileUtils.deleteDirectory(repo);
         }
 
         // Initialize
-        String phrase = Textile.initialize(ctx, true, false);
+        String phrase = Textile.initializeCreatingNewWalletAndAccount(path, true, false);
         assertNotEquals("", phrase);
+
+        Textile.launch(ctx, path, true);
 
         // Setup events
         Textile.instance().addEventListener(new TextileLoggingListener());
