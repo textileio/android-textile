@@ -13,13 +13,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import core.CafeOutboxHandler;
 import io.textile.pb.Model.CafeHTTPRequest;
 import io.textile.pb.View.Strings;
 
 /**
  * Handles HTTP requests queued by the Textile node
  */
-class RequestsHandler {
+class RequestsHandler implements CafeOutboxHandler {
 
     private static final String TAG = "RequestsHandler";
 
@@ -30,7 +31,7 @@ class RequestsHandler {
         this.batchSize = batchSize;
     }
 
-    void flush() {
+    public void flush() {
         final Future<Void> future = executor.submit(() -> {
             try {
                 // List a batch of request ids

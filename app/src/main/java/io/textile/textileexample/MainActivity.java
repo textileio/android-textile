@@ -1,8 +1,11 @@
 package io.textile.textileexample;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import java.io.File;
 
 import io.textile.textile.Textile;
 import io.textile.textile.TextileLoggingListener;
@@ -24,7 +27,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void initTextile() {
         try {
-            String phrase = Textile.initialize(getApplicationContext(), true, false);
+            Context ctx = getApplicationContext();
+
+            final File filesDir = ctx.getFilesDir();
+            final String path = new File(filesDir, "textile-go").getAbsolutePath();
+
+            if (!Textile.isInitialized(path)) {
+                String phrase = Textile.initializeCreatingNewWalletAndAccount(path, true, false);
+                System.out.println(phrase);
+            }
+
+            Textile.launch(ctx, path, true);
+
             Textile.instance().addEventListener(new TextileLoggingListener());
         } catch (Exception e) {
             System.out.println(e.getMessage());

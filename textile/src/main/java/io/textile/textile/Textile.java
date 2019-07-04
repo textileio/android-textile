@@ -123,16 +123,6 @@ public class Textile implements LifecycleObserver {
     public Threads threads;
 
     /**
-     * The path to the local Textile repository
-     */
-    public String repoPath;
-
-    /**
-     * The name of the repo that will be created for the node on disk
-     */
-    public static String REPO_NAME = "textile-go";
-
-    /**
      * The number of words to use in the wallet's mnemonic phrase
      */
     public static int WALLET_WORD_COUNT = 12;
@@ -161,8 +151,8 @@ public class Textile implements LifecycleObserver {
 
     private Context applicationContext;
 
-    private HashSet<TextileEventListener> eventsListeners = new HashSet<>();
-    private MessageHandler messageHandler = new MessageHandler(eventsListeners);
+    private HashSet<TextileEventListener> eventListeners = new HashSet<>();
+    private MessageHandler messageHandler = new MessageHandler(eventListeners);
 
     private Mobile_ node;
 
@@ -178,17 +168,83 @@ public class Textile implements LifecycleObserver {
     }
 
     /**
-     * Initialize the shared Textile instance, possibly returning the wallet recovery phrase
-     * @param applicationContext The host app's application context
-     * @param debug Sets the log level to debug or not
-     * @param logToDisk Whether or not to write Textile logs to disk
-     * @return The wallet recovery phrase if it's the first time the node is being initialize, nil otherwise
+     * Create a new Textile wallet
+     * @param wordCount The number of words the wallet recovery phrase should contain
+     * @return The new wallet recovery phrase
      * @throws Exception The exception that occurred
      */
-    public static String initialize(final Context applicationContext, final boolean debug, final boolean logToDisk) throws Exception {
-        if (Textile.instance().node != null) {
-            return null;
-        }
+    public static String newWallet(final long wordCount) throws Exception {
+        return Mobile.newWallet(wordCount);
+    }
+
+    /**
+     * Resolve a wallet account
+     * @param phrase The wallet recovery phrase
+     * @param index The index of the account to resolve
+     * @param password The wallet password or nil if there is no password
+     * @return The wallet account
+     * @throws Exception The exception that occurred
+     */
+    public static MobileWalletAccount walletAccountAt(final String phrase, final long index, final String password) throws Exception {
+        final byte[] bytes = Mobile.walletAccountAt(phrase, index, password);
+        return MobileWalletAccount.parseFrom(bytes);
+    }
+
+    /**
+     * Check if Textile is already initialized
+     * @param repoPath The path to the Textile repo
+     * @return A boolean value indicating if Textile is initialized or not
+     */
+    public static Boolean isInitialized(final String repoPath) {
+        File file = new File(repoPath);
+        return file.exists() && file.isDirectory();
+    }
+
+    /**
+     * Initialize the shared Textile instance with an existing account seed
+     * @param repoPath The path to the Textile repo
+     * @param seed The account seed
+     * @param debug Sets the log level to debug or not
+     * @param logToDisk Whether or not to write Textile logs to disk
+     * @throws Exception The exception that occurred
+     */
+    public static void initialize(final String repoPath, final String seed, final boolean debug, final boolean logToDisk) throws Exception {
+        final InitConfig config = new InitConfig();
+        config.setSeed(seed);
+        config.setRepoPath(repoPath);
+        config.setLogToDisk(logToDisk);
+        config.setDebug(debug);
+        Mobile.initRepo(config);
+    }
+
+    /**
+     * Initialize the shared Textile instance, creating a new wallet
+     * @param repoPath The path to the Textile repo
+     * @param debug Sets the log level to debug or not
+     * @param logToDisk Whether or not to write Textile logs to disk
+     * @return The wallet recovery phrase
+     * @throws Exception The exception that occurred
+     */
+    public static String initializeCreatingNewWalletAndAccount(final String repoPath, final boolean debug, final boolean logToDisk) throws Exception {
+        final String recoveryPhrase = Textile.newWallet(WALLET_WORD_COUNT);
+        final MobileWalletAccount account = Textile.walletAccountAt(recoveryPhrase, WALLET_ACCOUNT_INDEX, WALLET_PASSPHRASE);
+        Textile.initialize(repoPath, account.getSeed(), debug, logToDisk);
+        return recoveryPhrase;
+    }
+
+    /**
+     * After initialization is complete, launch Textile
+     * @param applicationContext The application context
+     * @param repoPath The path to the Textile repo
+     * @param debug Sets the log level to debug or not
+     * @throws Exception The exception that occurred
+     */
+    public static void launch(final Context applicationContext, final String repoPath, final boolean debug) throws Exception {
+        Textile.instance().applicationContext = applicationContext;
+        Textile.instance().requestsHandler = new RequestsHandler(REQUESTS_BATCH_SIZE);
+        Textile.instance().node = Textile.newTextile(repoPath, debug, Textile.instance().requestsHandler, Textile.instance().messageHandler);
+        Textile.instance().createNodeDependents();
+
         if (debug) {
             Logger.setLogLevel(Logger.LogLevel.DEBUG);
         }
@@ -197,27 +253,14 @@ public class Textile implements LifecycleObserver {
         UploadService.HTTP_STACK = new OkHttpStack();
         UploadService.UPLOAD_POOL_SIZE = Textile.UPLOAD_POOL_SIZE;
 
-        Textile.instance().applicationContext = applicationContext;
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BuildConfig.APPLICATION_ID + ".uploadservice.broadcast.status");
+        applicationContext.registerReceiver(broadcastReceiver, intentFilter);
 
-        final File filesDir = applicationContext.getFilesDir();
-        final String path = new File(filesDir, REPO_NAME).getAbsolutePath();
-        Textile.instance().repoPath = path;
-
-        try {
-            Textile.create(path, debug);
-            return null;
-        } catch (final Exception e) {
-            if (e.getMessage().equals("repo does not exist, initialization is required")) {
-                final String recoveryPhrase = Textile.instance().newWallet(WALLET_WORD_COUNT);
-                final MobileWalletAccount account = Textile.instance()
-                        .walletAccountAt(recoveryPhrase, WALLET_ACCOUNT_INDEX, WALLET_PASSPHRASE);
-                Textile.instance().initRepo(account.getSeed(), path, logToDisk, debug);
-                Textile.create(path, debug);
-                return recoveryPhrase;
-            } else {
-                throw e;
-            }
-        }
+        Textile.instance().lifecycleServiceIntent = new Intent(applicationContext, LifecycleService.class);
+        applicationContext.bindService(Textile.instance()
+                .lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
+        applicationContext.startService(Textile.instance().lifecycleServiceIntent);
     }
 
     /**
@@ -228,70 +271,30 @@ public class Textile implements LifecycleObserver {
         return TextileHelper.INSTANCE;
     }
 
-    private static void create(final String repoPath, final boolean debug) throws Exception {
-        final Context ctx = Textile.instance().applicationContext;
-
-        Textile.instance().newTextile(repoPath, debug);
-        Textile.instance().createNodeDependents();
-
-        Textile.instance().requestsHandler = new RequestsHandler(REQUESTS_BATCH_SIZE);
-
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BuildConfig.APPLICATION_ID + ".uploadservice.broadcast.status");
-        ctx.registerReceiver(broadcastReceiver, intentFilter);
-
-        Textile.instance().lifecycleServiceIntent = new Intent(ctx, LifecycleService.class);
-        ctx.bindService(Textile.instance()
-                .lifecycleServiceIntent, Textile.instance().connection, Context.BIND_AUTO_CREATE);
-        ctx.startService(Textile.instance().lifecycleServiceIntent);
-    }
-
-    private Textile () {
-    }
-
-    private String newWallet(final long wordCount) throws Exception {
-        return Mobile.newWallet(wordCount);
-    }
-
-    private MobileWalletAccount walletAccountAt(final String phrase, final long index, final String password) throws Exception {
-        final byte[] bytes = Mobile.walletAccountAt(phrase, index, password);
-        return MobileWalletAccount.parseFrom(bytes);
-    }
-
-    private void initRepo(final String seed, final String repoPath, final boolean logToDisk, final boolean debug) throws Exception {
-        final InitConfig config = new InitConfig();
-        config.setSeed(seed);
-        config.setRepoPath(repoPath);
-        config.setLogToDisk(logToDisk);
-        config.setDebug(debug);
-        Mobile.initRepo(config);
-    }
-
-    private void migrateRepo(final String repoPath) throws Exception {
+    private static void migrateRepo(final String repoPath) throws Exception {
         final MigrateConfig config = new MigrateConfig();
         config.setRepoPath(repoPath);
         Mobile.migrateRepo(config);
     }
 
-    private void newTextile(final String repoPath, final boolean debug) throws Exception {
+    private static Mobile_ newTextile(final String repoPath, final boolean debug, final RequestsHandler requestsHandler, final MessageHandler messenger) throws Exception {
         final RunConfig config = new RunConfig();
         config.setRepoPath(repoPath);
         config.setDebug(debug);
         // Having this part of the config is not ideal. We should instead make it a setter
         // which can be used after node creation.
-        config.setCafeOutboxHandler(() -> {
-            if (requestsHandler != null) {
-                requestsHandler.flush();
-            }
-        });
-        node = Mobile.newTextile(config, messageHandler);
+        config.setCafeOutboxHandler(requestsHandler);
+        return Mobile.newTextile(config, messenger);
+    }
+
+    private Textile () {
     }
 
     void start() {
         try {
             node.start();
         } catch (final Exception e) {
-            for (final TextileEventListener listener : eventsListeners) {
+            for (final TextileEventListener listener : eventListeners) {
                 listener.nodeFailedToStart(e);
             }
         }
@@ -301,20 +304,20 @@ public class Textile implements LifecycleObserver {
         try {
             node.stop();
         } catch (final Exception e) {
-            for (final TextileEventListener listener : eventsListeners) {
+            for (final TextileEventListener listener : eventListeners) {
                 listener.nodeFailedToStop(e);
             }
         }
     }
 
     void notifyListenersOfPendingNodeStop(final int seconds) {
-        for (final TextileEventListener listener : eventsListeners) {
+        for (final TextileEventListener listener : eventListeners) {
             listener.willStopNodeInBackgroundAfterDelay(seconds);
         }
     }
 
     void notifyListenersOfCanceledPendingNodeStop() {
-        for (final TextileEventListener listener : eventsListeners) {
+        for (final TextileEventListener listener : eventListeners) {
             listener.canceledPendingNodeStop();
         }
     }
@@ -370,7 +373,7 @@ public class Textile implements LifecycleObserver {
 
         requestsHandler = null;
 
-        eventsListeners.clear();
+        eventListeners.clear();
         node = null;
         applicationContext = null;
 
@@ -391,8 +394,6 @@ public class Textile implements LifecycleObserver {
         profile = null;
         schemas = null;
         threads = null;
-
-        repoPath = null;
     }
 
     /**
@@ -400,7 +401,7 @@ public class Textile implements LifecycleObserver {
      * @param listener The listener that will be called back
      */
     public void addEventListener(TextileEventListener listener) {
-        eventsListeners.add(listener);
+        eventListeners.add(listener);
     }
 
     /**
@@ -408,7 +409,7 @@ public class Textile implements LifecycleObserver {
      * @param listener The listener to remove
      */
     public void removeEventListener(TextileEventListener listener) {
-        eventsListeners.remove(listener);
+        eventListeners.remove(listener);
     }
 
     private void createNodeDependents() {
