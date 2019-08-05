@@ -1,7 +1,6 @@
 package io.textile.textile;
 
 import android.content.Context;
-import android.content.IntentFilter;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Base64;

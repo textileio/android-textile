@@ -32,6 +32,7 @@ class RequestsHandler implements CafeOutboxHandler {
     }
 
     public void flush() {
+        Textile.instance().flushLock();
         final Future<Void> future = executor.submit(() -> {
             try {
                 // List a batch of request ids
@@ -66,6 +67,7 @@ class RequestsHandler implements CafeOutboxHandler {
         } catch (final Exception e) {
             Logger.error(TAG, e.getMessage());
         }
+        Textile.instance().flushUnlock();
     }
 
     private CompletableFuture<String> getUpload(final String id) {

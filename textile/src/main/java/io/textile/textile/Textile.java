@@ -354,11 +354,25 @@ public class Textile implements LifecycleObserver {
     }
 
     /**
-     * Get a summary of the local Textile node and it's data
+     * Return whether or not the node is online
      * @return A boolean indicating the online status of the node
      */
     public boolean online() {
         return node.online();
+    }
+
+    /**
+     * Acquire a flush lock
+     */
+    public void flushLock() {
+        node.flushLock();
+    }
+
+    /**
+     * Release a flush lock
+     */
+    public void flushUnlock() {
+        node.flushUnlock();
     }
 
     /**
