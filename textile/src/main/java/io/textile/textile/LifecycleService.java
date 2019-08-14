@@ -65,12 +65,21 @@ public class LifecycleService extends Service {
             timer.cancel();
             timer = null;
         }
-        Textile.instance().stop();
-        // Sometimes this function is run while nodeStoppedListener is still null, crashing the app
-        if (nodeStoppedListener != null) {
-            nodeStoppedListener.onNodeStopped();
-        }
-        stopSelf();
+        Textile.instance().stop(new Handlers.ErrorHandler() {
+            @Override
+            public void onComplete() {
+                // Sometimes this function is run while nodeStoppedListener is still null, crashing the app
+                if (nodeStoppedListener != null) {
+                    nodeStoppedListener.onNodeStopped();
+                }
+                stopSelf();
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
     void cancelPendingNodeStop() {
