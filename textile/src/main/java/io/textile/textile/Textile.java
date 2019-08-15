@@ -32,6 +32,7 @@ import mobile.RunConfig;
 public class Textile implements LifecycleObserver {
 
     private static final String TAG = "Textile";
+    private static final String WAIT_SRC = "Textile.flush";
 
     enum AppState {
         None, Background, Foreground, BackgroundFromForeground
@@ -300,14 +301,17 @@ public class Textile implements LifecycleObserver {
         }
     }
 
-    void stop() {
-        try {
-            node.stop();
-        } catch (final Exception e) {
-            for (final TextileEventListener listener : eventListeners) {
-                listener.nodeFailedToStop(e);
+    void stop(Handlers.ErrorHandler handler) {
+        node.stop((Exception e) -> {
+            if(e != null) {
+                handler.onError(e);
+                for (final TextileEventListener listener : eventListeners) {
+                    listener.nodeFailedToStop(e);
+                }
+            } else {
+                handler.onComplete();
             }
-        }
+        });
     }
 
     void notifyListenersOfPendingNodeStop(final int seconds) {
@@ -362,20 +366,6 @@ public class Textile implements LifecycleObserver {
     }
 
     /**
-     * Acquire a flush lock
-     */
-    public void flushLock() {
-        node.flushLock();
-    }
-
-    /**
-     * Release a flush lock
-     */
-    public void flushUnlock() {
-        node.flushUnlock();
-    }
-
-    /**
      * Reset the local Textile node instance so it can be re-initialized
      */
     public void destroy() {
@@ -416,6 +406,20 @@ public class Textile implements LifecycleObserver {
      */
     public void addEventListener(TextileEventListener listener) {
         eventListeners.add(listener);
+    }
+
+    /**
+     * Acquire a flush lock
+     */
+    protected void flushLock() {
+        node.waitAdd(1, WAIT_SRC);
+    }
+
+    /**
+     * Release a flush lock
+     */
+    protected void flushUnlock() {
+        node.waitDone(WAIT_SRC);
     }
 
     /**
