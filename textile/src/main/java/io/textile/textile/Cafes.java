@@ -77,11 +77,21 @@ public class Cafes extends NodeDependent {
     }
 
     /**
-     * Triggers the async process of checking for messages from all registered cafes
-     * @throws Exception The exception that occurred
+     * Checks messages from all registered cafes
+     * @param handler An object that will get called with the operation is complete
      */
-    public void checkMessages() throws Exception {
-        node.checkCafeMessages();
+    public void checkMessages(final Handlers.ErrorHandler handler) {
+        node.checkCafeMessages((e) -> {
+            if (e != null) {
+                handler.onError(e);
+                return;
+            }
+            try {
+                handler.onComplete();
+            } catch (final Exception exception) {
+                handler.onError(exception);
+            }
+        });
     }
 
     /**
