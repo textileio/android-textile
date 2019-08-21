@@ -71,7 +71,7 @@ public class TextileTest {
 
         // register a cafe
         AtomicBoolean ready = new AtomicBoolean();
-        Textile.instance().cafes.register(BuildConfig.TEST_CAFE_ID, BuildConfig.TEST_CAFE_TOKEN, new Handlers.ErrorHandler() {
+        Textile.instance().cafes.register(BuildConfig.TEST_CAFE_URL, BuildConfig.TEST_CAFE_TOKEN, new Handlers.ErrorHandler() {
             @Override
             public void onComplete() {
                 ready.getAndSet(true);
@@ -110,6 +110,10 @@ public class TextileTest {
         // add a message
         String blockId = Textile.instance().messages.add(blobThread.getId(), "hello");
         assertNotEquals("", blockId);
+
+        // add a comment
+        String blockId2 = Textile.instance().comments.add(blockId, "hello back");
+        assertNotEquals("", blockId2);
 
         // add some data to the blob thread
         ready.getAndSet(false);

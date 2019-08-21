@@ -19,7 +19,7 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField 'String', 'TEST_CAFE_ID', '"'+getTestCafeID()+'"'
+        buildConfigField 'String', 'TEST_CAFE_URL', '"'+getTestCafeURL()+'"'
         buildConfigField 'String', 'TEST_CAFE_TOKEN', '"'+getTestCafeToken()+'"'
     }
 
@@ -180,13 +180,13 @@ bintray {
     }
 }
 
-def getTestCafeID() {
+def getTestCafeURL() {
     try {
         Properties properties = new Properties()
         properties.load(project.rootProject.file('local.properties').newDataInputStream())
-        return properties.getProperty('test.cafe.id')
+        return properties.getProperty('test.cafe.url')
     } catch (Exception e) {
-        return String.valueOf(System.getenv('TEST_CAFE_ID'))
+        return String.valueOf(System.getenv('TEST_CAFE_URL'))
     }
 }
 

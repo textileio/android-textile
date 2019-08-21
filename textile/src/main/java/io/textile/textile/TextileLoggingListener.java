@@ -23,6 +23,12 @@ public class TextileLoggingListener extends BaseTextileEventListener {
     }
 
     @Override
+    public void threadUpdateReceived(final String threadId, final FeedItemData feedItemData) {
+        super.threadUpdateReceived(threadId, feedItemData);
+        System.out.println("------------> thread update received: " + threadId);
+    }
+
+    @Override
     public void threadAdded(final String threadId) {
         super.threadAdded(threadId);
         System.out.println("------------> thread added: " + threadId);

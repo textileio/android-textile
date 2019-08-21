@@ -302,6 +302,10 @@ public class Textile implements LifecycleObserver {
     }
 
     void stop(Handlers.ErrorHandler handler) {
+        if (node == null) {
+            handler.onComplete();
+            return;
+        }
         node.stop((Exception e) -> {
             if(e != null) {
                 handler.onError(e);
