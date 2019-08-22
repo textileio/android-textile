@@ -2,8 +2,8 @@ package io.textile.textile;
 
 public enum FeedItemType {
     TEXT,
-    LIKE,
     COMMENT,
+    LIKE,
     FILES,
     IGNORE,
     JOIN,
