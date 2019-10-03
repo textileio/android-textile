@@ -212,7 +212,7 @@ public class Textile implements LifecycleObserver {
     public static void initialize(final String repoPath, final String seed, final boolean debug, final boolean logToDisk) throws Exception {
         final InitConfig config = new InitConfig();
         config.setSeed(seed);
-        config.setRepoPath(repoPath);
+        config.setBaseRepoPath(repoPath);
         config.setLogToDisk(logToDisk);
         config.setDebug(debug);
         Mobile.initRepo(config);

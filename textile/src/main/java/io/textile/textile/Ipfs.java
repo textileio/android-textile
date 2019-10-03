@@ -21,6 +21,17 @@ public class Ipfs extends NodeDependent {
     }
 
     /**
+     * Open a new direct connection to a peer using an IPFS multiaddr
+     * @param multiaddr Peer IPFS multiaddr
+     * @return Whether the peer swarm connect was successfull
+     * @throws Exception The exception that occurred
+     */
+    public Boolean swarmConnect(final String multiaddr) throws Exception {
+        final String result = node.swarmConnect(multiaddr);
+        return result.length() > 0;
+    }
+
+    /**
      * Get raw data stored at an IPFS path
      * @param path The IPFS path for the data you want to retrieve
      * @param handler An object that will get called with the resulting data and media type
