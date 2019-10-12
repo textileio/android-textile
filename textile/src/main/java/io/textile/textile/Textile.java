@@ -197,8 +197,7 @@ public class Textile implements LifecycleObserver {
      * @return A boolean value indicating if Textile is initialized or not
      */
     public static Boolean isInitialized(final String repoPath) {
-        File file = new File(repoPath);
-        return file.exists() && file.isDirectory();
+        return Mobile.repoExists(repoPath);
     }
 
     /**
@@ -212,7 +211,7 @@ public class Textile implements LifecycleObserver {
     public static void initialize(final String repoPath, final String seed, final boolean debug, final boolean logToDisk) throws Exception {
         final InitConfig config = new InitConfig();
         config.setSeed(seed);
-        config.setBaseRepoPath(repoPath);
+        config.setRepoPath(repoPath);
         config.setLogToDisk(logToDisk);
         config.setDebug(debug);
         Mobile.initRepo(config);
