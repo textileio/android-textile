@@ -39,7 +39,7 @@ ext {
     appcompatVersion = '28.0.0'
 
     // Textile
-    textileVersion = '0.7.2'
+    textileVersion = '0.7.4'
 
     // Lifecycle
     // androidxLifecycleVersion = '2.0.0'
