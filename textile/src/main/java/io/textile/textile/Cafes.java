@@ -16,12 +16,12 @@ public class Cafes extends NodeDependent {
 
     /**
      * Used to register a remote Textile Cafe node with the local Textile node
-     * @param peerId The peer id of the cafe being registered
+     * @param url The url of the cafe being registered
      * @param token The API token for the cafe being registered
      * @param handler An object that will get called with the operation is complete
      */
-    public void register(final String peerId, final String token, final Handlers.ErrorHandler handler) {
-        node.registerCafe(peerId, token, (e) -> {
+    public void register(final String url, final String token, final Handlers.ErrorHandler handler) {
+        node.registerCafe(url, token, (e) -> {
             if (e != null) {
                 handler.onError(e);
                 return;
@@ -36,11 +36,11 @@ public class Cafes extends NodeDependent {
 
     /**
      * Used to deregister a previously registered Textile Cafe
-     * @param peerId The peer id of the cafe you want to deregister
+     * @param sessionId The sessionId of the cafe you want to deregister
      * @param handler An object that will get called with the operation is complete
      */
-    public void deregister(final String peerId, final Handlers.ErrorHandler handler) {
-        node.deregisterCafe(peerId, (e) -> {
+    public void deregister(final String sessionId, final Handlers.ErrorHandler handler) {
+        node.deregisterCafe(sessionId, (e) -> {
             if (e != null) {
                 handler.onError(e);
                 return;
@@ -55,11 +55,11 @@ public class Cafes extends NodeDependent {
 
     /**
      * Used to refresh an individual Textile Cafe session
-     * @param peerId The peer id of the cafe who's session you want to refresh
+     * @param sessionId The peer id of the cafe who's session you want to refresh
      * @param handler An object that will get called with the result of the operation
      */
-    public void refreshSession(final String peerId, final Handlers.CafeSessionHandler handler) {
-        node.refreshCafeSession(peerId, (data, e) -> {
+    public void refreshSession(final String sessionId, final Handlers.CafeSessionHandler handler) {
+        node.refreshCafeSession(sessionId, (data, e) -> {
             if (e != null) {
                 handler.onError(e);
                 return;
