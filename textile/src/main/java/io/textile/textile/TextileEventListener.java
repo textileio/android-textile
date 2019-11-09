@@ -99,6 +99,14 @@ public interface TextileEventListener {
     void queryError(final String queryId, final Exception e);
 
     /**
+     * Called when there is a message query result available
+     * @param queryId The id of the corresponding query
+     * @param message The message text
+     * @param messageId The id of the message
+     */
+    void pubsubQueryResult(final String queryId, final String message, final String messageId);
+
+    /**
      * Called when there is a thread query result available
      * @param queryId The id of the corresponding query
      * @param thread A thread query result
