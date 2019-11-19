@@ -13,6 +13,7 @@ import io.textile.pb.Model.Thread;
 import io.textile.pb.Model.Contact;
 import io.textile.pb.View.AccountUpdate;
 import io.textile.pb.View.FeedItem;
+import io.textile.pb.View.Strings;
 
 import mobile.Event;
 import mobile.Messenger;
@@ -103,7 +104,13 @@ class MessageHandler implements Messenger {
                     switch (queryEvent.getType()) {
                         case DATA:
                             final String type = queryEvent.getData().getValue().getTypeUrl();
-                            if (type.equals("/Thread")) {
+                            if (type.equals("/Strings")) {
+                                final String message = Strings.parseFrom(queryEvent.getData().getValue().getValue()).getValues(0);
+                                final String messageId = queryEvent.getData().getId();
+                                for (final TextileEventListener listener : listeners) {
+                                    listener.pubsubQueryResult(queryEvent.getId(), message, messageId);
+                                }
+                            } else if (type.equals("/Thread")) {
                                 final Thread clientThread = Thread.parseFrom(queryEvent.getData().getValue().getValue());
                                 for (final TextileEventListener listener : listeners) {
                                     listener.clientThreadQueryResult(queryEvent.getId(), clientThread);

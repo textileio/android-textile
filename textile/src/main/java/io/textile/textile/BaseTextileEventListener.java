@@ -86,6 +86,11 @@ public abstract class BaseTextileEventListener implements TextileEventListener {
     }
 
     @Override
+    public void pubsubQueryResult(final String queryId, final String message, final String messageId) {
+
+    }
+
+    @Override
     public void clientThreadQueryResult(final String queryId, final Thread thread) {
 
     }
