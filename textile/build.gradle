@@ -17,7 +17,7 @@ android {
         versionCode 1
         versionName '1.0'
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField 'String', 'TEST_CAFE_URL', '"'+getTestCafeURL()+'"'
         buildConfigField 'String', 'TEST_CAFE_TOKEN', '"'+getTestCafeToken()+'"'
@@ -48,15 +48,13 @@ dependencies {
     api "io.textile:mobile:$textileVersion"
 
     // Support
-    // implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
-    implementation "com.android.support:appcompat-v7:$appcompatVersion"
-    implementation "com.android.support:support-v4:$appcompatVersion"
+    implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     // Lifecycle
-    // implementation "androidx.lifecycle:lifecycle-extensions:$androidxLifecycleVersion"
-    // implementation "androidx.lifecycle:lifecycle-common-java8:$androidxLifecycleVersion"
-    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
-    annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$androidxLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$androidxLifecycleVersion"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$androidxLifecycleVersion"
 
     // UploadService
     implementation "com.github.textileio:android-upload-service:$uploadServiceVersion"
@@ -70,7 +68,7 @@ dependencies {
     // AndroidJUnitRunner and JUnit Rules
     // androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
     // androidTestImplementation "androidx.test:rules:$androidxTestRulesVersion"
-    androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
 
     // Assertions
     // androidTestImplementation "androidx.test.ext:junit:$androidxTestExtJunitVersion"
