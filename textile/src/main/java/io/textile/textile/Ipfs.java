@@ -73,9 +73,8 @@ public class Ipfs extends NodeDependent {
     /**
      * Cancel subscribe to messages on a given topic
      * @param queryId The query ID that can be used to cancel the sub
-     * @throws Exception The exception that occurred
      */
-    public void cancelPubsubSub(final String queryId) throws Exception {
+    public void cancelPubsubSub(final String queryId) {
         node.cancelIpfsPubsubSub(queryId);
     }
 }

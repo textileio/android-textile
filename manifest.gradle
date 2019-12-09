@@ -17,7 +17,7 @@ ext {
     libraryVersion = '0.0.1-dev'
 
     minSdk = 24
-    targetSdk = 28
+    targetSdk = 29
 
     // Gradle classpath dependencies versions
     gradleVersion = '3.4.1'
@@ -35,18 +35,16 @@ ext {
     testRunnerVersion = '1.0.2'
 
     // Library and app dependencies versions
-    // androidxAppcompatVersion = '1.0.2'
-    appcompatVersion = '28.0.0'
+    androidxAppcompatVersion = '1.0.2'
 
     // Textile
-    textileVersion = '0.7.6'
+    textileVersion = '0.7.7'
 
     // Lifecycle
-    // androidxLifecycleVersion = '2.0.0'
-    lifecycleVersion = '1.1.1'
+    androidxLifecycleVersion = '2.0.0'
 
     // UploadService
-    uploadServiceVersion = '3.5.4'
+    uploadServiceVersion = '3.5.5'
 
     // Demo App
     constraintLayoutVersion = '1.1.3'
