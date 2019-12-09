@@ -38,13 +38,13 @@ ext {
     androidxAppcompatVersion = '1.0.2'
 
     // Textile
-    textileVersion = '0.7.6'
+    textileVersion = '0.7.7'
 
     // Lifecycle
     androidxLifecycleVersion = '2.0.0'
 
     // UploadService
-    uploadServiceVersion = '3.5.4'
+    uploadServiceVersion = '3.5.5'
 
     // Demo App
     constraintLayoutVersion = '1.1.3'
