@@ -24,8 +24,10 @@ import io.textile.pb.View.AddThreadConfig;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * Textile tests.
@@ -122,6 +124,12 @@ public class TextileTest {
             @Override
             public void onComplete(Model.Block block) {
                 assertNotEquals("", block.getId());
+                try {
+                    io.textile.pb.View.Files files = Textile.instance().files.file(block.getId());
+                    assertEquals(block.getId(), files.getBlock());
+                } catch(Exception e) {
+                    fail(e.getMessage());
+                }
                 ready.getAndSet(true);
             }
 

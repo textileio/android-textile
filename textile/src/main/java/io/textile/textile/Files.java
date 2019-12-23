@@ -78,6 +78,17 @@ public class Files extends NodeDependent {
 
     /**
      * Get a list of files data from a thread
+     * @param blockId The block id of the File to get
+     * @return The Files object corresponding to the specified block id
+     * @throws Exception The exception that occurred
+     */
+    public io.textile.pb.View.Files file(final String blockId) throws Exception {
+        final byte[] bytes = node.file(blockId);
+        return io.textile.pb.View.Files.parseFrom(bytes);
+    }
+
+    /**
+     * Get a list of files data from a thread
      * @param threadId The thread to query
      * @param offset The offset to beging querying from
      * @param limit The max number of results to return
