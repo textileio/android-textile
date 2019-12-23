@@ -8,6 +8,14 @@
 ![Platform](https://img.shields.io/badge/platform-android-lightgrey.svg?style=popout-square)
 ![Bintray](https://img.shields.io/badge/dynamic/json.svg?label=latest&query=name&style=flat-square&url=https%3A%2F%2Fapi.bintray.com%2Fpackages%2Ftextile%2Fmaven%2Ftextile%2Fversions%2F_latest)
 
+---
+**Deprecation Warning**
+
+Textile Threads v1 are being deprecated. Please follow our ongoing work on v2 on both the [go-textile-threads repo](https://github.com/textileio/go-textile-threads) and the [early preview](https://paper.dropbox.com/doc/Threads-v2-Early-Preview-X8fKsMiTyztuQ1L8CnUng). 
+
+Until Threads v2 release and integration into the Android SDK, this repo should be used for experimental purposes only.
+---
+
 > Textile provides encrypted, recoverable, schema-based, and cross-application data storage built on IPFS and libp2p. We like to think of it as a decentralized data wallet with built-in protocols for sharing and recovery, or more simply, an open and programmable iCloud.
 
 ## Table of Contents
